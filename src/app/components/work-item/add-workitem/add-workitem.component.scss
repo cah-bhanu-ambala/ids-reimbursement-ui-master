@@ -1,0 +1,46 @@
+.p-button {
+    color: #ffffff;
+    background: #e85637;
+    border: 1px solid #e85637;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    border-radius: 2px;
+}
+
+.ui-datatable .ui-datatable-thead>tr>th {
+    background: red;
+}
+
+.p-datatable .p-datatable-thead>tr>th {
+    text-align: left;
+    padding: 0.75rem 0.75rem;
+    border: 1px solid #f3f2f1;
+    border-width: 0 0 1px 0;
+    font-weight: 600;
+    color: #edebe9;
+    background: #848488;
+    transition: box-shadow 0.2s;
+}
+
+.report-grid-margin {
+    margin-top: 10px;
+}
+
+.deliquency-report-title {
+    margin-left: 43px;
+    margin-bottom: 20px;
+}
+
+.deliquency-report-facility-list {
+    white-space: nowrap;
+    margin-left: 44px;
+}
+
+.report-btn-group {
+    margin-left: 30px;
+}
+
+.card-header {
+    color: #e85637 !important;
+}

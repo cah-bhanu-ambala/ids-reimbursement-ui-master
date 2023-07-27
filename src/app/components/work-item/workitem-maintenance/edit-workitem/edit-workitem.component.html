@@ -1,0 +1,583 @@
+<!-- Edit Facility Form Start-->
+<form *ngIf="wiInfo" [formGroup]="formWorkItem" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">WORK ITEM INFORMATION</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Work Item Number</label>
+                    <input type="text" class="form-control" id="workItemNo" formControlName="workItemNo" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>MRN</label>
+                    <input type="text" class="form-control" id="patientMrn" formControlName="patientMrn" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Date in</label>
+                    <input class="form-control" placeholder="mm/dd/yyyy" name="dateIn" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateIn" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Who Added</label>
+                    <input type="text" class="form-control" id="createdBy" formControlName="createdBy" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Work Item Status</label>
+                    <select id="workItemStatusId" class="custom-select" formControlName="workItemStatusId" (change)="onStatusChange($event)">
+                        <option *ngFor="let w of wiStatuses" value="{{ w.workItemStatusId }}">
+                            {{ w.workItemStatusName }}
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Team Member</label>
+                    <select id="assignedToId" class="custom-select" formControlName="assignedToId">
+            <option *ngFor="let member of wiTeamMembers" value="{{ member.userId }}">
+              {{ member.userName }}
+            </option>
+          </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Order Type</label>
+                  <select id="orderTypeId" class="custom-select" formControlName="orderTypeId">
+                    <option *ngFor="let ot of orderTypes" value="{{ ot.orderTypeId }}">
+                      {{ ot.orderTypeName }}
+                    </option></select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Billing Level</label>
+                    <select id="facilityBillingLevelId" class="custom-select" formControlName="facilityBillingLevelId">
+            <option *ngFor="let bl of billingLevels" value="{{ bl.facilityBillingLevelId }}">
+              {{ bl.facilityBillingLevelName }}
+            </option>
+          </select>
+                </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Referral Number</label>
+                <input type="text" class="form-control" id="referralNumber" formControlName="referralNumber" [ngClass]="{'is-invalid': (f.referralNumber.dirty || f.referralNumber.touched ) && f.referralNumber.errors }" />
+                <div *ngIf="(f.referralNumber.dirty || f.referralNumber.touched) && f.referralNumber.errors" class="invalid-feedback">
+                  <div *ngIf="f.referralNumber.errors.maxlength" class="txt-red">
+                    Referral number is max of 25 characters
+                  </div>
+                  <div *ngIf="f.referralNumber.errors.pattern" class="txt-red">
+                    Referral number is not in correct format
+                  </div>
+                </div>
+              </div>
+                <div class="form-group col-md-6">
+                    <label class="col-sm-4" style="margin-left: -15px">Date Out</label>
+                    <div class="form-inline">
+                        <input id="dateOut" class="form-control col-sm-10" placeholder="mm/dd/yyyy" name="dateOut" ngbDatepicker #df="ngbDatepicker" formControlName="dateOut" />
+                        <button class="btn calendar form-control col-sm-1" style="margin-left: 27px" (click)="df.toggle()" type="button"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card w-100 p-3">
+        <h5 class="card-header">ORDER INFORMATION</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Facility EIN</label>
+                    <input type="text" class="form-control" id="facilityEin" formControlName="facilityEin" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Physician</label>
+                    <input type="text" class="form-control" id="providerName" formControlName="providerName" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Physician NPI</label>
+                    <input type="text" class="form-control" id="providerNPI" formControlName="providerNPi" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Facility NPI</label>
+                    <input type="text" class="form-control" id="facilityNPI" formControlName="facilityNPI" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Facility</label>
+                    <select id="facilityName" class="custom-select" formControlName="facilityName">
+            <option *ngFor="let f of facilities" value="{{ f.facilityName }}">
+              {{ f.facilityName }}
+            </option>
+          </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Order Date</label>
+                    <div class="form-inline">
+                        <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="orderDate" ngbDatepicker #ds="ngbDatepicker" formControlName="orderDate" />
+                        <button class="btn calendar col-sm-1" (click)="ds.toggle()" type="button"></button>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Buy/Bill<span class="required">*</span></label>
+                    <select class="custom-select" formControlName="buyBill" name="buyBill" id="buyBill" #buyBill>
+                        <option value="Y">YES</option>
+                        <option value="N">NO</option>
+                        <option value="U">UNKNOWN</option>
+                    </select>
+                </div>
+                <!-- <div class="form-group col-md-6">
+          <label>External Work ID</label>
+          <input type="text" class="form-control" id="externalWorkId" formControlName="externalWorkId"
+            [ngClass]="{ 'is-invalid': (f.externalWorkId.dirty || f.externalWorkId.touched || submitted) && f.externalWorkId.errors }" />
+          <div *ngIf="(f.externalWorkId.dirty || f.externalWorkId.touched || submitted) && f.externalWorkId.errors"
+            class="invalid-feedback">
+            <div *ngIf="f.externalWorkId.errors.maxlength" class="txt-red">
+              External Work ID is max of 25 characters length
+            </div>
+            <div *ngIf="f.externalWorkId.errors.pattern" class="txt-red">
+              External Work ID is alphanumeric
+            </div>
+          </div>
+        </div> -->
+            </div>
+            <!-- <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Order Type</label>
+          <select class="custom-select" formControlName="orderTypeId">
+            <option value="1">Oncology</option>
+            <option value="2">Non Oncology</option>
+          </select>
+        </div>
+      </div> -->
+        </div>
+    </div>
+    <div class="card w-100 p-3">
+        <!-- <h5 class="card-header">DIAGNOSIS INFORMATION</h5> -->
+        <div class="card-header container-fluid">
+            <div class="row">
+                <div class="col-md-11">
+                    <h5>DIAGNOSIS INFORMATION <small>(Max 10)</small></h5>
+                </div>
+                <div class="col-md-1" *ngIf="!viewOnly">
+                    <button type="button" class="btn-primary float-right" (click)="generateDianosisGridRows()"><em
+              class="fas fa-plus"></em></button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <label for="icdCode" class="col-sm-4 wi-header">DX Code</label>
+                <label for="mrn" class="col-sm-8 wi-header">Description</label>
+            </div>
+            <div formArrayName="icdCodes">
+                <ng-container *ngFor="let icd of icdCodes.controls; index as i">
+                    <div class="row" style="padding: 0.2em">
+                        <div [formGroupName]="i" class="col-4">
+                            <ng-select formControlName="icdCode" [virtualScroll]="true" [items]="icdCodesFiltered$[i] | async" [trackByFn]="trackByIcdCode" [minTermLength]="minLengthTerm" [loading]="icdCodesLoading" [typeahead]="icdCodesInput$[i]" placeholder="Search for ICD code" (change)="onIcdCodeChange($event, i)">
+                            </ng-select>
+                        </div>
+                        <div [formGroupName]="i" class="col-8">
+                            <input type="text" class="form-control" style="margin-left: -2px" formControlName="icdDescription" id="icdDescription" />
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <div class="card w-100 p-3">
+        <div class="card-header container-fluid">
+            <div class="row">
+                <div class="col-md-11">
+                    <h5>DRUG/TEST INFORMATION <small>(Max 13)</small></h5>
+                </div>
+                <div class="col-md-1" *ngIf="!viewOnly">
+                    <button type="button" class="btn-primary float-right" (click)="generateDrugGridRows()"><em
+              class="fas fa-plus"></em></button>
+                </div>
+            </div>
+        </div>
+        <div style="margin: 15px 6px 2px 2px">
+            <div class="form-row scrollmenu" formArrayName="drugCodes">
+                <div class="form-group col-md-12">
+                    <table class="table table-hover grid-background" style="width: 100%;">
+                      <caption>drug/test information</caption>
+                        <thead class="grid-header">
+                            <tr>
+                                <th scope="col">Codes</th>
+                                <th scope="col">Short Description</th>
+                                <th scope="col">Long Description</th>
+                                <th scope="col">Is Cover</th>
+                                <th scope="col">Clearance</th>
+                                <th scope="col">Approval Reason</th>
+                                <th scope="col">Prior Auth</th>
+                                <th scope="col">Prior Auth No</th>
+                                <th scope="col">Prior Auth Notes</th>
+
+                                <th scope="col">Drug Dosage</th>
+                                <th scope="col">Drug Denied</th>
+                                <th scope="col">Denial Type</th>
+
+                                <th scope="col">From Date</th>
+                                <th scope="col">To Date</th>
+                                <th scope="col">Visits Approved</th>
+                                <th scope="col">Units Approved</th>
+                                <th scope="col">Advocacy</th>
+                                <th scope="col" *ngIf="showOverride()">Override</th>
+                                <th scope="col" *ngIf="showOverrideAdvocacyNotes()">Override Notes</th>
+                                <th scope="col">Advocacy Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngFor="let dc of drugCodes.controls; index as i">
+                            <td [formGroupName]="i" style="width: 200px">
+                                <ng-select formControlName="drugProcCode" [virtualScroll]="true" [items]="drugCodesFiltered$[i] | async" [trackByFn]="trackByDrugCode" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$[i]" placeholder="Search for Drug code"
+                                    (change)="onDrugCodeChange($event, i)" style="width: 200px" [ngClass]="{'is-invalid': dc.controls.drugProcCode.errors }">
+                                </ng-select>
+                                <div *ngIf="dc.controls.drugProcCode.errors" class="invalid-feedback">
+                                    <div class="txt-red">
+                                        Drug Already Exists
+                                    </div>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i">
+                                <input type="text" class="form-control" formControlName="drugShortDesc" id="drugShortDesc" style="width: 150px; word-wrap: break-word" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <input type="text" class="form-control" formControlName="drugLongDesc" id="drugLongDesc" style="width: 150px; word-wrap: break-word" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 120px; padding-right: 0.5em">
+                                    <select class="custom-select col-sm-12" formControlName="isCover" style="width: 70px">
+                                        <!-- <option value="" disabled selected hidden>Please choose Yes or No</option> -->
+                                        <option value="Y">YES</option>
+                                        <option value="N">NO</option>
+                                        <option value="U">UNKNOWN</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 120px; padding-right: 0.5em">
+                                    <select class="custom-select col-sm-12" formControlName="clearance" style="width: 70px">
+                                        <option value="Y">YES</option>
+                                        <option value="N">NO</option>
+                                        <option value="U">UNKNOWN</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <select id="approvalReasonId" class="custom-select col-sm-10" formControlName="priorAuthApprovalReason" (change)="OnApprovalReason(i)" #priorAuthApprovalReason>
+                                    <option *ngFor="let reason of wiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                                        {{ reason.priorAuthStatusName }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 120px">
+                                    <select class="custom-select col-sm-12" formControlName="priorAuth" style="width: 70px" (change)="OnPirorAuth($event, i, dc)" #priorAuth>
+                                        <option value="Y">YES</option>
+                                        <option value="N">NO</option>
+                                        <option value="U">UNKNOWN</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <input type="text" class="form-control" formControlName="priorAuthNo" id="priorAuthNo" style="width: 80px" (keypress)="alphanumericOnly($event)" maxlength="25" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <textarea rows="2" type="text" formControlName="priorAuthNotes" class="form-control" maxlength="1000" style="width: 200px"></textarea>
+                            </td>
+
+                            <td [formGroupName]="i" style="width: auto">
+                                <input type="text" class="form-control" formControlName="drugDosage" id="drugDosage" style="width: 80px" (keypress)="decimalNumericOnly($event)" maxlength="25" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 120px">
+                                    <select class="custom-select col-sm-12" formControlName="isDenied" (change)="onDenialChange($event, i)" style="width: 70px" #isDenied>
+                                        <option value=true>YES</option>
+                                        <option value=false>NO</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <select class="custom-select col-sm-10" formControlName="denialTypeId" #denialTypeId>
+                                    <option *ngFor="let reason of denialTypes" value="{{ reason.denialTypeId }}">
+                                        {{ reason.denialType }}
+                                    </option>
+                                </select>
+                            </td>
+
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 200px; padding-right: 0.5em">
+                                    <input class="form-control col-sm-10" placeholder="mm/dd/yyyy" name="priorAuthFromDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="priorAuthFromDate" style="width: 80px" />
+                                    <button class="btn calendar col-sm-2" (click)="dfs.toggle()" type="button" style="width: 30px"></button>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <div class="row" style="width: 200px">
+                                    <input class="form-control col-sm-10" placeholder="mm/dd/yyyy" name="priorAuthToDate" ngbDatepicker #dfe="ngbDatepicker" formControlName="priorAuthToDate" />
+                                    <button class="btn calendar col-sm-2" (click)="dfe.toggle()" type="button"></button>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <input type="text" class="form-control" formControlName="visitsApproved" (keypress)="numericOnly($event)" maxlength="25" id="visitsApproved" style="width: 70px" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <input type="text" class="form-control" formControlName="unitsApproved" (keypress)="numericOnly($event)" maxlength="25" id="unitsApproved" style="width: 70px" />
+                            </td>
+
+                            <td [formGroupName]="i" style="width: auto">
+                                <select class="custom-select col-sm-6" formControlName="advocacyNeeded" id="advocacyNeeded" style="width: 200px">
+                                  <option value="Y">YES</option>
+                                  <option value="N">NO</option>
+                                  <option value="U">UNKNOWN</option>
+                                </select>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto" *ngIf="!!dc.value.drugAdvocacyId">
+                                <input type="checkbox" class="override-checkbox" formControlName="overrideAdvocacyNeeded" id="overrideAdvocacyNeeded" (change)="enableAdvocacyNeeded(i)" />
+                            </td>
+                            <td [formGroupName]="i" style="width: auto" *ngIf="!dc.value.drugAdvocacyId && showOverride()">
+                                &nbsp;
+                            </td>
+                            <td [formGroupName]="i" style="width: auto" *ngIf="!!dc.value.overrideAdvocacyNeeded">
+                                <textarea rows="2" type="text" formControlName="overrideAdvocacyNotes" class="form-control" [ngClass]="{'is-invalid': dc.controls.overrideAdvocacyNotes.errors }" maxlength="1000" style="width: 200px"></textarea>
+                                <div *ngIf="dc.controls.overrideAdvocacyNotes.errors && submitted" class="invalid-feedback">
+                                    <div class="txt-red">
+                                        Override Notes is required
+                                    </div>
+                                </div>
+                            </td>
+                            <td [formGroupName]="i" style="width: auto" *ngIf="!dc.value.overrideAdvocacyNeeded && showOverrideAdvocacyNotes()">
+                                &nbsp;
+                            </td>
+                            <td [formGroupName]="i" style="width: auto">
+                                <textarea rows="2" type="text" formControlName="advocacyNotes" class="form-control" maxlength="1000" style="width: 200px"></textarea>
+                            </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- </div> -->
+    </div>
+    <div class="card w-100 p-3" formGroupName="wiInsurance">
+        <h5 class="card-header">PRIMARY INSURANCE INFORMATION</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Representatives</label>
+                    <input type="text" class="form-control" id="primaryInsRep" formControlName="primaryInsRep" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('primaryInsRep').dirty || f['wiInsurance'].get('primaryInsRep').touched || submitted) && f['wiInsurance'].get('primaryInsRep').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('primaryInsRep').dirty || f['wiInsurance'].get('primaryInsRep').touched || submitted) && f['wiInsurance'].get('primaryInsRep').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('primaryInsRep').errors.maxlength" class="txt-red">
+                            Representatives is max of 25 characters length
+                        </div>
+                        <div *ngIf="f['wiInsurance'].get('primaryInsRep').errors.pattern" class="txt-red">
+                            Representatives is alphanumeric
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Reference #</label>
+                    <input type="text" class="form-control" id="primaryInsRefNum" formControlName="primaryInsRefNum" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('primaryInsRefNum').dirty || f['wiInsurance'].get('primaryInsRefNum').touched || submitted) && f['wiInsurance'].get('primaryInsRefNum').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('primaryInsRefNum').dirty || f['wiInsurance'].get('primaryInsRefNum').touched || submitted) && f['wiInsurance'].get('primaryInsRefNum').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('primaryInsRefNum').errors.maxlength" class="txt-red">
+                            Reference # is max of 25 characters length
+                        </div>
+                        <div *ngIf="f['wiInsurance'].get('primaryInsRefNum').errors.pattern" class="txt-red">
+                            Reference # is alphanumeric
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>In Network</label>
+                    <select class="custom-select" formControlName="primaryInNetwork">
+            <option value="Y">YES</option>
+            <option value="N">NO</option>
+            <option value="U">UNKNOWN</option>
+          </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Deductible Max</label>
+                    <input type="text" class="form-control" id="deductibleMax" formControlName="deductibleMax" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('deductibleMax').dirty || f['wiInsurance'].get('deductibleMax').touched || submitted) && f['wiInsurance'].get('deductibleMax').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('deductibleMax').dirty || f['wiInsurance'].get('deductibleMax').touched || submitted) && f['wiInsurance'].get('deductibleMax').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('deductibleMax').errors.pattern" class="txt-red">
+                            Deductible Max is allowed a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Deductible Met</label>
+                    <input type="text" class="form-control" id="deductibleMet" formControlName="deductibleMet" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('deductibleMet').dirty || f['wiInsurance'].get('deductibleMet').touched || submitted) && f['wiInsurance'].get('deductibleMet').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('deductibleMet').dirty || f['wiInsurance'].get('deductibleMet').touched || submitted) && f['wiInsurance'].get('deductibleMet').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('deductibleMet').errors.pattern" class="txt-red">
+                            Deductible Met is allowed a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Out of Pocket Max</label>
+                    <input type="text" class="form-control" id="outOfPocketMax" formControlName="outOfPocketMax" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('outOfPocketMax').dirty || f['wiInsurance'].get('outOfPocketMax').touched || submitted) && f['wiInsurance'].get('outOfPocketMax').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('outOfPocketMax').dirty || f['wiInsurance'].get('outOfPocketMax').touched || submitted) && f['wiInsurance'].get('outOfPocketMax').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('outOfPocketMax').errors.pattern" class="txt-red">
+                            Out of Pocket Max is allowed a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Out of Pocket Met</label>
+                    <input type="text" class="form-control" id="outOfPocketMet" formControlName="outOfPocketMet" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('outOfPocketMet').dirty || f['wiInsurance'].get('outOfPocketMet').touched || submitted) && f['wiInsurance'].get('outOfPocketMet').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('outOfPocketMet').dirty || f['wiInsurance'].get('outOfPocketMet').touched || submitted) && f['wiInsurance'].get('outOfPocketMet').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('outOfPocketMet').errors.pattern" class="txt-red">
+                            Out of Pocket Met is allowed a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Co-Insurance %</label>
+                    <input type="number" class="form-control" id="coInsurance" formControlName="coInsurance" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('coInsurance').dirty || f['wiInsurance'].get('coInsurance').touched || submitted) && f['wiInsurance'].get('coInsurance').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('coInsurance').dirty || f['wiInsurance'].get('coInsurance').touched || submitted) && f['wiInsurance'].get('coInsurance').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('coInsurance').errors.pattern" class="txt-red">
+                            Co-Insurance percentage is allowed up to 100% with two optional decimals
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Ins Notes</label>
+                    <textarea rows="2" type="text" formControlName="primaryInsNotes" class="form-control" maxlength="500"></textarea>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Ins Classification</label>
+                    <select id="insuranceId" class="custom-select" (change)="onInsuranceChange()" formControlName="primaryInsClassification">
+            <option *ngFor="let insur of primaryInsList" value="{{ insur.insuranceId }}">
+              {{ insur.insuranceName }}
+            </option>
+          </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card w-100 p-3" formGroupName="wiInsurance">
+        <h5 class="card-header">SECONDARY INSURANCE INFORMATION</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Representatives</label>
+                    <input type="text" class="form-control" id="secondaryInsRep" formControlName="secondaryInsRep" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('secondaryInsRep').dirty || f['wiInsurance'].get('secondaryInsRep').touched || submitted) && f['wiInsurance'].get('secondaryInsRep').errors
+            }" />
+                    <div *ngIf="(f['wiInsurance'].get('secondaryInsRep').dirty || f['wiInsurance'].get('secondaryInsRep').touched || submitted) && f['wiInsurance'].get('secondaryInsRep').errors" class="invalid-feedback">
+                        <div *ngIf="f['wiInsurance'].get('secondaryInsRep').errors.maxlength" class="txt-red">
+                            Representatives is max of 25 characters length
+                        </div>
+                        <div *ngIf="f['wiInsurance'].get('secondaryInsRep').errors.pattern" class="txt-red">
+                            Representatives is alphanumeric
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Reference #</label>
+                    <input type="text" class="form-control" id="secondaryInsRefNum" formControlName="secondaryInsRefNum" [ngClass]="{
+              'is-invalid':
+                (f['wiInsurance'].get('secondaryInsRefNum').dirty || f['wiInsurance'].get('secondaryInsRefNum').touched || submitted) && f['wiInsurance'].get('secondaryInsRefNum').errors
+            }" />
+                    <div *ngIf="
+              (f['wiInsurance'].get('secondaryInsRefNum').dirty || f['wiInsurance'].get('secondaryInsRefNum').touched || submitted) && f['wiInsurance'].get('secondaryInsRefNum').errors
+            " class="invalid-feedback">
+                        <div *ngIf="
+                f['wiInsurance'].get('secondaryInsRefNum').errors.maxlength
+              " class="txt-red">
+                            Reference # is max of 25 characters length
+                        </div>
+                        <div *ngIf="f['wiInsurance'].get('secondaryInsRefNum').errors.pattern" class="txt-red">
+                            Reference # is alphanumeric
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>In Network</label>
+                    <select class="custom-select" formControlName="secondaryInNetwork">
+            <option value="Y">YES</option>
+            <option value="N">NO</option>
+            <option value="U">UNKNOWN</option>
+          </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Ins Classification</label>
+                    <select id="secInsuranceId" class="custom-select" formControlName="secondaryInsClassification" (change)="onInsuranceChange()">
+            <option *ngFor="let ins of secondaryInsList" value="{{ ins.insuranceId }}">
+              {{ ins.insuranceName }}
+            </option>
+          </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Ins Notes</label>
+                    <textarea rows="2" type="text" formControlName="secondaryInsNotes" class="form-control" maxlength="500"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card w-100 p-3">
+        <h5 class="card-header">NOTES SECTION</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <label>General Notes</label>
+                <textarea rows="2" type="text" formControlName="generalNotes" class="form-control" maxlength="1000"></textarea>
+            </div>
+            <app-file-attachments
+              attachmentTransmissionInterfaceName="WorkitemService"
+              [fileAttachmentData]="fileAttachmentData"
+              (fileAttachmentsChanged)="onFileAttachmentsChanged($event)">
+            </app-file-attachments>
+        </div>
+        <div class="card-footer text-right" *ngIf="!viewOnly">
+            <button type="button" [ngClass]="{ 'btn btn-primary mr-1': enableUpdateButton(), 'btn-disabled': !(enableUpdateButton())}" (click)="onSubmit()" [disabled]="!(enableUpdateButton())"><em class="fas fa-check"></em>
+        Update
+      </button>
+            <button type="button" [ngClass]="{ 'btn btn-primary': enableUpdateButton(), 'btn-disabled': !(enableUpdateButton()) }" (click)="onDelete(wiInfo.workItemId)" [disabled]="!(enableUpdateButton())"><em class="fas fa-trash"></em>
+        Delete
+      </button>
+        </div>
+
+      <div ngbDropdown class="d-inline-block float-right dropup" *ngIf="viewOnly">
+        <button class="btn btn-primary " (click)="exportPDF()" id="export-pdf-btn"><em class="fa fa-download"></em> Export</button>
+      </div>
+
+    </div>
+</form>

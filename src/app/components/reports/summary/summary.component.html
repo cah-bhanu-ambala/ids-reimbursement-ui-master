@@ -1,0 +1,218 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Summary Report</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6 pl-0">
+                    <label for="facilityId">Facility<span class="required">*</span></label>
+                    <ng-select formControlName="selectedFacilitiesIds" [items]="facilitiesList" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Wbs"
+                        [ngClass]="{'is-invalid': (sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors}">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="(sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors" class="invalid-feedback">
+                        <div *ngIf="sf.selectedFacilitiesIds.errors.required" class="txt-red">
+                            Facility is required
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="teamMemberId">Team Member</label>
+                    <ng-select formControlName="selectedTeamMembersIds" [items]="teamMembers" bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Team Member">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('teamMember')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('teamMember')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="fromDate">
+                        Date From<span class="required">*</span>
+                    </label>
+                    <div class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="fromDate" ngbDatepicker #fromDate="ngbDatepicker" formControlName="fromDate" [ngClass]="{'is-invalid':(sf.fromDate.touched || sf.fromDate.dirty ||searched) && sf.fromDate.errors}"
+                        />
+                        <button class="btn calendar col-md-1 " (click)="fromDate.toggle()" type="button"></button>
+                        <div *ngIf="(sf.fromDate.touched || sf.fromDate.dirty ||searched) && sf.fromDate.errors" class="invalid-feedback">
+                            <div *ngIf="sf.fromDate.errors.required" class="txt-red">
+                                Date From is required
+                            </div>
+                            <div *ngIf="(sf.fromDate.touched || sf.fromDate.dirty ||searched) && sf.fromDate.errors?.ngbDate?.invalid" class="txt-red">
+                                Date From should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="toDate">Date To<span class="required">*</span></label>
+                    <div class="form-inline">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="toDate" ngbDatepicker #toDate="ngbDatepicker" formControlName="toDate" [ngClass]="{'is-invalid':(sf.toDate.touched || sf.toDate.dirty ||searched) && sf.toDate.errors}"
+                        />
+                        <button class="btn calendar col-md-1 " (click)="toDate.toggle()" type="button"></button>
+                        <div *ngIf="(sf.toDate.touched || sf.toDate.dirty ||searched) && sf.toDate.errors" class="invalid-feedback">
+                            <div *ngIf="sf.toDate.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div *ngIf="(sf.toDate.touched || sf.toDate.dirty ||searched) && sf.toDate.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <!-- <div class="form-group col-md-6 ">
+                    <label for="date">
+                        Date<span class="required">*</span>
+                    </label>
+                    <div class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" ngbDatepicker #df="ngbDatepicker" formControlName="date" [ngClass]="{'is-invalid':(sf.date.touched || sf.date.dirty ||searched) && sf.date.errors}" />
+                        <button class="btn calendar col-md-1 " (click)="df.toggle()" type="button"></button>
+                        <div *ngIf="(sf.date.touched || sf.date.dirty ||searched) && sf.date.errors" class="invalid-feedback">
+                            <div *ngIf="sf.date.errors.required" class="txt-red">
+                                Date is required
+                            </div>
+                            <div *ngIf="(sf.date.touched || sf.date.dirty ||searched) && sf.date.errors?.ngbDate?.invalid" class="txt-red">
+                                Date should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="form-group col-md-6">
+                    <label for="dateType">Date Type<span class="required">*</span></label>
+                    <select class="custom-select " [ngClass]="{ 'is-invalid': (sf.selectedDateType.touched || sf.selectedDateType.dirty ||searched) && sf.selectedDateType.errors }" formControlName="selectedDateType">
+                        <option value="" selected>Select Date Type</option>
+                        <option *ngFor="let dateType of dateTypes" [value]="dateType.dateType">
+                        {{ dateType.dateTypeName }}
+                        </option>
+                    </select>
+                    <div *ngIf="(sf.selectedDateType.touched || sf.selectedDateType.dirty ||searched) && sf.selectedDateType.errors" class="invalid-feedback">
+                        <div *ngIf="sf.selectedDateType.errors.required" class="txt-red">
+                            Date Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="card-footer ">
+            <div class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getSummaryReport()">
+          <em class="fa fa-search"></em> Search
+        </button>
+                <button type="button" class="btn btn-primary" (click)="onReset()">
+          <em class="fa fa-refresh"></em> Reset
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="summaryList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Facility Name</th>
+                        <th scope="col"># of VOB L1 Work Items</th>
+                        <th scope="col">VOB L1 Bill Amt</th>
+                        <th scope="col"># of VOB L2 Work Items</th>
+                        <th scope="col">VOB L2 Bill Amt</th>
+                        <th scope="col"># of VOB L3 Work Items</th>
+                        <th scope="col">VOB L3 Bill Amt</th>
+                        <th scope="col"># of PHARM L1 Work Items</th>
+                        <th scope="col">PHARM L1 Bill Amt</th>
+                        <th scope="col"># of PHARM L2 Work Items</th>
+                        <th scope="col">PHARM L2 Bill Amt</th>
+                        <th scope="col"># of PHARM L3 Work Items</th>
+                        <th scope="col">PHARM L3 Bill Amt</th>
+                        <th scope="col"># of RAD L1 Work Items</th>
+                        <th scope="col">RAD L1 Bill Amt</th>
+                        <th scope="col"># of RAD L2 Work Items</th>
+                        <th scope="col">RAD L2 Bill Amt</th>
+                        <th scope="col">Grand Total</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-newFacility>
+                    <tr *ngFor="let listItem of facilities; let i = index">
+                        <td>{{ listItem.facilityName }}</td>
+                        <td>{{ listItem.workItemStatuses[5].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[5].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[6].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[6].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[7].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[7].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[0].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[0].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[1].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[1].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[2].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[2].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[3].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[3].amount | currency }}
+                        </td>
+                        <td>{{ listItem.workItemStatuses[4].count }}</td>
+                        <td>
+                            {{ listItem.workItemStatuses[4].amount | currency }}
+                        </td>
+                        <td>{{ grandAmount | currency }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td></td>
+                        <td>{{ totalVOBL1 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalVOBL2 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalVOBL3 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalPHARML1 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalPHARML2 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalPHARML3 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalRADL1 | currency }}</td>
+                        <td></td>
+                        <td>{{ totalRADL2 | currency }}</td>
+                        <td>{{ grandTotal | currency }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportExcel()">
+        Export
+      </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,328 @@
+<div class="shadow p-3 mb-5 bg-white rounded">
+    <form [formGroup]="advSearchForm" class="mt-2 mb-2">
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Drug Advocacy Management Search</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="drugId">Drug for advocacy</label>
+                        <ng-select formControlName="drugId" [items]="drugCodesFiltered$ | async" bindLabel="drugValue" bindValue="drugId" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Drug Code or Description">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.drugValue" class="ng-option-label">{{item.drugValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label>Diagnosis Code</label>
+                        <ng-select formControlName="icdCode" [items]="icdCodesFiltered$ | async" bindLabel="icdValue" bindValue="icdCode" [minTermLength]="minLengthTerm" [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Diagnosis Code or Description">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.icdValue" class="ng-option-label">{{item.icdValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Primary Insurance</label>
+                        <select class="custom-select" formControlName="primaryInsuranceId">
+                            <option value="" selected>Select Primary Insurance</option>
+                            <option *ngFor="let primInsurance of primaryInsurance"
+                                [ngValue]="primInsurance.insuranceId">
+                                {{ primInsurance.insuranceName }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Secondary Insurance</label>
+                        <select class="custom-select" formControlName="secondaryInsuranceId">
+                            <option value="" selected>Select Secondary Insurance</option>
+                            <option *ngFor="let secInsurance of secondaryInsurance"
+                                [ngValue]="secInsurance.insuranceId">
+                                {{ secInsurance.insuranceName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Copay</label>
+                        <select class="custom-select" formControlName="copay">
+                    <option value="" selected>Select an option</option>
+                    <option *ngFor="let option of coPayPremiumOptions"
+                            [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Premium</label>
+                        <select class="custom-select" formControlName="premium">
+                    <option value="" selected>Select an option</option>
+                    <option *ngFor="let option of coPayPremiumOptions"
+                            [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Approval Reason</label>
+                        <select class="custom-select col-md-12" formControlName="priorAuthStatusId">
+                            <option value="" selected>Select Approval Reason</option>
+                            <option *ngFor="let reason of wiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                                {{ reason.priorAuthStatusName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <button class="btn btn-primary float-right" (click)="onResetSF()"><em class="fas fa-refresh"></em>
+                    Reset</button>
+                <button class="btn btn-primary mr-3 float-right" (click)="onSearch()"><em class="fas fa-check"></em>
+                    Search</button>
+            </div>
+        </div>
+    </form>
+    <div *ngIf="showGrid">
+        <div class="row">
+            <div class="col-md-12">
+                <p-table [value]="advSearchResult" [lazy]="true" (onLazyLoad)="loadAdvDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="advTotalRecords" [loading]="advloading" styleClass="p-datatable-striped" [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Drug Code</th>
+                            <th scope="col">Diagnosis Code</th>
+                            <th scope="col">Primary Insurance</th>
+                            <th scope="col">Secondary Insurance</th>
+                            <th scope="col">Approval Reason</th>
+                            <th scope="col">Website</th>
+                            <th scope="col">Notes</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-adv>
+                        <tr>
+                            <td style="padding-top: 0%">
+                                <button class="btn btn-link" (click)="onEdit(adv)">Edit</button>
+                                <button class="btn btn-link" (click)="onDelete(adv)">
+                                    Delete
+                                </button>
+                            </td>
+                            <td style="width: 200px;">{{ adv.drugProcCode }}</td>
+                            <td>{{adv.icds}}</td>
+                            <td>{{ adv.primaryInsName }}</td>
+                            <td>{{ adv.secondaryInsuranceName }}</td>
+                            <td>{{ adv.priorAuthStatusName }}</td>
+                            <td><a href="{{ adv.website }}" target="_blank"> {{ adv.website }}</a></td>
+                            <td class="wrap">{{ adv.notes}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+    <form [formGroup]="advocacyForm" class="mb-2">
+        <div class="card w-100 p-3">
+            <h5 *ngIf="!isUpdate" class="card-header">Add Drug Advocacy</h5>
+            <h5 *ngIf="isUpdate" class="card-header">Edit Drug Advocacy</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="drugId">Drug for advocacy<span class="required">*</span></label>
+                        <ng-select formControlName="drugId" [items]="drugCodesFiltered$ | async" bindLabel="drugValue" bindValue="drugId" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Drug Code or Description" [ngClass]="{'is-invalid':(f.drugId.dirty || f.drugId.touched || submitted) && f.drugId.errors}">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.drugValue" class="ng-option-label">{{item.drugValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div *ngIf="(f.drugId.touched || f.drugId.dirty ||submitted) && f.drugId.errors" class="invalid-feedback ml-3">
+                            <div *ngIf="f.drugId.errors.required" class="txt-red">
+                                Drug for advoacy is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="card">
+                            <div class="card-header container-fluid">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <h5>Diagnosis codes<span class="required">*</span></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10 m-2 container-fluid" style="display: inline-block;">
+                                    <ng-select class="" [multiple]="true" [(ngModel)]="selectedIcdCodes" [selectableGroup]="true" [selectableGroupAsModel]="true" [closeOnSelect]="false" formControlName="icdId" [items]="icdList" bindLabel="icdValue" bindValue="icdCode" [minTermLength]="minLengthTerm"
+                                        [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Search for Diagnosis Code or Description">
+                                        <ng-template ng-option-tmp let-item="item">
+                                            <span [title]="item.icdValue" class="ng-option-label">{{item.icdValue}}</span>
+                                        </ng-template>
+                                    </ng-select>
+                                    <div *ngIf="(f.icdId.dirty || f.icdId.touched || submitted) && f.icdId.errors">
+                                        <div *ngIf="f.icdId.errors.required" class="txt-red">
+                                            Diagnosis code is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="col-md-1 btn btn-primary m-2" style="max-height: 40px;" (click)="bulkAddAdv()">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Primary Insurance<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="primaryInsuranceId" [ngClass]="{'is-invalid': (f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors }">
+                            <option value="" selected>Select Primary Insurance</option>
+                            <option *ngFor="let primInsurance of primaryInsurance"
+                                [ngValue]="primInsurance.insuranceId">
+                                {{ primInsurance.insuranceName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors" class="invalid-feedback">
+                            <div *ngIf="f.primaryInsuranceId.errors.required" class="txt-red">
+                                Primary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Secondary Insurance<span class="required">*</span></label>
+                        <ng-select [multiple]="true" [(ngModel)]="selectedSecInsIds" [selectableGroup]="true" [selectableGroupAsModel]="true" [closeOnSelect]="false" formControlName="secondaryInsuranceId" [items]="secondaryInsurance" bindLabel="insuranceName" bindValue="insuranceId"
+                            [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Select Secondary Insurance" [ngClass]="{'is-invalid': (f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || submitted) && f.secondaryInsuranceId.errors }">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.insuranceName" class="ng-option-label">{{item.insuranceName}}</span>
+                            </ng-template>
+                        </ng-select>
+
+                        <div *ngIf="(f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || submitted) && f.secondaryInsuranceId.errors">
+                            <div *ngIf="f.secondaryInsuranceId.errors.required" class="txt-red">
+                                Secondary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Advocacy Type</label>
+                        <select class="custom-select" formControlName="advocacyTypeId" [ngClass]="{'is-invalid': (f.advocacyTypeId.dirty || f.advocacyTypeId.touched || submitted) && f.advocacyTypeId.errors }">
+                    <option value="" selected>Select Advocacy Type</option>
+                    <option *ngFor="let advocacyType of advocacyTypes"
+                            [ngValue]="advocacyType.advocacyTypeId">
+                      {{ advocacyType.advocacyTypeName }}
+                    </option>
+                  </select>
+                        <div *ngIf="(f.advocacyTypeId.dirty || f.advocacyTypeId.touched || submitted) && f.advocacyTypeId.errors" class="invalid-feedback">
+                            <div *ngIf="f.advocacyTypeId.errors.required" class="txt-red">
+                                Advocacy Type is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Copay</label>
+                        <select class="custom-select" formControlName="copay" [ngClass]="{'is-invalid': (f.copay.dirty || f.copay.touched || submitted) && f.copay.errors }">
+                    <option value="" selected>Select an option</option>
+                    <option *ngFor="let option of coPayPremiumOptions"
+                            [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Premium</label>
+                        <select class="custom-select" formControlName="premium" [ngClass]="{'is-invalid': (f.premium.dirty || f.premium.touched || submitted) && f.premium.errors }">
+                    <option value="" selected>Select an option</option>
+                    <option *ngFor="let option of coPayPremiumOptions"
+                            [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="card">
+                            <div class="card-header container-fluid">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <h5>Websites</h5>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn-primary float-right" (click)="generateWebsiteControls()"><em class="fas fa-plus"></em></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row ml-2">
+                                <div class="form-group col-md-4">
+                                    <h6 class="card-title mt-3">Website</h6>
+                                </div>
+                            </div>
+                            <div formArrayName="websites">
+                                <ng-container *ngFor="let websiteForm of websites.controls; index as i">
+                                    <div [formGroupName]="i">
+                                        <div class="form-row ml-2 mr-2">
+                                            <div class="form-group col-12">
+                                                <input type="text" formControlName="website" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <label>Notes</label>
+                        <textarea rows="3" type="text" formControlName="notes" class="form-control" [ngClass]="{'is-invalid': (f.notes.dirty || f.notes.touched || submitted) && f.notes.errors }">
+                        </textarea>
+                        <div *ngIf="(f.notes.dirty || f.notes.touched || submitted) && f.notes.errors" class="invalid-feedback">
+                            <div *ngIf="f.notes.errors" class="txt-red">
+                                Notes should have maximum of 1000 characters
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Approval Reason<span class="required">*</span></label>
+                        <select class="custom-select col-sm-12" formControlName="priorAuthStatusId" [ngClass]="{'is-invalid': (f.priorAuthStatusId.dirty || f.priorAuthStatusId.touched || submitted) && f.priorAuthStatusId.errors }">
+                            <option value="" selected>Select Approval Reason</option>
+                            <option *ngFor="let reason of wiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                                {{ reason.priorAuthStatusName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(f.priorAuthStatusId.dirty || f.priorAuthStatusId.touched || submitted) && f.priorAuthStatusId.errors" class="invalid-feedback">
+                            <div *ngIf="f.priorAuthStatusId.errors.required" class="txt-red">
+                                Approval Reason is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <div class="float-right">
+                    <button type="button" class="btn btn-primary mr-3" (click)="onSaveNew()">
+                        <em class="fa fa-search"></em> Save as new
+                    </button>
+                    <button type="button" class="btn btn-primary mr-3" (click)="onSubmit()">
+                        <em class="fa fa-search"></em> Submit
+                    </button>
+                    <button type="button" class="btn btn-primary" (click)="onReset()">
+                        <em class="fa fa-refresh"></em> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

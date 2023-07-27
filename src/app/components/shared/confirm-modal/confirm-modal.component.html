@@ -1,0 +1,24 @@
+<div class="modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 ngbAutofocus class="modal-title"><span>Confirmation</span></h5>
+            <button type="button" class="close" aria-label="Close" (click)="Close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to {{textMessage}} this item</p>
+            <div *ngIf="this.needConfirm">
+                <label>Please type 'DELETE' to confirm deletion.</label>
+                <input type="text" class="form-control" [formControl]="confirmDelete">
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-sm-8"></div>
+                <div class="col-sm-2">  <button type="button" id="delete-btn" class="btn btn-primary float-right" (click)="Delete()" [disabled]="this.needConfirm && this.confirmDelete.invalid">Yes</button></div>
+                <div class="col-sm-2"> <button type="button" class="btn btn-danger float-right" (click)="Close()">No</button> </div>
+                    
+        </div>
+        </div>
+    </div>
+</div>

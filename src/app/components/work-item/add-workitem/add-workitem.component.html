@@ -1,0 +1,267 @@
+<!-- Search Form Start-->
+<form [hidden]="!showPatientSearch" [formGroup]="addFormSearchPatient">
+    <div class="card w-100">
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Search MRN</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Facility<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="facilityId" [ngClass]="{ 'is-invalid': searched && sf.facilityId.errors }">
+                        <option value="" selected>Select Facility</option>
+                        <option *ngFor="let f of addFacilities" [ngValue]="f.facilityId">
+                            {{ f.facilityName }}
+                        </option>
+                    </select>
+                        <div *ngIf="searched && sf.facilityId.errors" class="invalid-feedback ">
+                            <div *ngIf="sf.facilityId.errors.required" class="txt-red">
+                                Facility is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>MRN<span class="required">*</span></label>
+                        <input type="text" class="form-control" formControlName="mrn" (keydown.enter)="onSearch()" [ngClass]="{ 'is-invalid': searched && sf.mrn.errors }" />
+                        <div *ngIf="searched && sf.mrn.errors" class="invalid-feedback">
+                            <div *ngIf="sf.mrn.errors.required" class="txt-red">
+                                MRN is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer ">
+                    <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+                    <button class="btn btn-primary mr-3 float-right" (click)="onSearch()"><em class="fas fa-check"></em> Search</button>
+                </div>
+
+            </div>
+            <div class="row" *ngIf="showError" style="padding: 0.5em">
+                <div class="col-sm-6">
+                    <h6 style="color: red">No records found</h6>
+                </div>
+            </div>
+
+            <div *ngIf="showGrid" class="report-grid-margin">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p-table [value]="searchResult" [lazy]="true" (onLazyLoad)="loadAddWorkItemDetails($event)" [paginator]="true" [rows]="10" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th scope="col">MRN</th>
+                                    <th scope="col">Facility</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-patient>
+                                <tr>
+                                    <td>
+                                        <p-button styleClass="p-button-link" (click)="addWorkItem(patient)">{{patient.mrn}}</p-button>
+                                    </td>
+                                    <td>{{patient.facilityName}}</td>
+                                    <td>
+                                        <p-button label="Add WorkItem" styleClass="p-button-link" (click)="addWorkItem(patient)"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Search Form End-->
+<!-- Add New WorkItem Form Start-->
+<form [hidden]="!showAddWorkItem" [formGroup]="addFormWorkItem" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Add Internal Work Item</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>MRN</label>
+                    <input type="text" class="form-control" formControlName="mrn" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Facility</label>
+                    <input type="text" class="form-control" id="facilityName" formControlName="facilityName" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Physician<span class="required">*</span></label>
+                    <select id="providerId" class="custom-select" formControlName="providerId" [ngClass]="{ 'is-invalid': (f.providerId.dirty || f.providerId.touched || addSubmitted) && f.providerId.errors }">
+                        <option value="" selected>Select Physician</option>
+                        <option *ngFor="let p of providerList" [ngValue]="p.providerId">
+                            {{ p.providerNPI }}
+                        </option>
+                    </select>
+                    <div *ngIf="(f.providerId.dirty || f.providerId.touched || addSubmitted) && f.providerId.errors" class="invalid-feedback">
+                        <div *ngIf="f.providerId.errors.required" class="txt-red">
+                            Please select Physician
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Order Type<span class="required">*</span></label>
+                    <select id="orderTypeId" class="custom-select" formControlName="orderTypeId" (change)="onOrderTypeChange($event.target.value)">
+                      <option *ngFor="let ot of orderTypes" value="{{ ot.orderTypeId }}">
+                        {{ ot.orderTypeName }}
+                      </option>
+                    </select>
+                    <div *ngIf="(f.orderTypeId.dirty || f.orderTypeId.touched || addSubmitted) && f.orderTypeId.errors" class="invalid-feedback">
+                        <div *ngIf="f.orderTypeId.errors.required" class="txt-red">
+                            Order Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label class="col-sm-4">Order Date<span class="required">*</span></label>
+                    <div class="form-inline">
+                        <input id="orderDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="orderDate" ngbDatepicker #df="ngbDatepicker" formControlName="orderDate" [ngClass]="{ 'is-invalid': (f.orderDate.dirty || f.orderDate.touched || addSubmitted) && f.orderDate.errors }">
+                        <button class="btn calendar form-control col-sm-1" (click)="df.toggle()" type="button"></button>
+                        <div *ngIf="(f.orderDate.dirty || f.orderDate.touched || addSubmitted) && f.orderDate.errors" class="invalid-feedback">
+                            <div *ngIf="f.orderDate.errors.required" class="txt-red">
+                                Please select Order Date
+                            </div>
+                            <div *ngIf="(f.orderDate.dirty || f.orderDate.touched || addSubmitted) && f.orderDate.errors?.ngbDate?.invalid" class="txt-red">
+                                Order date should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Billing Type<span class="required">*</span></label>
+                    <select id="facilityBillingTypeId" class="custom-select" formControlName="facilityBillingTypeId" [ngClass]="{ 'is-invalid': (f.facilityBillingTypeId.dirty || f.facilityBillingTypeId.touched || addSubmitted) && f.facilityBillingTypeId.errors }">
+                        <option value="" *ngIf="billingTypes?.length > 1 && selectedfacilityBillingTypeId == ''" selected>Select Billing Type</option>
+                        <option *ngFor="let billingType of billingTypes" value="{{ billingType.facilityBillingTypeId }}" [selected]="billingType.facilityBillingTypeId === selectedfacilityBillingTypeId">
+                            {{ billingType.facilityBillingTypeName }}
+                        </option>
+                    </select>
+                    <div *ngIf="(f.facilityBillingTypeId.dirty || f.facilityBillingTypeId.touched || addSubmitted) && f.facilityBillingTypeId.errors" class="invalid-feedback">
+                        <div *ngIf="f.facilityBillingTypeId.errors.required" class="txt-red">
+                            Billing Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>{{refOrClaimLabelName}}</label>
+                    <input type="text" class="form-control" formControlName="referralNumber" [ngClass]="{ 'is-invalid': (f.referralNumber.dirty || f.referralNumber.touched || addSubmitted) && f.referralNumber.errors }" />
+                    <div *ngIf="(f.referralNumber.dirty || f.referralNumber.touched || addSubmitted) && f.referralNumber.errors" class="invalid-feedback">
+                        <div *ngIf="f.referralNumber.errors.maxlength" class="txt-red">
+                            {{refOrClaimLabelName}} is max of 25 characters
+                        </div>
+                        <div *ngIf="f.referralNumber.errors.pattern" class="txt-red">
+                            {{refOrClaimLabelName}} is not in correct format
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <div class="card">
+                        <div class="card-header container-fluid">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <h5>Diagnosis codes <small>(Max 10)</small></h5>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn-primary float-right" (click)="generateDianosisControls()"><em class="fas fa-plus"></em></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row ml-2">
+                            <div class="form-group col-md-4">
+                                <h6 class="card-title mt-3">ICD Code</h6>
+                            </div>
+                            <div class="form-group col-md-8">
+                                <h6 class="card-title mt-3"> ICD Description</h6>
+                            </div>
+                        </div>
+                        <div formArrayName="icdCodes">
+                            <ng-container *ngFor="let icd of icdCodes.controls; index as i">
+                                <div [formGroupName]="i">
+                                    <div class="form-row ml-2 mr-2">
+                                        <div class="form-group col-4">
+                                            <ng-select formControlName="icdCode" [virtualScroll]="true" [items]="icdCodesFiltered$ | async" [trackByFn]="trackByIcdCode" [minTermLength]="minLengthTerm" [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" placeholder="Search for ICD code, description"
+                                                (change)="onIcdCodeChange($event, i)">
+                                            </ng-select>
+                                        </div>
+                                        <div class="form-group col-8">
+                                            <input type="text" formControlName="icdDescription" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <div class="card">
+                        <div class="card-header container-fluid">
+                            <div class="row">
+                                <div class="col-md-11">
+                                    <h5>Drug / Procedure Codes <small>(Max 13)</small></h5>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn-primary float-right" (click)="generateDrugCodeControls()"><em class="fas fa-plus"></em></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row ml-2">
+                            <div class="form-group col-md-4">
+                                <h6 class="card-title mt-3">Drug Code</h6>
+                            </div>
+                            <div class="form-group col-md-8">
+                                <h6 class="card-title mt-3">Drug Code Description</h6>
+                            </div>
+                        </div>
+                        <div formArrayName="drugCodes">
+                            <ng-container *ngFor="let drug of drugCodes.controls; index as i">
+                                <div [formGroupName]="i">
+                                    <div class="form-row ml-2 mr-2">
+                                        <div class="form-group col-4">
+                                            <ng-select formControlName="drugCode" [virtualScroll]="true" [items]="drugCodesFiltered$ | async" [trackByFn]="trackByDrugCode" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" placeholder="Search for Drug code, description"
+                                                (change)="onDrugCodeChange($event, i)">
+                                            </ng-select>
+                                        </div>
+                                        <div class="form-group col-8">
+                                            <input type="text" formControlName="drugCodeDescription" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card w-100 p-3">
+                <h5 class="card-header">NOTES SECTION</h5>
+                <div class="card-body">
+                    <div class="form-row">
+                        <label>General Notes</label>
+                        <textarea rows="3" type="text" formControlName="generalNotes" class="form-control" maxlength="1000"></textarea>
+                    </div>
+                    <app-file-attachments
+                      attachmentTransmissionInterfaceName="WorkitemService"
+                      [fileAttachmentData]="fileAttachmentData"
+                      (fileAttachmentsChanged)="onFileAttachmentsChanged($event)">
+                    </app-file-attachments>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onClear()"><em class="fas fa-refresh"></em> Clear</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="onSubmit()"><em class="fas fa-check"></em> Submit</button>
+        </div>
+    </div>
+</form>
+<!-- Add New WorkItem Form End-->

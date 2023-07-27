@@ -1,0 +1,188 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Work Status Report</h5>
+        <div class="card-body">
+            <!-- <div class="form-inline">
+                <div class="form-group col-md-8 pl-0">
+                    <label for="facilityId" class="mr-2">
+                        Facility<span class="required">*</span>
+                    </label>
+                    <ng-select formControlName="selectedFacilitiesIds" style="width: 80%;" [items]="facilitiesList" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true"
+                        placeholder="Please select Facility" [ngClass]="{'is-invalid': (sf.selectedFacilitiesIds.dirty || sf.selectedFacilitiesIds.touched || searched) && sf.selectedFacilitiesIds.errors}">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="(sf.selectedFacilitiesIds.dirty || sf.selectedFacilitiesIds.touched || searched) && sf.selectedFacilitiesIds.errors" class="invalid-feedback">
+                        <div *ngIf="sf.selectedFacilitiesIds.errors.required" class="txt-red">
+                            Facility is required
+                        </div>
+                    </div> -->
+                    <!-- <div class="txt-red">{{errorMessage}}</div> -->
+                <!-- </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="dateCreatedFrom">
+                            Date From<span class="required">*</span>
+                        </label>
+                        <div class="form-inline ">
+                            <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedFrom" ngbDatepicker #dffrom="ngbDatepicker" formControlName="dateCreatedFrom" [ngClass]="{'is-invalid':(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors}"
+                            />
+                            <button class="btn calendar col-md-1 " (click)="dffrom.toggle()" type="button"></button>
+                            <div *ngIf="(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors" class="invalid-feedback">
+                                <div *ngIf="sf.dateCreatedFrom.errors.required" class="txt-red">
+                                    Date From is required
+                                </div>
+                                <div *ngIf="(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                    Date From should be in mm/dd/yyyy format
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="dateCreatedTo">Date To<span class="required">*</span></label>
+                        <div class="form-inline">
+                            <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedTo" ngbDatepicker #dfto="ngbDatepicker" formControlName="dateCreatedTo" [ngClass]="{'is-invalid':(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors}"
+                            />
+                            <button class="btn calendar col-md-1 " (click)="dfto.toggle()" type="button"></button>
+                            <div *ngIf="(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors" class="invalid-feedback">
+                                <div *ngIf="sf.dateCreatedTo.errors.required" class="txt-red">
+                                    Date To is required
+                                </div>
+                                <div *ngIf="(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors?.ngbDate?.invalid" class="txt-red">
+                                    Date To should be in mm/dd/yyyy format
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="facilityId">Facility<span class="required">*</span></label>
+                        <ng-select formControlName="selectedFacilitiesIds" [items]="facilitiesList" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Please select Facility" [ngClass]="{'is-invalid': (sf.selectedFacilitiesIds.dirty || sf.selectedFacilitiesIds.touched || searched) && sf.selectedFacilitiesIds.errors}">
+                            <ng-template ng-header-tmp>
+                                <div>
+                                    <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                    <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                                </div>
+                            </ng-template>
+                        </ng-select>
+                        <div *ngIf="(sf.selectedFacilitiesIds.dirty || sf.selectedFacilitiesIds.touched || searched) && sf.selectedFacilitiesIds.errors" class="invalid-feedback">
+                            <div *ngIf="sf.selectedFacilitiesIds.errors.required" class="txt-red">
+                                Facility is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="dateOutFrom">
+                            Date From<span class="required">*</span>
+                        </label>
+                        <div class="form-inline" style="margin-top: -5px;">
+                            <input id="dateOut" class="form-control col-md-10 rounded" placeholder="mm/dd/yyyy" name="dateOutFrom" ngbDatepicker #dateOutFrom="ngbDatepicker" formControlName="dateOutFrom" [ngClass]="{'is-invalid':(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors}"
+                            />
+                            <button class="btn calendar col-md-1" (click)="dateOutFrom.toggle()" type="button"></button>
+                            <div *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors" class="invalid-feedback">
+                                <div *ngIf="sf.dateOutFrom.errors.required" class="txt-red">
+                                    Date from is required
+                                </div>
+                                <div *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                    Date From should be in mm/dd/yyyy format
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="dateOutTo">
+                            Date To<span class="required">*</span>
+                        </label>
+                        <div class="form-inline ">
+                            <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateOutTo" ngbDatepicker #dateOutTo="ngbDatepicker" formControlName="dateOutTo" [ngClass]="{'is-invalid':(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors}"
+                            />
+                            <button class="btn calendar col-md-1" (click)="dateOutTo.toggle()" type="button"></button>
+                            <div *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors" class="invalid-feedback">
+                                <div *ngIf="sf.dateOutTo.errors.required" class="txt-red">
+                                    Date To is required
+                                </div>
+                                <div *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors?.ngbDate?.invalid" class="txt-red">
+                                    Date To should be in mm/dd/yyyy format
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- </div> -->
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getWorkstatusReport()">
+                    <em class="fa fa-search"></em> Search
+                </button>
+                <button type="button" class="btn btn-primary" (click)="onReset()">
+                    <em class="fa fa-refresh"></em> Reset
+                </button>
+            </div>
+        </div>
+
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="workstatusList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Facility Name</th>
+                        <th scope="col">Approved</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">In Process</th>
+                        <th scope="col">New</th>
+                        <th scope="col">Pending</th>
+                        <th scope="col">Reviewed for Advocacy</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-newWorkItem>
+                    <tr *ngFor="let listItem of facilities; let i = index">
+                        <td>{{ listItem.facilityName }}</td>
+                        <td>{{ listItem.workItemStatuses[0].count }}</td>
+                        <td>{{ listItem.workItemStatuses[1].count }}</td>
+                        <td>{{ listItem.workItemStatuses[2].count }}</td>
+                        <td>{{ listItem.workItemStatuses[3].count }}</td>
+                        <td>{{ listItem.workItemStatuses[4].count }}</td>
+                        <td>{{ listItem.workItemStatuses[5].count }}</td>
+                        <td>{{ listItem.totalCount }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TOTAL</strong></td>
+                        <td>{{ totalApproved }}</td>
+                        <td>{{ totalDenied }}</td>
+                        <td>{{ totalInProcess }}</td>
+                        <td>{{ totalNew }}</td>
+                        <td>{{ totalPending }}</td>
+                        <td>{{ totalRFA }}</td>
+                        <td>{{grandCount}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportExcel()">
+        Export
+      </button>
+        </div>
+    </div>
+</div>

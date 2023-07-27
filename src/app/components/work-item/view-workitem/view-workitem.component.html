@@ -1,0 +1,57 @@
+<!-- Search Form Start-->
+<div>
+    <app-search-revenue id="wiItemInfo" placeholderText="Search for Work Item Number, Facility Name, MRN, Status" (setValue)="onSearch($event)"></app-search-revenue>
+</div>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div class="report-grid-margin">
+    <div *ngIf="showViewWorkItemGrid">
+        <div id="view-workitem-dup" class="row">
+            <div id="view-workitem-dup" class="col-md-12">
+                <p-table #viewWiTable [value]="wiDatasource" [lazy]="true" (onLazyLoad)="viewLoadWiDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="wiTotalRecords" [loading]="workItemsloading" styleClass="p-datatable-striped" [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th id="view-workitem-dup10" scope="col">Work Item Number</th>
+                            <th id="view-workitem-dup10" scope="col">MRN</th>
+                            <th id="view-workitem-dup10" scope="col">Work Item Status</th>
+                            <!-- <th id="view-workitem-dup10" scope="col">Team Member Created</th> -->
+                            <th id="view-workitem-dup10" scope="col">Team Member Assigned</th>
+                            <th id="view-workitem-dup10" scope="col">Order Type</th>
+                            <th id="view-workitem-dup10" scope="col">Billing Type</th>
+                            <th id="view-workitem-dup10" scope="col">Facility</th>
+                            <th id="view-workitem-dup10" scope="col">Diagnosis Codes</th>
+                            <th id="view-workitem-dup10" scope="col">Drug/Procedure Codes</th>
+                            <th id="view-workitem-dup10" scope="col">Order Date</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-wi>
+                        <tr>
+                            <td id="view-workitem-dup14" style="padding-top: 0%">
+                                <button class="btn btn-link" (click)="onView(wi.workItemId)" type="button">
+                  {{ wi.workItemId }}
+                </button>
+                            </td>
+                            <td id="view-workitem-dup14">{{ wi.patientMrn }}</td>
+                            <td id="view-workitem-dup14">{{ wi.workItemStatusName }}</td>
+                            <!-- <td id="view-workitem-dup14">{{ wi.createdByName }}</td> -->
+                            <td id="view-workitem-dup14">{{ wi.assignedToName }}</td>
+                            <td id="view-workitem-dup14">{{ wi.orderTypeName }}</td>
+                            <td id="view-workitem-dup14">{{ wi.facilityBillingTypeName }}</td>
+                            <td id="view-workitem-dup15">{{ wi.facilityName }}</td>
+                            <td id="view-workitem-dup15">
+                                {{wi.icdCodes}}
+                            </td>
+                            <td id="view-workitem-dup15">
+                                {{wi.drugCodes}}
+                            </td>
+                            <td id="view-workitem-dup15">{{ wi.orderDate | date :'shortDate': 'UTC'}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>

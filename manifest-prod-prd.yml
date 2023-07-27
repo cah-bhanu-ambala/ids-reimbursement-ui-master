@@ -1,0 +1,12 @@
+applications:
+- name: ids-reimbursement-ui
+  routes:
+    - route: https://ids-reimbursement-ui-fantastic-kookaburra-nr.apps.cf.gc.cahcloud.net
+    - route: https://ids-reimbursement-ui.apps.cf.gc.cahcloud.net
+    - route: https://reimbursement.cardinalhealth.com
+  memory: 1G
+  instances: 2
+  services:
+    - idsreimb_api
+  buildpacks:
+    - nginx_buildpack

@@ -1,0 +1,7 @@
+---
+nginx:
+  version: mainline
+  plaintext_env_vars:
+    - "CLIENT_ID"
+    - "OKTA_DOMAIN"
+    - "API_ENDPOINT"

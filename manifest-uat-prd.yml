@@ -1,0 +1,10 @@
+applications:
+- name: ids-reimbursement-ui
+  path: ./ids-reimbursement-ui-0.0.1.zip
+  random-route: true
+  memory: 1G
+  instances: 1
+  services:
+    - idsreimb_api
+  buildpacks:
+    - nginx_buildpack

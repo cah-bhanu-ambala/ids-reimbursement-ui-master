@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h5 ngbAutofocus class="modal-title"><span>{{title}}</span></h5>
+    <button type="button" class="close" aria-label="Close" (click)="close()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="form-group row">
+        <label for="notes" class="col-sm-11">{{label}}<span class="required">*</span></label>
+    </div>
+    <textarea rows="3" type="text" [ngModel]="notes" (ngModelChange)="onChange($event)" class="form-control" maxlength="maxLength"
+        [ngClass]="{ 'is-invalid': error }"></textarea>
+    <div *ngIf="error" style="font-size: 0.75rem;" class="txt-red">
+        Notes is required
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary ml-2" (click)="proceed()">{{buttonText}}</button>
+    <button type="button" class="btn btn-danger" (click)="close()">Cancel</button>
+</div>

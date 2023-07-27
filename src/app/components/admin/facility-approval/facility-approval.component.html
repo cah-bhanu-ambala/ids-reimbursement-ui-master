@@ -1,0 +1,438 @@
+<div id="system-approval" class="card w-100 p-3" *ngIf="showPendingSystemGrid">
+  <h5 class="card-header">Pending Systems</h5>
+  <div id="system-approval" class="card-body">
+    <div id="system-approval" *ngIf="showError" style="padding: 0.5em">
+      <div id="system-approval" class="col-md-12 col-sm-6">
+        <h6 style="color: #444">No Pending Systems Found</h6>
+      </div>
+    </div>
+    <div id="system-approval" class="row">
+      <div id="system-approval" class="col-md-12">
+        <p-table [value]="systemSearchResult" [lazy]="true" (onLazyLoad)="loadPendingSystemDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="systemTotalRecords" [loading]="systemGridloading" styleClass="p-datatable-striped"
+                 [autoLayout]="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="system-approval" scope="col">Action</th>
+              <th id="system-approval" scope="col">System</th>
+
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-system>
+            <tr>
+              <td style="padding-top: 0%" *ngIf="(userRole == 'Superuser' || userRole == 'Team Lead') ">
+                <button *ngIf="userId != system.createdBy" class="btn btn-link" (click)="onApprove(system, 'System')" style="margin-top: 5px">
+                  Approve
+                </button>
+                <button class="btn btn-link" (click)="onSystemEdit(system)" style="margin-top: 5px">
+                  Edit
+                </button>
+              </td>
+              <td *ngIf="userRole == 'External User' || userRole == 'Business Analyst'">
+                <button class="btn btn-link" style="margin-top: 5px" (click)="onSystemView(system)">
+                  View
+                </button>
+              </td>
+              <td>{{ system.systemName }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="system-approval" class="row" *ngIf="showSystemForm">
+  <form class="col-md-12 needs-validation" [formGroup]="formSystemApproval">
+    <div id="system-approval" class="card w-100 p-3">
+      <h5 class="card-header" *ngIf="ShowOnEdit">Edit System</h5>
+      <h5 class="card-header" *ngIf="!ShowOnEdit">View System</h5>
+      <div id="system-approval" class="card-body">
+        <div id="system-approval" class="form-group row">
+          <label for="systemName" class="col-sm-6 col-form-label">System<span class="required">*</span></label>
+        </div>
+
+        <div id="system-approval" class="form-group row">
+          <div id="system-approval" class="col-sm-6">
+            <input type="text" class="form-control" id="systemName" formControlName="systemName" [ngClass]="{
+                  'is-invalid': (s.systemName.dirty || s.systemName.touched || submitted) && s.systemName.errors
+                }" />
+            <div id="system-approval" *ngIf="(s.systemName.dirty || s.systemName.touched || submitted) && s.systemName.errors" class="invalid-feedback">
+              <div id="system-approval" *ngIf="s.systemName.errors.required" class="txt-red">
+                System Name is required
+              </div>
+              <div id="system-approval" *ngIf="s.systemName.errors.maxlength" class="txt-red">
+                System name should be of max 100 characters length
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="system-approval" class="card-footer " *ngIf="ShowOnSystemEdit">
+        <div id="system-approval" class="float-right">
+
+          <button class="btn btn-primary mr-3 " [disabled]="!formSystemApproval.dirty" (click)="onSystemSubmit()">
+            <em class="fas fa-check"></em> Update
+          </button>
+          <button class="btn btn-primary mr-3" (click)="resetFormFields()" [disabled]="!formSystemApproval.dirty">
+            <em class="fas fa-eraser"></em> Clear
+          </button>
+          <button class="btn btn-primary " (click)="onCancel()">
+            <em class="fa fa-times"></em> Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!--Facility Approval-->
+
+<div id="facility-approval" class="card w-100 p-3" *ngIf="showPendingFacilityGrid">
+    <h5 class="card-header">Pending Facilities</h5>
+    <div id="facility-approval" class="card-body">
+        <div id="facility-approval" *ngIf="showError" style="padding: 0.5em">
+            <div id="facility-approval" class="col-md-12 col-sm-6">
+                <h6 style="color: #444">No Pending facilities found</h6>
+            </div>
+        </div>
+        <div id="facility-approval" class="row">
+            <div id="facility-approval" class="col-md-12">
+                <p-table [value]="facilitySearchResult" [lazy]="true" (onLazyLoad)="loadPendingfacilityDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="facilityTotalRecords" [loading]="facilityGridloading" styleClass="p-datatable-striped"
+                    [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th id="facility-approval" scope="col">Action</th>
+                            <th id="facility-approval" scope="col">Facility</th>
+                            <th id="facility-approval" scope="col">System</th>
+                            <th id="facility-approval" scope="col">EIN</th>
+                            <th id="facility-approval" scope="col">Contact1</th>
+                            <th id="facility-approval" scope="col">Contact1 Role</th>
+                            <th id="facility-approval" scope="col">Contact2</th>
+                            <th id="facility-approval" scope="col">Contact2 Role</th>
+                            <th id="facility-approval2" scope="col">Contact3</th>
+                            <th id="facility-approval2" scope="col">Contact3 Role</th>
+                            <th id="facility-approval2" scope="col">Contact4</th>
+                            <th id="facility-approval2" scope="col">Contact4 Role</th>
+                            <th id="facility-approval2" scope="col">NPI</th>
+                            <th id="facility-approval2" scope="col">Address</th>
+                            <th id="facility-approval2" scope="col">Phone</th>
+                            <th id="facility-approval2" scope="col">Fax</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-facility>
+                        <tr>
+                            <td style="padding-top: 0%" *ngIf="(userRole == 'Superuser' || userRole == 'Team Lead') && userRole != facility.createdBy">
+                                <button *ngIf="userId != facility.createdBy" class="btn btn-link" (click)="onApprove(facility, 'Facility')" style="margin-top: 5px">
+                        Approve
+                      </button>
+                                <button class="btn btn-link" (click)="onEdit(facility)" style="margin-top: 5px">
+                        Edit
+                      </button>
+                            </td>
+                            <td *ngIf="userRole == 'External User' || userRole == 'Business Analyst'">
+                                <button class="btn btn-link" style="margin-top: 5px" (click)="onView(facility)">
+                                    View
+                                  </button>
+                            </td>
+                            <td>{{ facility.facilityName }}</td>
+                            <td>{{ facility.systemName }}</td>
+                            <td id="facility-approval3">{{ facility.ein }}</td>
+                            <td id="facility-approval3">{{facility.contact1}}</td>
+                            <td id="facility-approval3">{{facility.contactRole1}}</td>
+                            <td id="facility-approval3">{{facility.contact2}}</td>
+                            <td id="facility-approval3">{{facility.contactRole2}}</td>
+                            <td id="facility-approval3">{{facility.contact3}}</td>
+                            <td id="facility-approval3">{{facility.contactRole3}}</td>
+                            <td id="facility-approval3">{{facility.contact4}}</td>
+                            <td id="facility-approval3">{{facility.contactRole4}}</td>
+                            <td id="facility-approval3">{{ facility.facilityNPI }}</td>
+                            <td id="facility-approval3">{{ facility.address }}</td>
+                            <td id="facility-approval3">{{ facility.phone }}</td>
+                            <td id="facility-approval3">{{ facility.fax }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="facility-approval" class="row" *ngIf="showFacilityForm">
+    <form class="col-md-12 needs-validation" [formGroup]="formFacilityApproval">
+        <div id="facility-approval" class="card w-100 p-3">
+            <h5 class="card-header" *ngIf="ShowOnEdit">Edit Facility</h5>
+            <h5 class="card-header" *ngIf="!ShowOnEdit">View Facility</h5>
+            <div id="facility-approval" class="card-body">
+                <div id="facility-approval" class="form-group row">
+                    <label for="facilityName" class="col-sm-6 col-form-label">Facility<span class="required">*</span></label>
+                    <label for="facilityNickName" class="col-sm-6 col-form-label">Nick Name </label>
+                </div>
+
+                <div id="facility-approval" class="form-group row">
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="facilityName" formControlName="facilityName" [ngClass]="{
+                  'is-invalid': (f.facilityName.dirty || f.facilityName.touched || submitted) && f.facilityName.errors
+                }" />
+                        <div id="facility-approval" *ngIf="(f.facilityName.dirty || f.facilityName.touched || submitted) && f.facilityName.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.facilityName.errors.required" class="txt-red">
+                                Facility Name is required
+                            </div>
+                            <div id="facility-approval" *ngIf="f.facilityName.errors.maxlength" class="txt-red">
+                                Facility name should be of max 100 characters length
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="facilityNickName" formControlName="facilityNickName" [ngClass]="{
+                  'is-invalid': (f.facilityNickName.dirty || f.facilityNickName.touched || submitted) && f.facilityNickName.errors
+                }" />
+                        <div id="facility-approval" *ngIf="(f.facilityNickName.dirty || f.facilityNickName.touched || submitted) && f.facilityNickName.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.facilityNickName.errors.maxlength" class="txt-red">
+                                Nick name should be of max 50 characters length
+                            </div>
+                            <div id="facility-approval" *ngIf="(f.facilityNickName.dirty || f.facilityNickName.touched || submitted) && f.facilityNickName.errors.pattern" class="txt-red">
+                                Nick name should be alphanumeric
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="facility-approval" class="form-group row">
+                    <label for="ein" class="col-sm-6 col-form-label">EIN<span class="required">*</span></label>
+                    <label for="facilityNPI" class="col-sm-6 col-form-label">NPI<span class="required">*</span></label>
+                </div>
+
+                <div id="facility-approval" class="form-group row">
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="ein" formControlName="ein" [ngClass]="{ 'is-invalid': (f.ein.dirty || f.ein.touched || submitted) && f.ein.errors }" />
+                        <div id="facility-approval" *ngIf="(f.ein.dirty || f.ein.touched || submitted) && f.ein.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.ein.errors.required" class="txt-red">
+                                EIN is required
+                            </div>
+                            <div id="facility-approval" *ngIf="f.ein.errors.maxlength" class="txt-red">
+                                EIN should be of max 10 characters length
+                            </div>
+                            <div id="facility-approval" *ngIf="f.ein.errors.pattern" class="txt-red">
+                                EIN should be alphanumeric
+                            </div>
+                        </div>
+                    </div>
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="facilityNPI" formControlName="facilityNPI" (keypress)="onKeypressEvent($event)" [ngClass]="{
+                  'is-invalid': (f.facilityNPI.dirty || f.facilityNPI.touched || submitted) && f.facilityNPI.errors
+                }" />
+                        <div id="facility-approval" *ngIf="(f.facilityNPI.dirty || f.facilityNPI.touched || submitted) && f.facilityNPI.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.facilityNPI.errors.required" class="txt-red">
+                                NPI is required
+                            </div>
+                            <div id="facility-approval" *ngIf="f.facilityNPI.errors.maxlength" class="txt-red">
+                                NPI should have max length of 10 characters
+                            </div>
+                            <div id="facility-approval" *ngIf="f.facilityNPI.errors.pattern" class="txt-red">
+                                NPI should be alphanumeric
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="facility-approval" class="form-group row">
+                    <label for="address" class="col-sm-6 col-form-label">Address (Street Address, City, State, Zip)<span
+              class="required">*</span></label>
+                    <label for="phone" class="col-sm-6 col-form-label">Phone</label>
+
+                </div>
+                <div id="facility-approval" class="form-group row">
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="address" formControlName="address" [ngClass]="{ 'is-invalid': (f.address.dirty || f.address.touched || submitted) && f.address.errors }" />
+                        <div id="facility-approval" *ngIf="(f.address.dirty || f.address.touched || submitted) && f.address.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.address.errors.required" class="txt-red">
+                                Address is required
+                            </div>
+                            <div id="facility-approval" *ngIf="f.address.errors.maxlength" class="txt-red">
+                                Address should be of max 100 characters length
+                            </div>
+                        </div>
+                    </div>
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="phone" formControlName="phone" [ngClass]="{ 'is-invalid': (f.phone.dirty || f.phone.touched || submitted) && f.phone.errors }" mask="000-000-0000" placeholder="XXX-XXX-XXXX" />
+                        <div id="facility-approval" *ngIf="(f.phone.dirty || f.phone.touched || submitted) && f.phone.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.phone.errors.required" class="txt-red">
+                                Phone Number is required
+                            </div>
+                            <div id="facility-approval" *ngIf="(f.phone.dirty || f.phone.touched || submitted) && f.phone.errors" class="txt-red">
+                                Phone Number should have 10 digits
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="facility-approval" class="form-group row">
+                    <label for="fax" class="col-sm-6 col-form-label">Fax</label>
+                  <label  for="systemId" class="col-sm-6 col-form-label">System<span
+                    class="required">*</span></label>
+                </div>
+                <div id="facility-approval" class="form-group row">
+                    <div id="facility-approval" class="col-sm-6">
+                        <input type="text" class="form-control" id="fax" formControlName="fax" [ngClass]="{ 'is-invalid': (f.fax.dirty || f.fax.touched || submitted) && f.fax.errors }" mask="000-000-0000" placeholder="XXX-XXX-XXXX" />
+                        <div id="facility-approval" *ngIf="(f.fax.dirty || f.fax.touched || submitted) && f.fax.errors" class="invalid-feedback">
+                            <div id="facility-approval" *ngIf="f.fax.errors.required" class="txt-red">
+                                Fax is required
+                            </div>
+                            <div id="facility-approval" *ngIf="(f.fax.dirty || f.fax.touched || submitted) && f.fax.errors" class="txt-red">
+                                Fax should have 10 digits
+                            </div>
+                        </div>
+                    </div>
+                  <div class="col-sm-6">
+
+                    <select id="systemId" class="custom-select" formControlName="systemId" [ngClass]="{
+                      'is-invalid': (f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors
+                    }">
+                      <option value="" selected>Select System</option>
+                      <option *ngFor="let systemObj of systems" [ngValue]="systemObj.systemId">
+                        {{ systemObj.systemName }}
+                      </option>
+                    </select>
+                    <div *ngIf="(f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors" class="invalid-feedback">
+                      <div *ngIf="f.systemId.errors.required" class="txt-red">
+                        System is Required
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="facility-approval" class="form-row">
+                    <div id="facility-approval" class="form-group col-md-12">
+                        <div id="facility-approval" class="card">
+                            <div id="facility-approval" class="card-header container-fluid">
+                                <div id="facility-approval" class="row">
+                                    <div id="facility-approval" class="col-md-11">
+                                        <h5>WBS</h5>
+                                    </div>
+                                    <div id="facility-approval" class="col-md-1">
+                                        <button type="button" class="btn-primary float-right" (click)="generateSubFacilities()"><em class="fas fa-plus"></em></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="facility-approval" class="form-row ml-2">
+                                <div id="facility-approval" class="form-group col-md-4">
+                                    <h6 class="card-title mt-3">WBS Number</h6>
+                                </div>
+                                <div id="facility-approval" class="form-group col-md-3">
+                                    <h6 class="card-title mt-3">Contract Start Date</h6>
+                                </div>
+                                <div id="facility-approval" class="form-group col-md-3">
+                                    <h6 class="card-title mt-3">Contract End Date</h6>
+                                </div>
+                            </div>
+
+                            <ng-container formArrayName="facilityWbsDetails">
+                                <div id="facility-approval" *ngFor="let _ of facilityWbsDetails.controls; index as i">
+                                    <ng-container [formGroupName]="i">
+                                        <div id="facility-approval" class="form-row ml-2 mr-2">
+                                            <div id="facility-approval" class="form-group col-4">
+                                                <input formControlName="wbsName" class="form-control" />
+                                            </div>
+                                            <div id="facility-approval" class="form-group col-md-3">
+                                                <div id="facility-approval" class="form-inline">
+                                                    <input class="form-control" placeholder="mm/dd/yyyy" ngbDatepicker #dcs="ngbDatepicker" formControlName="contractStartDate" (ngModelChange)="onContractStartDateChange(i)" />
+                                                    <button class="btn calendar col-md-1" (click)="dcs.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                            <div id="facility-approval" class="form-group col-md-3">
+                                                <div id="facility-approval" class="form-inline">
+                                                    <input class="form-control" placeholder="mm/dd/yyyy" ngbDatepicker #dce="ngbDatepicker" formControlName="contractEndDate" />
+                                                    <button class="btn calendar col-md-1" (click)="dce.toggle()" type="button"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="facility-approval" class="form-row">
+                    <div id="facility-approval" class="form-group col-md-12">
+                        <div id="facility-approval" class="card">
+                            <div id="facility-approval" class="card-header container-fluid">
+                                <div id="facility-approval" class="row">
+                                    <div id="facility-approval" class="col-md-11">
+                                        <h5>Contacts <small>(Max 4)</small></h5>
+                                    </div>
+                                    <div id="facility-approval" class="col-md-1" *ngIf="ShowOnEdit">
+                                        <button type="button" class="btn-primary float-right" (click)="generateContacts()"><em class="fas fa-plus"></em></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="facility-approval" class="form-row ml-2">
+                                <div id="facility-approval" class="form-group col-md-6">
+                                    <h6 class="card-title mt-3">Contact Name</h6>
+                                </div>
+                                <div id="facility-approval" class="form-group col-md-6">
+                                    <h6 class="card-title mt-3">Role</h6>
+                                </div>
+                            </div>
+                            <div id="facility-approval">
+                                <div id="facility-approval" class="form-row ml-2 mr-2">
+                                    <ng-container *ngFor="let a of arr; index as i">
+                                        <div id="facility-approval" class="form-group col-6">
+                                            <input type="text" [formControlName]="'contact'+(i+1)" class="form-control" maxlength="50" />
+                                        </div>
+                                        <div id="facility-approval" class="form-group col-6">
+                                            <input type="text" [formControlName]="'contactRole'+(i+1)" class="form-control" maxlength="100" />
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+
+                <div id="facility-approval" class="form-group row">
+                    <label for="facilityBillingLevelName" class="col-sm-6 col-form-label">Billing Level</label>
+                    <label for="billingAmount" class="col-sm-6 col-form-label">Billing Amount</label>
+                </div>
+                <div id="facility-approval" formArrayName="facilityBillingDetails">
+                    <ng-container *ngFor="
+                let bInfo of facilityBillingDetails.controls;
+                index as i
+              ">
+                        <div id="facility-approval" class="row" style="padding: 1em">
+                            <div id="facility-approval" class="col-sm-6" [formGroupName]="i">
+                                <input type="text" class="form-control" formControlName="facilityBillingLevelName" readonly />
+                            </div>
+                            <div id="facility-approval" class="col-sm-6" [formGroupName]="i">
+                                <div id="facility-approval" class="input-group">
+                                    <span class="v-align">$</span>
+                                    <input type="text" class="form-control" formControlName="billingAmount" [ngClass]="{
+                        'is-invalid':
+                          (bInfo.controls.billingAmount.touched || submitted || bInfo.controls.billingAmount.dirty) && bInfo.controls.billingAmount.errors
+                      }" />
+                                    <div id="facility-approval" *ngIf="(bInfo.controls.billingAmount.touched || submitted || bInfo.controls.billingAmount.dirty) && bInfo.controls.billingAmount.errors" class="invalid-feedback">
+                                        <div id="facility-approval" *ngIf="bInfo.controls.billingAmount.errors.pattern" class="txt-red">
+                                            Billing amount is allowed a max length of 10 digits with two optional decimals
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+            <div id="facility-approval" class="card-footer " *ngIf="ShowOnEdit">
+                <div id="facility-approval" class="float-right">
+
+                    <button class="btn btn-primary mr-3 " [disabled]="!formFacilityApproval.dirty" (click)="onSubmit()">
+            <em class="fas fa-check"></em> Update
+          </button>
+                    <button class="btn btn-primary mr-3" (click)="resetFormFields()" [disabled]="!formFacilityApproval.dirty">
+            <em class="fas fa-eraser"></em> Clear
+          </button>
+                    <button class="btn btn-primary " (click)="onCancel()">
+            <em class="fa fa-times"></em> Cancel
+          </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

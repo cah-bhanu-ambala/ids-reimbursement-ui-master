@@ -1,0 +1,97 @@
+<form [formGroup]="formSearchSubmittedCWI" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Submitted Customer Work Items</h5>
+        <div class="card-body">
+            <div class="form-row">
+              <app-facility-list id ="shared-facility-id" class="form-group col-md-6" [form]="formSearchSubmittedCWI" [submitEvent] ="submitted"></app-facility-list>
+                <!--<div class="col-md-6 form-group" *ngIf="customerFacilityId == 0">-->
+                    <!--<label>Facility</label><span class="required">*</span>-->
+                    <!--<select class="custom-select" formControlName="intFacilityId" [ngClass]="{ 'is-invalid': submitted && f.intFacilityId.errors  }">-->
+                      <!--<option value="" selected>Select Facility</option>-->
+                      <!--<option *ngFor="let f of facilities" value="{{ f.facilityId }}">-->
+                        <!--{{ f.facilityName }}-->
+                      <!--</option>-->
+                    <!--</select>-->
+                    <!--<div *ngIf="submitted && f.intFacilityId.errors" class="invalid-feedback">-->
+                        <!--<div *ngIf="f.intFacilityId.errors.required" class="txt-red">-->
+                            <!--Facility is required-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="form-group col-md-6" *ngIf="customerFacilityName != ''">-->
+                    <!--<label>Facility</label>-->
+                    <!--<input type="text" class="form-control" formControlName="facilityName" />-->
+                <!--</div>-->
+                <div class="form-group col-md-6">
+                    <label>MRN</label>
+                    <input type="text" class="form-control" id="patientMrn" formControlName="patientMrn" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Who Added</label>
+                    <input type="text" class="form-control" id="whoAdded" formControlName="whoAdded" />
+                </div>
+
+            </div>
+        </div>
+        <div class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="onSearch()"><em class="fas fa-check"></em> Search</button>
+        </div>
+    </div>
+    <div class="row" *ngIf="showError" style="padding: 0.5em">
+        <div class="col-sm-6">
+            <h6 style="color: red">No records found!</h6>
+        </div>
+    </div>
+    <div *ngIf="showGrid" class="report-grid-margin">
+        <div class="row">
+            <div class="col-md-12">
+                <p-table [value]="searchResult" [lazy]="true" (onLazyLoad)="loadSubmittedWorkItems($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Customer WorkItem Number</th>
+                            <th scope="col">Meds/Procedure</th>
+                            <th scope="col">Diagnosis</th>
+                            <th scope="col">Physician</th>
+                            <th scope="col">MRN</th>
+                            <th scope="col">Date of Service</th>
+                            <th scope="col">Who Added</th>
+                            <th scope="col">Item Status</th>
+                            <th scope="col">Notes</th>
+                            <th scope="col">Attachment</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-sCWItem>
+                        <tr>
+                            <td>
+                                <button class="btn btn-link" *ngIf="sCWItem.externalCustomerRequestedToDelete == 'N'" (click)="onDelete(sCWItem.customerWorkItemId)">Request to Delete</button>
+                                <span class="txt-red" *ngIf="sCWItem.externalCustomerRequestedToDelete == 'Y'">Delete request submitted</span>
+                            </td>
+                            <td>{{ sCWItem.customerWorkItemId }}</td>
+                            <td>{{ sCWItem.drugCodeInString }}</td>
+                            <td>{{ sCWItem.icdCodeInString }}</td>
+                            <td>{{ sCWItem.providerName }}</td>
+                            <td>{{ sCWItem.patientMrn}}</td>
+                            <td>{{ sCWItem.dos | date :'shortDate': 'UTC' }}</td>
+                            <td>{{ sCWItem.createdByName }}</td>
+                            <td>{{ sCWItem.workItemStatusName }}</td>
+                            <td class="notes-word-wrap">{{ sCWItem.notes }}</td>
+                            <td>
+                                <ng-container *ngIf="sCWItem.attachments">
+                                    <div *ngFor="let att of sCWItem.attachments">
+                                        <div class="btn-link" style="cursor: pointer;" (click)="openFile(att.customerWorkItemAttachmentId, att.customerWorkItemAttachmentPath) ">{{att.customerWorkItemAttachmentPath}}
+                                        </div>
+                                    </div>
+                                </ng-container>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+
+</form>

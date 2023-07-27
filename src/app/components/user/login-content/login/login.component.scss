@@ -1,0 +1,191 @@
+.ids-login-h {
+  border-color: #ced1d4;
+  border-style: solid;
+  border-width: 1px;
+  max-height: 112px;
+  img {
+    padding: 2.75rem 0 2.75rem 2.75rem;
+  }
+}
+.ids-login-bg {
+  background-color: #f9fafb;
+}
+
+.ids-login {
+  font-family: "Open Sans", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 888px;
+  h2 {
+    font-size: 23px;
+    line-height: 28px;
+  }
+  h3 {
+    font-size: 36px;
+    line-height: 36px;
+  }
+  p {
+    color: #6e6e6e;
+    font-weight: normal;
+    line-height: 28px;
+  }
+  sup {
+    font-size: 9px;
+  }
+  .msg-pl {
+    padding-left: 23%;
+  }
+  .wel-pb {
+    padding-bottom: 16px;
+  }
+  .login-form {
+    background-color: #ffffff;
+    box-shadow: -5px -5px #fff, -6px -6px #ced1d4, -4px -6px #ced1d4,
+      -6px -4px #ced1d4;
+    -moz-box-shadow: -5px -5px #fff, -6px -6px #ced1d4, -4px -6px #ced1d4,
+      -6px -4px #ced1d4;
+    -webkit-box-shadow: -5px -5px #fff, -6px -6px #ced1d4, -4px -6px #ced1d4,
+      -6px -4px #ced1d4;
+    -o-box-shadow: -5px -5px #fff, -6px -6px #ced1d4, -4px -6px #ced1d4,
+      -6px -4px #ced1d4;
+    min-height: 505px;
+    margin: auto;
+    padding: 15px;
+    width: 461px;
+    form {
+      max-width: 392px;
+      width: 100%;
+    }
+  }
+  .comm-border {
+    border-color: #ced1d4;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+  }
+  label {
+    font-family: "Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L",
+      "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px;
+    padding-bottom: 5.5px;
+  }
+  input {
+    height: 42px;
+  }
+  .login-btn {
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: "Open Sans", Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    height: 46px;
+    min-width: 255px;
+    &.btn-main {
+      background-color: #539ed1;
+    }
+    &.btn-sec {
+      background-color: #ffffff;
+      box-shadow: 0 0 0 1px #539ed1;
+      color: #539ed1;
+      min-width: 96px;
+    }
+    &.btn-disabled {
+      background-color: #e5e7e9;
+      pointer-events: none;
+    }
+  }
+  .form-check .checkbox-label {
+    color: #acb0b2;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 18px;
+    padding-top: 0.15rem;
+  }
+  .ids-form-check-input {
+    height: 15px;
+    margin-top: 0.15rem;
+    width: 15px;
+    z-index: 3;
+  }
+  a {
+    color: #2a5db0;
+    font-family: "Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L",
+      "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+  }
+  img.doctors-one {
+    bottom: 0;
+    left: 34.75%;
+    position: absolute;
+    z-index: 2;
+  }
+  img.doctors-two {
+    bottom: 0;
+    right: 2.5%;
+    position: absolute;
+    z-index: 2;
+  }
+  .form-h-pt {
+    padding-top: 2rem;
+  }
+  .form-h-pb {
+    padding-bottom: 2rem;
+  }
+  span.eye {
+    color: #c4c8cb;
+    float: right;
+    font-size: 20px;
+    padding-right: 15px;
+    position: relative;
+    top: -30px;
+  }
+  strong {
+    font-weight: 600;
+  }
+  @media screen and (max-width: 1024px) {
+    .msg-pl {
+      padding-left: 6%;
+    }
+    img.doctors-one {
+      height: 262.86px;
+      left: 32.75%;
+    }
+    img.doctors-two {
+      display: none;
+    }
+  }
+  @media screen and (max-width: 992px) {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    height: 100%;
+    .login-form {
+      box-shadow: unset;
+      margin: auto;
+      padding: 0;
+      width: 100%;
+    }
+    .login-form form {
+      max-width: 80%;
+      width: 80%;
+    }
+    input {
+      width: 100%;
+    }
+    .msg-pl {
+      padding-left: unset;
+    }
+    img.doctors-one {
+      display: none;
+    }
+    img.doctors-two {
+      display: none;
+    }
+    .login-help {
+      padding-top: 2rem;
+    }
+  }
+}

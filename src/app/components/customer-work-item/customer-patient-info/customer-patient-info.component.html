@@ -1,0 +1,173 @@
+<form *ngIf="showSearchForm" [formGroup]="formSearchPatient">
+    <div class="card w-100 p-3 shadow">
+        <h5 class="card-header">Search for Patient</h5>
+        <div class="card-body">
+            <div class="form-row">
+              <app-facility-list id ="shared-facility-id" class="form-group col-md-6" [form]="formSearchPatient" [submitEvent] ="searched"></app-facility-list>
+                <!--<div class="col-md-6 form-group " *ngIf="customerFacilityId == 0">-->
+                    <!--<label for="facilityId" class="mr-2">Facility</label><span class="required">*</span>-->
+                    <!--<select class="custom-select" formControlName="facilityId" [ngClass]="{ 'is-invalid': searched && sf.facilityId.errors  }">-->
+            <!--<option value="" selected>Select Facility</option>-->
+            <!--<option *ngFor="let f of facilities" value="{{ f.facilityId }}">-->
+              <!--{{ f.facilityName }}-->
+            <!--</option>-->
+          <!--</select>-->
+                    <!--<div *ngIf="searched && sf.facilityId.errors" class="invalid-feedback">-->
+                        <!--<div *ngIf="sf.facilityId.errors.required" class="txt-red">-->
+                            <!--Facility is required-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="form-group col-md-6" *ngIf="customerFacilityName != ''">-->
+                    <!--<label>Facility</label>-->
+                    <!--<input type="text" class="form-control" formControlName="facilityName" />-->
+                <!--</div>-->
+                <div class="col-md-6 form-group">
+                    <label for="mrn" class="mr-2">MRN </label>
+                    <input type="text" class="form-control" formControlName="mrn" (keydown.enter)="onSearch()" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <button class="btn btn-primary mr-3" (click)="onSearch()"> <em class="fa fa-search"></em> Search</button>
+                <button class="btn btn-primary" (click)="onResetSF()"><em class="fa fa-refresh"></em> Reset</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+
+<div *ngIf="showGrid" class="shadow p-3 rounded mt-2" style="background-color: white;">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="searchResult" [lazy]="true" (onLazyLoad)="loadPatientDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalSearchRecords" [loading]="resultGridloading" styleClass="p-datatable-striped"
+                [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col">MRN</th>
+                        <th scope="col">Proof Of Income</th>
+                        <th scope="col">House Hold</th>
+                        <th scope="col">Contact Status</th>
+                        <th scope="col">Notes</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-patient>
+                    <tr>
+                        <td class="mr-1">
+                            <button class="btn btn-link p-0" (click)="onEditPatient(patient.patientId)">
+                Edit
+              </button>
+                            <!-- <button class="btn btn-link p-0 ml-2"  >
+                Delete
+              </button> -->
+                        </td>
+                        <td>
+                            <button class="btn btn-link pl-0" (click)="onEditPatient(patient.patientId)">
+                {{ patient.mrn }}
+              </button>
+                        </td>
+                        <td>{{ patient.proofOfIncome }}</td>
+                        <td>{{ patient.householdSize }}</td>
+                        <td>{{ patient.contactStatusName }}</td>
+                        <td>{{ patient.notes }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<form [hidden]="!showForm" [formGroup]="formPatient">
+    <div class="card w-100 shadow p-3 mt-2">
+        <h5 class="card-header">Edit Patient</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="facilityId">Facility</label>
+                    <input type="text" class="form-control" formControlName="facilityId" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="mrn">MRN</label>
+                    <input type="text" class="form-control" formControlName="mrn" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="proofOfIncome">Proof Of Income</label>
+                    <input type="text" class="form-control" formControlName="proofOfIncome" [ngClass]="{
+                  'is-invalid': (f.proofOfIncome.dirty || f.proofOfIncome.touched || submitted) && f.proofOfIncome.errors
+                }" />
+                    <div *ngIf="(f.proofOfIncome.dirty || f.proofOfIncome.touched || submitted) && f.proofOfIncome.errors" class="invalid-feedback">
+                        <div *ngIf="f.proofOfIncome.errors.pattern" class="txt-red">
+                            Proof Of Income is allowed a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="householdSize">House Hold</label>
+                    <input type="tel" maxlength="2" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="form-control" formControlName="householdSize" [ngClass]="{
+                'is-invalid': (f.householdSize.dirty || f.householdSize.touched || submitted) && f.householdSize.errors
+              }" />
+                    <div *ngIf="(f.householdSize.dirty || f.householdSize.touched || submitted) && f.householdSize.errors" class="invalid-feedback">
+                        <div *ngIf="f.householdSize.errors.required" class="txt-red">
+                            House hold is allowed only 2 numeric characters
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="notes">Notes</label>
+                    <textarea rows="3" type="text" formControlName="notes" class="form-control" [ngClass]="{
+              'is-invalid': f.notes.errors
+            }"></textarea>
+                    <div *ngIf="f.notes.errors" class="invalid-feedback">
+                        <div *ngIf="f.notes.errors.maxlength" class="txt-red">
+                            Notes should have max 1000 characters
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="contactStatusId">Contact Status<span
+              class="required">*</span></label>
+                    <select class="custom-select" formControlName="contactStatusId" [ngClass]="{
+        'is-invalid': (f.contactStatusId.dirty || f.contactStatusId.touched || submitted) && f.contactStatusId.errors
+      }">
+      <option value="">Select Contact Status</option>      
+      <option *ngFor="let con of contactStatuses" value="{{ con.contactStatusId }}">
+              {{ con.contactStatusName }}
+            </option>
+          </select>
+                    <div *ngIf="(f.contactStatusId.dirty || f.contactStatusId.touched || submitted) && f.contactStatusId.errors" class="invalid-feedback">
+                        <div *ngIf="f.contactStatusId.errors.required" class="txt-red">
+                            Contact Status is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="float-right">
+                    <button class="btn btn-primary mr-3" (click)="onSubmit()" [disabled]="!formPatient.dirty">
+          <em class="fas fa-check"></em> Update
+        </button>
+                    <button class="btn btn-primary mr-3" (click)="onClear()" [disabled]="!formPatient.dirty">
+          <em class="fas fa-eraser"></em> Clear
+        </button>
+                    <button class="btn btn-primary" (click)="onCancel()">
+          <em class="fa fa-times"></em> Cancel
+        </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>

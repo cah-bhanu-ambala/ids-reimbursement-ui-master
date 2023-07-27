@@ -1,0 +1,194 @@
+<div>
+    <div class="row mb-1">
+        <div class="col-md-12">
+            <app-search-revenue placeholderText="Search for User name or user email" (setValue)="onSearch($event)">
+            </app-search-revenue>
+        </div>
+    </div>
+    <div class="row" *ngIf="showError">
+        <div class="col-md-12">
+            <h6 style="color: red">No Records found!</h6>
+        </div>
+    </div>
+    <div class="row" *ngIf="showGrid">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table #ptable [value]="userSearchResult" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="userTotalRecords"
+                [loading]="userGridloading" styleClass="p-datatable-striped" [autoLayout]="true" [sortMode]="'multiple'">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col" [pSortableColumn]="'userName'">User Name<p-sortIcon [field]="'userName'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'userEmail'">User Email<p-sortIcon [field]="'userEmail'"></p-sortIcon></th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">User Role</th>
+                        <th scope="col">Reporting To</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user>
+                    <tr>
+                        <td style="padding-top: 0%;overflow:hidden">
+
+                            <div ngbDropdown container="body">
+                                <button class="btn btn-outline-primary btn-sm" ngbDropdownToggle>Actions</button>
+                                <div ngbDropdownMenu>
+                                    <button ngbDropdownItem *ngIf="user.active" (click)="onActivateOrDeactivate(user, false)">Deactivate</button>
+                                    <button ngbDropdownItem *ngIf="!user.active" (click)="onActivateOrDeactivate(user, true)">Activate</button>
+                                    <button ngbDropdownItem *ngIf="user.active" (click)="onEdit(user)">Edit</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ user.userName }}</td>
+                        <td>{{ user.userEmail }}</td>
+                        <td>{{ user.firstName }}</td>
+                        <td>{{ user.lastName }}</td>
+                        <td>{{ user.userRoleName }}</td>
+                        <td>{{ user.reportingTo }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div *ngIf="showForm">
+        <div class="row">
+            <form class="needs-validation col-md-12 mt-2" [formGroup]="formUserMgntUserMgt">
+                <div class="card w-100 p-3">
+                    <h5 *ngIf="!isUpdate" class="card-header">Add New User</h5>
+                    <h5 *ngIf="isUpdate" class="card-header">Edit User</h5>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="userName" class="col-sm-6 col-form-label">User Name<span class="required">*</span></label>
+                            <label for="userEmail" class="col-sm-6 col-form-label">Email<span class="required">*</span></label>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="userName" formControlName="userName" [ngClass]="{ 'is-invalid': (f.userName.dirty || f.userName.touched || submitted) && f.userName.errors }" />
+                                <div *ngIf="(f.userName.dirty || f.userName.touched || submitted) && f.userName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.userName.errors.required" class="txt-red">
+                                        User Name is required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="email" class="form-control" id="userEmail" formControlName="userEmail" [ngClass]="{
+                      'is-invalid': (f.userEmail.dirty || f.userEmail.touched || submitted) && f.userEmail.errors
+                    }" />
+                                <div *ngIf="(f.userEmail.dirty || f.userEmail.touched || submitted) && f.userEmail.errors" class="invalid-feedback">
+                                    <div *ngIf="f.userEmail.errors.required" class="txt-red">
+                                        Email is required
+                                    </div>
+                                    <div *ngIf="(f.userEmail.dirty || f.userEmail.touched || submitted) && f.userEmail.errors" class="txt-red">
+                                        Email is invalid
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="firstName" class="col-sm-6 col-form-label">First Name<span class="required">*</span></label>
+                            <label for="lastName" class="col-sm-6 col-form-label">Last Name<span class="required">*</span></label>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="firstName" formControlName="firstName" [ngClass]="{
+                      'is-invalid': (f.firstName.dirty || f.firstName.touched || submitted) && f.firstName.errors
+                    }" />
+                                <div *ngIf="(f.firstName.dirty || f.lastName.touched || submitted) && f.firstName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.firstName.errors.required" class="txt-red">
+                                        First Name is required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="lastName" formControlName="lastName" [ngClass]="{
+                      'is-invalid': (f.lastName.dirty || f.lastName.touched || submitted) && f.lastName.errors
+                    }" />
+                                <div *ngIf="(f.lastName.dirty || f.lastName.touched || submitted) && f.lastName.errors" class="invalid-feedback">
+                                    <div *ngIf="f.lastName.errors.required" class="txt-red">
+                                        Last Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="roles" class="col-sm-6 col-form-label">User Role<span class="required">*</span></label>
+                            <label *ngIf="showReportingTo" for="reportingto" class="col-sm-6 col-form-label">Reporting To<span
+                class="required">*</span></label>
+                            <label *ngIf="showSystems" for="systemId" class="col-sm-6 col-form-label">System<span
+                class="required">*</span></label>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6">
+                                <select class="custom-select" formControlName="userRoleId" [ngClass]="{
+                      'is-invalid': (f.userRoleId.dirty || f.userRoleId.touched || submitted) && f.userRoleId.errors
+                    }">
+                <option value="" selected>Select User Role</option>
+                <option *ngFor="let userrole of userRoleList" [ngValue]="userrole.userRoleId">
+                  {{ userrole.userRoleName }}
+                </option>
+              </select>
+                                <div *ngIf="(f.userRoleId.dirty || f.userRoleId.touched || submitted) && f.userRoleId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.userRoleId.errors.required" class="txt-red">
+                                        User Role is required
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" *ngIf="showReportingTo">
+                                <select class="custom-select" formControlName="teamLeadId" [ngClass]="{
+                      'is-invalid': (f.teamLeadId.dirty || f.teamLeadId.touched || submitted) && f.teamLeadId.errors
+                    }">
+                <option value="" selected>Select Reporting To</option>
+                <option *ngFor="let userreporting of userReportingUserList" [ngValue]="userreporting.userId">
+                  {{ userreporting.userName }}
+                </option>
+              </select>
+                                <div *ngIf="(f.teamLeadId.dirty || f.teamLeadId.touched || submitted) && f.teamLeadId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.teamLeadId.errors.required" class="txt-red">
+                                        Reporting To is required
+                                    </div>
+                                </div>
+
+                                <!--<input disabled type="text" [(ngModel)]="reportingTo" class="form-control" id="reportingTo" formControlName="reportingTo"/>-->
+                            </div>
+                            <div class="col-sm-6" *ngIf="showSystems">
+                                <select id="systemId" class="custom-select" formControlName="systemId" [ngClass]="{
+                      'is-invalid': (f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors
+                    }">
+                <option value="" selected>Select System</option>
+                <option *ngFor="let system of systems" [ngValue]="system.systemId">
+                  {{ system.systemName }}
+                </option>
+              </select>
+                                <div *ngIf="(f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.systemId.errors.required" class="txt-red">
+                                        System is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button *ngIf="!isUpdate" class="btn btn-primary mr-3 " (click)="onSubmit()" [disabled]="!formUserMgntUserMgt.dirty">
+              <em class="fas fa-check"></em> Create
+            </button>
+                            <button *ngIf="isUpdate" class="btn btn-primary mr-3 " (click)="onSubmit()" [disabled]="!formUserMgntUserMgt.dirty">
+              <em class="fas fa-check"></em> Update
+            </button>
+                            <button *ngIf="!isUpdate" class="btn btn-primary  mr-3" (click)="onReset()" [disabled]="!formUserMgntUserMgt.dirty">
+              <em class="fas fa-eraser"></em> Clear
+            </button>
+                            <button class="btn btn-primary " (click)="onCancel()">
+              <em class="fa fa-times"></em> Cancel
+            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

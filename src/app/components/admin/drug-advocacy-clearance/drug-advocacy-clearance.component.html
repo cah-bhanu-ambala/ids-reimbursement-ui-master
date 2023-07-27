@@ -1,0 +1,250 @@
+<div class="shadow p-3 mb-5 bg-white rounded">
+    <form [formGroup]="advClearanceSearchForm" class="mt-2 mb-2">
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Drug Clearance Search</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="drugId">Drug for Clearance</label>
+                        <ng-select formControlName="drugId" [items]="drugCodesFiltered$ | async" bindLabel="drugValue" bindValue="drugId" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Drug Code or Description">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.drugValue" class="ng-option-label">{{item.drugValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label>Diagnosis Code</label>
+                        <ng-select formControlName="icdCode" [items]="icdCodesFiltered$ | async" bindLabel="icdValue" bindValue="icdCode" [minTermLength]="minLengthTerm" [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Diagnosis Code or Description">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.icdValue" class="ng-option-label">{{item.icdValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Primary Insurance</label>
+                        <select class="custom-select" formControlName="primaryInsuranceId">
+                            <option value="" selected>Select Primary Insurance</option>
+                            <option *ngFor="let primInsurance of advClearprimaryInsurance"
+                                [ngValue]="primInsurance.insuranceId">
+                                {{ primInsurance.insuranceName }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Secondary Insurance</label>
+                        <select class="custom-select" formControlName="secondaryInsuranceId">
+                            <option value="" selected>Select Secondary Insurance</option>
+                            <option *ngFor="let secInsurance of advClearSecondaryInsurance"
+                                [ngValue]="secInsurance.insuranceId">
+                                {{ secInsurance.insuranceName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Approval Reason</label>
+                        <select class="custom-select col-md-12" formControlName="priorAuthStatusId">
+                            <option value="" selected>Select Approval Reason</option>
+                            <option *ngFor="let reason of advClearWiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                                {{ reason.priorAuthStatusName }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <button class="btn btn-primary float-right" (click)="onResetSF()"><em class="fas fa-refresh"></em>
+                    Reset</button>
+                <button class="btn btn-primary mr-3 float-right" (click)="onClearanceSearch()"><em class="fas fa-check"></em>
+                    Search</button>
+            </div>
+        </div>
+    </form>
+    <div *ngIf="advClearshowGrid">
+        <div class="row">
+            <div class="col-md-12">
+                <p-table [value]="advClearSearchResult" [lazy]="true" (onLazyLoad)="loadAdvDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="advTotalRecords" [loading]="advloading" styleClass="p-datatable-striped" [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Drug Code</th>
+                            <th scope="col">Diagnosis Code</th>
+                            <th scope="col">Primary Insurance</th>
+                            <th scope="col">Secondary Insurance</th>
+                            <th scope="col">Approval Reason</th>
+                            <th scope="col">Clearance</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-adv>
+                        <tr>
+                            <td style="padding-top: 0%">
+                                <button class="btn btn-link" (click)="onEdit(adv)">Edit</button>
+                                <button class="btn btn-link" (click)="onDelete(adv)">
+                                    Delete
+                                </button>
+                            </td>
+                            <td style="width: 200px;">{{ adv.drugProcCode }}</td>
+                            <td>{{adv.icds}}</td>
+                            <td>{{ adv.primaryInsName }}</td>
+                            <td>{{ adv.secondaryInsuranceName }}</td>
+                            <td>{{ adv.priorAuthStatusName }}</td>
+                            <td class="wrap">{{ adv.clearance ? 'Yes' : 'No'}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+    <form [formGroup]="drugAdvocacyClearanceForm" class="mb-2">
+        <div class="card w-100 p-3">
+            <h5 *ngIf="!isUpdate" class="card-header">Add Drug Clearance</h5>
+            <h5 *ngIf="isUpdate" class="card-header">Edit Drug Clearance</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="drugId">Drug for Clearance<span class="required">*</span></label>
+                        <ng-select formControlName="drugId" [items]="drugCodesFiltered$ | async" bindLabel="drugValue" bindValue="drugId" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                            placeholder="Search for Drug Code or Description" [ngClass]="{'is-invalid':(f.drugId.dirty || f.drugId.touched || advClearshowAddICDGrid) && f.drugId.errors}">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.drugValue" class="ng-option-label">{{item.drugValue}}</span>
+                            </ng-template>
+                        </ng-select>
+                        <div *ngIf="(f.drugId.touched || f.drugId.dirty ||advClearshowAddICDGrid) && f.drugId.errors" class="invalid-feedback ml-3">
+                            <div *ngIf="f.drugId.errors.required" class="txt-red">
+                                Drug for Clearance is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <div class="card">
+                            <div class="card-header container-fluid">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <h5>Diagnosis codes<span class="required">*</span></h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10 m-2 container-fluid" style="display: inline-block;">
+                                    <ng-select [multiple]="true" [(ngModel)]="advClearselectedIcdCodes" [selectableGroup]="true" [selectableGroupAsModel]="true" [closeOnSelect]="false" formControlName="icdId" [items]="icdCodesFiltered$ | async" bindLabel="icdValue" bindValue="icdCode" [minTermLength]="minLengthTerm"
+                                        [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Search for Diagnosis Code or Description">
+                                        <ng-template ng-option-tmp let-item="item">
+                                            <span [title]="item.icdValue" class="ng-option-label">{{item.icdValue}}</span>
+                                        </ng-template>
+                                    </ng-select>
+                                    <div *ngIf="(f.icdId.dirty || f.icdId.touched || advClearshowAddICDGrid) && f.icdId.errors">
+                                        <div *ngIf="f.icdId.errors.required" class="txt-red">
+                                            Diagnosis code is required
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="col-md-1 btn btn-primary m-2" style="max-height: 40px;" (click)="bulkAddClearance()">Add</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Primary Insurance<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="primaryInsuranceId" [ngClass]="{'is-invalid': (f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || advClearshowAddICDGrid) && f.primaryInsuranceId.errors }">
+                            <option value="" selected>Select Primary Insurance</option>
+                            <option *ngFor="let primInsurance of advClearprimaryInsurance"
+                                [ngValue]="primInsurance.insuranceId">
+                                {{ primInsurance.insuranceName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || advClearshowAddICDGrid) && f.primaryInsuranceId.errors" class="invalid-feedback">
+                            <div *ngIf="f.primaryInsuranceId.errors.required" class="txt-red">
+                                Primary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Secondary Insurance<span class="required">*</span></label>
+                        <ng-select [multiple]="true" [(ngModel)]="selectedSecInsIds" [selectableGroup]="true" [selectableGroupAsModel]="true" [closeOnSelect]="false" formControlName="secondaryInsuranceId" [items]="advClearSecondaryInsurance" bindLabel="insuranceName" bindValue="insuranceId"
+                            [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Select Secondary Insurance" [ngClass]="{'is-invalid': (f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || advClearshowAddICDGrid) && f.secondaryInsuranceId.errors }">
+                            <ng-template ng-option-tmp let-item="item">
+                                <span [title]="item.insuranceName" class="ng-option-label">{{item.insuranceName}}</span>
+                            </ng-template>
+                        </ng-select>
+
+                        <div *ngIf="(f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || advClearshowAddICDGrid) && f.secondaryInsuranceId.errors">
+                            <div *ngIf="f.secondaryInsuranceId.errors.required" class="txt-red">
+                                Secondary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Advocacy Type<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="advocacyTypeId" [ngClass]="{'is-invalid': (f.advocacyTypeId.dirty || f.advocacyTypeId.touched || advClearshowAddICDGrid) && f.advocacyTypeId.errors }">
+                    <option value="" selected>Select Advocacy Type</option>
+                    <option *ngFor="let advocacyType of advocacyClearanceTypes"
+                            [ngValue]="advocacyType.advocacyTypeId">
+                      {{ advocacyType.advocacyTypeName }}
+                    </option>
+                  </select>
+                        <div *ngIf="(f.advocacyTypeId.dirty || f.advocacyTypeId.touched || advClearshowAddICDGrid) && f.advocacyTypeId.errors" class="invalid-feedback">
+                            <div *ngIf="f.advocacyTypeId.errors.required" class="txt-red">
+                                Advocacy Type is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Clearance <span class="required">*</span></label>
+                        <select class="custom-select" formControlName="clearance" [ngClass]="{'is-invalid': (f.clearance.dirty || f.clearance.touched || advClearshowAddICDGrid) && f.clearance.errors }">
+                    <option value="" selected>Select an option</option>
+                    <option *ngFor="let option of advClearanceOptions"
+                            [ngValue]="option.value">
+                      {{ option.label }}
+                    </option>
+                  </select>
+                        <div *ngIf="(f.clearance.dirty || f.clearance.touched || advClearshowAddICDGrid) && f.clearance.errors" class="invalid-feedback">
+                            <div *ngIf="f.clearance.errors.required" class="txt-red">
+                                Clearance is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Approval Reason<span class="required">*</span></label>
+                        <select class="custom-select col-sm-12" formControlName="priorAuthStatusId" [ngClass]="{'is-invalid': (f.priorAuthStatusId.dirty || f.priorAuthStatusId.touched || advClearshowAddICDGrid) && f.priorAuthStatusId.errors }">
+                            <option value="" selected>Select Approval Reason</option>
+                            <option *ngFor="let reason of advClearWiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                                {{ reason.priorAuthStatusName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(f.priorAuthStatusId.dirty || f.priorAuthStatusId.touched || advClearshowAddICDGrid) && f.priorAuthStatusId.errors" class="invalid-feedback">
+                            <div *ngIf="f.priorAuthStatusId.errors.required" class="txt-red">
+                                Approval Reason is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer ">
+                <div class="float-right">
+                    <button type="button" class="btn btn-primary mr-3" (click)="onSubmit()">
+                        <em class="fa fa-search"></em> Submit
+                    </button>
+                    <button type="button" class="btn btn-primary" (click)="onReset()">
+                        <em class="fa fa-refresh"></em> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

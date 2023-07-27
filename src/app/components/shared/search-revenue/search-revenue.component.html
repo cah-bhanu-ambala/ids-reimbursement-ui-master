@@ -1,0 +1,15 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="search-bar p-2 rounded shadow mb-2">
+            <div class="input-group mb-1 border rounded-pill">
+                <div class="input-group-prepend border-1">
+                    <button id="button-addon4" type="button" class="btn btn-link text-info" style="cursor: none;"><em class="fa fa-search"></em></button>
+                </div>
+                <input type="text" placeholder="{{ placeholderText }}" id="{{id}}" aria-describedby="button-addon" class="form-control col-sm-11" style="padding-right: 0px;" (keyup)="onSearch($event.target.value)" #searchInput>
+                <button *ngIf="showDelIcon" type="button" class="btn bg-transparent" style="margin-left: -40px; z-index: 100;" (click)="clearSearchInput()">
+                    <em class="fa fa-times"></em>
+                  </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+  <div class="form-group" [formGroup]="form">
+    <label>Facility</label><span class="required">*</span>
+    <select class="form-control ng-untouched ng-pristine"  [ngClass]="{ 'is-invalid': isInValid() }" [formControlName]="controlName">
+      <option value="" selected >Select Facility</option>
+      <option *ngFor="let f of facilities" value="{{ f.facilityId }}" [selected]="facilities && facilities.length == 1">
+        {{ f.facilityName }}
+      </option>
+    </select>
+    <div *ngIf="isInValid()" class="invalid-feedback">
+      <div *ngIf="form.controls['intFacilityId'] && form.controls['intFacilityId'].errors.required" class="txt-red">
+        Facility is required
+      </div>
+    </div>
+  </div>

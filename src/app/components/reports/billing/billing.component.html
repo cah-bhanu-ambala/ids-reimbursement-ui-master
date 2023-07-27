@@ -1,0 +1,176 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div id="billing-dup" class="card w-100 p-3">
+        <h5 class="card-header">Billing Report</h5>
+        <div id="billing-dup" class="card-body">
+            <div id="billing-dup" class="form-row">
+                <div id="billing-dup" class="form-group col-md-6">
+                    <label for="facilityId">Facility<span class="required">*</span></label>
+                    <ng-select formControlName="selectedFacilitiesIds" [items]="facilities" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Facility"
+                        [ngClass]="{
+            'is-invalid': (sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors}">
+                        <ng-template ng-header-tmp>
+                            <div id="billing-dup">
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div id="billing-dup" *ngIf="(sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors" class="invalid-feedback">
+                        <div id="billing-dup" *ngIf="sf.selectedFacilitiesIds.errors.required" class="txt-red">
+                            Facility is required
+                        </div>
+                    </div>
+                </div>
+                <div id="billing-dup" class="form-group col-md-6">
+                    <label for="dateOutFrom">
+            Date From<span class="required">*</span>
+          </label>
+                    <div id="billing-dup" class="form-inline" style="margin-top: -5px;">
+                        <input id="dateOut" class="form-control col-md-10 rounded" placeholder="mm/dd/yyyy" name="dateOutFrom" ngbDatepicker #dateOutFrom="ngbDatepicker" formControlName="dateOutFrom" [ngClass]="{'is-invalid':(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors}"
+                        />
+                        <button class="btn calendar col-md-1" (click)="dateOutFrom.toggle()" type="button"></button>
+                        <div id="billing-dup" *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors" class="invalid-feedback">
+                            <div id="billing-dup" *ngIf="sf.dateOutFrom.errors.required" class="txt-red">
+                                Date from is required
+                            </div>
+                            <div id="billing-dup" *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                Date From should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="billing-dup" class="form-row">
+                <div id="billing-dup" class="form-group col-md-6">
+                    <label for="dateOutTo">
+            Date To<span class="required">*</span>
+          </label>
+                    <div id="billing-dup" class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateOutTo" ngbDatepicker #dateOutTo="ngbDatepicker" formControlName="dateOutTo" [ngClass]="{'is-invalid':(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors}"
+                        />
+                        <button class="btn calendar col-md-1" (click)="dateOutTo.toggle()" type="button"></button>
+                        <div id="billing-dup" *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors" class="invalid-feedback">
+                            <div id="billing-dup" *ngIf="sf.dateOutTo.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div id="billing-dup" *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="billing-dup" class="card-footer ">
+            <div id="billing-dup" class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getBillingReport()">
+          <em class="fa fa-search"></em> Search
+        </button>
+                <button type="button" class="btn btn-primary" (click)="onReset()">
+          <em class="fa fa-refresh"></em> Reset
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="billing-dup" class="row" *ngIf="showError" style="padding: 0.5em">
+    <div id="billing-dup" class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div id="billing-dup" *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div id="billing-dup" class="row">
+        <div id="billing-dup" class="col-md-12" style="overflow: auto;">
+            <p-table id="billingTable" [value]="billingList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Facility Name</th>
+                        <th scope="col">Billing Type</th>
+                        <th scope="col">Patient MRN</th>
+                        <th scope="col">Work item #</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Physician</th>
+                        <th scope="col">JCode 1</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">JCode 2</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">JCode 3</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 4</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 5</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 6</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 7</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 8</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 9</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                        <th scope="col">Jcode 10</th>
+                        <th scope="col">Dosage</th>
+                        <th scope="col">Denied</th>
+                        <th scope="col">Denial Type</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-newWorkItem>
+                    <tr>
+                        <td>{{ newWorkItem.facilityName }}</td>
+                        <td>{{ newWorkItem.facilityBillingLevelName }}</td>
+                        <td>{{ newWorkItem.patientMrn }}</td>
+                        <td>{{ newWorkItem.workItemId }}</td>
+                        <td>{{ newWorkItem.workItemStatusName }}</td>
+                        <td>{{ newWorkItem.providerName }}</td>
+                        <ng-container *ngFor="let x of maxJCodesList; let i = index">
+                            <ng-container *ngIf="newWorkItem.drugCodes[i]">
+                                <td>{{ newWorkItem.drugCodes[i]["drugProcCode"] }}</td>
+                                <td>{{ newWorkItem.drugCodes[i]["drugDosage"] }}</td>
+                                <td>{{ newWorkItem.drugCodes[i]["isDenied"]? 'Yes' : 'No' }}</td>
+                                <td>{{ newWorkItem.drugCodes[i].denialType? newWorkItem.drugCodes[i].denialType.denialType : '' }}</td>
+                            </ng-container>
+                            <ng-container *ngIf="!newWorkItem.drugCodes[i]">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </ng-container>
+                        </ng-container>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div id="billing-dup" class="col-md-12 mt-3">
+            <!--<div id="billing-dup" ngbDropdown class="d-inline-block float-right dropup">
+                <button class="dropdown-toggle btn btn-primary" id="dropdownBasic1" ngbDropdownToggle>Export</button>
+                <div id="billing-dup" ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button ngbDropdownItem (click)="exportExcel()">Excel Export</button>
+                    <button ngbDropdownItem (click)="exportPDF()">PDF Export</button>
+                </div>
+            </div>-->
+          <button type="button" class="btn btn-primary float-right mr-4" (click)="exportExcel()">
+            Export
+          </button>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+<div [formGroup]="parentForm">
+    <label for="teamMemberAssignedTo">Team Member Assigned</label>
+    <ng-select formControlName="teamMemberAssignedTo" [items]="teamMembers" bindLabel="displayName" bindValue="userId" [multiple]="false" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Team Member">
+    </ng-select>
+</div>

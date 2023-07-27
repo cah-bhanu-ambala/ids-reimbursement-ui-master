@@ -1,0 +1,13 @@
+<div class="d-flex align-items-center justify-content-center">
+    <div class="d-flex align-items-start pt-3">
+        <ng-container *ngIf="!success">
+            <div class="">
+                <span class="material-icons fs-26 txt-danger pr-1">privacy_tip</span>
+            </div>
+        </ng-container>
+        <div [ngClass]="{ 'text-center': !success, '': success }">
+            <p class="font-weight-light" [ngClass]="{ 'txt-danger': !success, 'txt-success': success }"
+                [innerHTML]="innerHtml"></p>
+        </div>
+    </div>
+</div>

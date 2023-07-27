@@ -1,0 +1,53 @@
+<form [formGroup]="viewPatientForm" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">View Clinic Responded Patients</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Facility</label>
+                    <select id="facilityId" class="custom-select" formControlName="facilityId">
+                        <option value="" selected>Select Facility</option>
+                        <option *ngFor="let f of facilities" value="{{ f.facilityId }}">
+                        {{ f.facilityName }}
+                        </option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>MRN</label>
+                    <input type="text" class="form-control" id="mrn" formControlName="mrn" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="getViewPatientData()"><em class="fas fa-check"></em> Search</button>
+        </div>
+        <div class="row" *ngIf="showError" style="padding: 0.5em">
+            <div class="col-sm-6">
+                <h6 style="color: red">No records found!</h6>
+            </div>
+        </div>
+        <div *ngIf="showGrid" class="report-grid-margin">
+            <div class="row">
+                <div class="col-md-12">
+                    <p-table [value]="patientsList" [lazy]="true" (onLazyLoad)="loadPatientData($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th scope="col">Facility</th>
+                                <th scope="col">MRN</th>
+                                <th scope="col">contactStatusName</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-patient>
+                            <tr>
+                                <td>{{ patient.facilityName }}</td>
+                                <td>{{ patient.mrn }}</td>
+                                <td>{{ patient.contactStatusName }}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

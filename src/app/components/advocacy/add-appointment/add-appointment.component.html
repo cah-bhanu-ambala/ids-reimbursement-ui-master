@@ -1,0 +1,1823 @@
+<div class="row mb-1" *ngIf="showSearch">
+    <div class="col-md-12">
+        <app-search-revenue id="searchAdvocacyId" placeholderText="Search for facility name or MRN" (setValue)="onSearch($event)"></app-search-revenue>
+    </div>
+</div>
+
+<div class="shadow col-md-12 p-3 bg-white left-img rounded">
+    <div class="mb-4 height-display">
+        <div class="row" *ngIf="showError" style="padding: 0.5em">
+            <div class="col-sm-6">
+                <h6 style="color: red">No matching master advocacies found!</h6>
+            </div>
+        </div>
+
+        <div class="row scrollmenu">
+            <div class="col-md-6">
+                <h6 *ngIf="showGrid" class="card-header">Master Advocacy List</h6>
+
+                <p-table #advocacyTable [value]="datasource" [lazy]="true" (onLazyLoad)="loadAdvocacyMasterList($event)"  [paginator]="true" [rows]="3" [rowsPerPageOptions]="[3,6,9,12,15]" [totalRecords]="totalRecords" [loading]="loading"
+                    styleClass="p-datatable-striped" [autoLayout]="true" [sortMode]="'multiple'">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col" [pSortableColumn]="'advocacyId'">Id <p-sortIcon [field]="'advocacyId'"></p-sortIcon></th>
+                            <th scope="col" [pSortableColumn]="'followUpNotification'">Follow Up<p-sortIcon [field]="'followUpNotification'"></p-sortIcon></th>
+                            <th scope="col">MRN</th>
+                            <th scope="col">Facility</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Diagnosis</th>
+                            <th scope="col">Drug</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-advocacy>
+                        <tr>
+                            <td> <button class="btn btn-link" (click)="onAdd(advocacy)">{{ advocacy.advocacyId }}</button></td>
+                            <td><img alt="bell" *ngIf="advocacy.followUpNotification" style="width: 25px;height:25px;" src="assets/img/notification.png"></td>
+                            <td>{{ advocacy.patientMrn }}</td>
+                            <td>{{ advocacy.facilityName }}</td>
+                            <td>{{ advocacy.advocacyStatus }}</td>
+                            <td>{{ advocacy.advocacyType }}</td>
+                            <td>{{ advocacy.icdCode }}</td>
+                            <td>{{ advocacy.drugProcCode }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <div class="col-sm-12">
+                    <h6 class="card-header">Master Advocacy Details <button *ngIf="!showGrid" class="btn btn-link float-right" (click)="showAdvocacies()">Return to master advocacy list</button></h6>
+                </div>
+                <form [formGroup]="addFormAdvocacy" class="mt-2">
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>Advocacy Id</label>
+                            <input type="text" class="form-control" id="advocacyId" formControlName="advocacyId" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>MRN</label>
+                            <input type="text" class="form-control" id="patientMrn" formControlName="patientMrn" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Facility</label>
+                            <input type="text" class="form-control" id="facilityName" formControlName="facilityName" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-3">
+                            <label>Look Back</label>
+                            <input type="text" class="form-control" id="lookBack" formControlName="lookBack" />
+                        </div>
+                        <div class="form-group col-md-3">
+                          <label>Look Back <br>Start Date</label>
+                            <input class="form-control" name="lookBackStartDate" ngbDatepicker #dfl="ngbDatepicker" formControlName="lookBackStartDate" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Start Date</label>
+                            <input class="form-control" name="startDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="startDate" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>End Date </label>
+                            <input class="form-control" name="endDate" ngbDatepicker #dfe="ngbDatepicker" formControlName="endDate" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label>Advocacy Status</label>
+                            <input type="text" class="form-control" id="advocacyStatusName" formControlName="advocacyStatusName" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Advocacy Type </label>
+                            <input type="text" class="form-control" id="advocacyTypeName" formControlName="advocacyTypeName" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Maximum Amount <br> Available</label>
+                            <input type="number" class="form-control" id="maxAmountAvail" formControlName="maxAmountAvail" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Advocacy Source</label>
+                            <input type="text" class="form-control" id="advocacySource" formControlName="advocacySource" />
+                        </div>
+                    </div>
+
+                    <div id="add-appointment-diagnosis" class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>Diagnosis for Advocacy</label>
+                            <input type="text" class="form-control" formControlName="diagnosisCode" id="diagnosisCode" />
+                        </div>
+
+                    </div>
+
+                    <div id="add-appointment-drugs" class="form-row">
+
+                        <div class="form-group col-md-12">
+                            <label>Drugs for Advocacy</label>
+                            <input type="text" class="form-control" formControlName="drugForAdvocacy" id="drugForAdvocacy" />
+                        </div>
+                    </div>
+
+                    <div id="add-appointment-notes" class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>Advocacy Notes</label>
+                            <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="add-appointment-attachments" class="form-row">
+                        <div class="form-group col-md-12">
+                            <ng-container *ngIf="(advocacyAttachments && advocacyAttachments.length>0)">
+                                <label>Attachments</label>
+                                <div *ngFor="let att of advocacyAttachments">
+                                    <ul><li>
+                                        <span class="btn-link" style="cursor: pointer;" (click)="openAdvAttachment(att.advocacyAttachmentId, att.attachmentPath) ">{{att.attachmentPath}}
+                                        </span>
+                                    </li></ul>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+
+                </form>
+
+                <h6 *ngIf="showAppointmentGrid" class="card-header">Appointments</h6>
+               <div *ngIf="showAppointmentGrid">
+                 <input *ngIf="showAppointmentGrid" #showClosedCheckBox type="checkbox" id="showClosedCheckBox" [checked]="showClosedAppointments"
+                        (change)="onShowClosedChanged(showClosedCheckBox.checked)">Show Closed Appointments
+                </div>
+                <p-table *ngIf="showAppointmentGrid" [value]="appointmentDatasource"  [paginator]="appointmentTotalRecords > 0" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="appointmentTotalRecords" [loading]="appointmentGridloading"
+                    styleClass="p-datatable-striped" [autoLayout]="true" [sortMode]="'multiple'">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Request</th>
+                            <th scope="col" [pSortableColumn]="'teamMemberAssignedToName'">Assigned To<p-sortIcon [field]="'teamMemberAssignedToName'"></p-sortIcon></th>
+                            <th scope="col" [pSortableColumn]="'followUpDate'">Follow-up Date  <p-sortIcon [field]="'followUpDate'"></p-sortIcon></th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-appointment>
+                        <tr>
+                            <td class="pl-0">
+                                <button class="btn btn-link" (click)="onEditAppointment(appointment)">
+                                Edit
+                            </button>
+                                <button class="btn btn-link" (click)="onDeleteAppointment(appointment.appointmentId)">
+                                Delete <em *ngIf="appointment.externalCustomerRequestedToDelete=== 'Y'"
+                                    class="fas fa-flag" title="External customer requested to delete"
+                                    style="font-size: small; color: #e85637;"></em>
+                            </button>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="appointment.externalCustomerRequestedToDelete=== 'Y'">
+                                    <div class="btn-link" style="cursor: pointer;" (click)="rejectDelete(appointment) ">
+                                        Reject Delete
+                                    </div>
+                                </ng-container>
+                            </td>
+                            <td>{{ appointment.teamMemberAssignedToName }}</td>
+                            <td><strong>{{ appointment.followUpDate | date :'shortDate': 'UTC'}}</strong></td>
+
+                            <td>{{ appointment.appointmentId }}</td>
+                            <td>{{ appointment.appointmentStatusName }}</td>
+                            <td>
+                                {{ appointment.scheduledAppointmentDate | date :'shortDate': 'UTC' }}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+            </div>
+
+            <div id="add-appointment4" class="col-md-6">
+                <form class="needs-validation" [formGroup]="addFormAppointment">
+                    <div id="add-appointment4" class="card w-100 p-4">
+                        <div id="add-appointment4" class="card-header">
+                            <div id="add-appointment-advocacy-appointment" class="form-row">
+                                <div id="add-appointment4" class="col-sm-6">
+                                    <label>Type of Advocacy Appointment</label>
+                                    <select id="appointmentTypeId" class="custom-select" formControlName="appointmentTypeId" (ngModelChange)="onAdvocacyTypeSelected($event)">
+                                        <option value="" selected>Select advocacy type</option>
+                                        <option *ngFor="let appointemntType of appointemntTypes" value="{{ appointemntType.appointmentTypeId }}"                                  >
+                                        {{ appointemntType.appointmentTypeName }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+
+                            <!-- Commercial copay pharmacy - Start-->
+                            <div *ngIf="showCommercialCopayPharmacy">
+                                <div  id="add-appointment-prescription-number" class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label>Prescription Number<span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="prescriptionNumber" formControlName="prescriptionNumber" [ngClass]="{ 'is-invalid': (f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors }" />
+                                        <div id="add-appointment-prescription-number" *ngIf="(f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors" class="invalid-feedback">
+                                            <div id="add-appointment-prescription-number" *ngIf="f.prescriptionNumber.errors.required" class="txt-red">
+                                                Prescription number is required
+                                            </div>
+                                            <div id="add-appointment-prescription-number" *ngIf="f.prescriptionNumber.errors.pattern" class="txt-red">
+                                                Prescription number should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment-prescription-number" *ngIf="f.prescriptionNumber.errors.maxlength" class="txt-red">
+                                                Prescription number is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment-frequency" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment-frequency" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment-frequency" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment-frequency" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment-frequency" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment-dosage" class="form-row">
+                                    <div id="add-appointment-dosage" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment-dosage" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment-dosage" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment-dosage" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment-dosage" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment-appointment-status" class="form-group col-md-6">
+                                        <label>Appointment Status<span class="required">*</span></label>
+                                        <div>
+                                            <select class="col-md-3" class="custom-select" formControlName="appointmentStatusId" [ngClass]="{ 'is-invalid': (f.appointmentStatusId.dirty || f.appointmentStatusId.touched || submitted) && f.appointmentStatusId.errors }">
+                                <option value="" selected>Select appointment status</option>
+                                <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}">
+                                {{ appointmentStatus.appointmentStatusName }}
+                            </option>
+                            </select>
+                                            <div *ngIf="(f.appointmentStatusId.dirty || f.appointmentStatusId.touched || submitted) && f.appointmentStatusId.errors" class="invalid-feedback">
+                                                <div *ngIf="f.appointmentStatusId.errors.required" class="txt-red">
+                                                    Appointment status is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment-schedule-appointment-date" class="form-row">
+                                    <div id="add-appointment-schedule-appointment-date" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date</label>
+                                        <div id="add-appointment-schedule-appointment-date" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfs.toggle()" type="button"></button>
+                                            <div id="add-appointment-schedule-appointment-date" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment-schedule-appointment-date" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment-copay-covered" class="form-group col-sm-6">
+                                        <label>Co-Pay Covered</label>
+                                        <input type="text" class="form-control" id="copayCovered" formControlName="copayCovered" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors }" />
+                                        <div *ngIf="(f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors" class="invalid-feedback">
+                                            <div *ngIf="f.copayCovered.errors.pattern" class="txt-red">
+                                                Co-Pay Covered is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment-copay-remaining" class="form-row">
+                                  <div id="add-appointment_dtAdvocacyRcvd1" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd1" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment3" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment3" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment3" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                    <div id="add-appointment-copay-remaining1" class="form-group col-sm-6">
+                                        <label>Co-Pay Remaining</label>
+                                        <input type="text" class="form-control" id="copayRemaining" formControlName="copayRemaining" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors }" />
+                                        <div id="add-appointment-copay-remaining" *ngIf="(f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors" class="invalid-feedback">
+                                            <div id="add-appointment-copay-remaining" *ngIf="f.copayRemaining.errors.pattern" class="txt-red">
+                                                Co-Pay Remaining is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="add-appointment-teamMemberAssignedTo" class="form-row">
+                                  <div id="add-appointment-follow1" class="form-group col-sm-6">
+                                    <label>Follow-up Date</label>
+                                    <div id="add-appointment-follow1" class="form-inline">
+                                      <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                      />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                      <div id="add-appointment-follow1" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                        <div id="add-appointment-follow1" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                          Follow-up date should be in mm/dd/yyyy format
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                  </div>
+                                </div>
+
+                          <!-- This can be shown as common but in future we need to seperate into templates-->
+                                <div id="add-appointment4" class="form-row">
+                                    <label>Notes</label>
+                                    <div id="add-appointment4" class="col-sm-12">
+                                        <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Commercial copay pharmacy - End-->
+
+                            <!-- Commercial copay vob - Start-->
+                            <div id="add-appointment4" *ngIf="showCommercialCopayVob">
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment4" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment3" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment3" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment3" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment3" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment3" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment3" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment3" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment3" class="form-row">
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date<span class="required">*</span></label>
+                                        <div id="add-appointment3" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #sad="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="sad.toggle()" type="button"></button>
+                                            <div id="add-appointment3" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment3" *ngIf="f.scheduledAppointmentDate.errors.required" class="txt-red">
+                                                    Scheduled appointment date is required
+                                                </div>
+                                                <div id="add-appointment3" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment3" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment3" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment3" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment3" class="form-row">
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins</label>
+                                        <div>
+                                            <select id="eobSubmittedToIns" class="custom-select" formControlName="eobSubmittedToIns">
+                          <option value="" selected>Select submitted to insurance</option>
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                      </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins Date</label>
+                                        <div id="add-appointment3" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToInsDate" ngbDatepicker #esid="ngbDatepicker" formControlName="eobSubmittedToInsDate" [ngClass]="{ 'is-invalid': (f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="esid.toggle()" type="button"></button>
+                                            <div id="add-appointment3" *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment3" *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Claim Submitted To Ins date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment3" class="form-row">
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>EOB Received From Ins</label>
+                                        <div>
+                                            <select id="eobReceivedFromIns" class="custom-select" formControlName="eobReceivedFromIns">
+                                            <option value="" selected>Select EOB Received</option>
+                                                    <option value="Y">Yes</option>
+                                                <option value="N">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>EOB Received From Ins Date</label>
+                                        <div id="add-appointment3" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobReceivedFromInsDate" ngbDatepicker #erid="ngbDatepicker" formControlName="eobReceivedFromInsDate" [ngClass]="{ 'is-invalid': (f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="erid.toggle()" type="button"></button>
+                                            <div id="add-appointment3" *ngIf="(f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment3" *ngIf="(f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    EOB received from ins date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment3" class="form-row">
+                                    <div  id="add-appointment" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div>
+                                            <select class="custom-select" formControlName="appointmentStatusId">
+                                                <option value="" selected>Select appointment status</option>
+                                                <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                                {{ appointmentStatus.appointmentStatusName }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment3" class="form-group col-sm-6">
+                                        <label>Indicated Copay</label>
+                                        <input class="form-control" [ngClass]="{ 'is-invalid': (f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors }" id="indicatedCopay" formControlName="indicatedCopay" placeholder="$" />
+                                        <div id="add-appointment4" *ngIf="(f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors" class="invalid-feedback">
+                                            <div *ngIf="f.indicatedCopay.errors.pattern" class="txt-red">
+                                                Indicated Copay is allowed with numeric of 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>EOB Submitted To CoPay</label>
+                                        <div>
+                                            <select id="eobSubmittedToCopay" class="custom-select" formControlName="eobSubmittedToCopay">
+                                                    <option value="" selected>Select submitted to insurance</option>
+                                                <option value="Y">Yes</option>
+                                                <option value="N">No</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>EOB Submitted To CoPay Date</label>
+                                        <div id="add-appointment4" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToCopayDate" ngbDatepicker #escdt="ngbDatepicker" formControlName="eobSubmittedToCopayDate" [ngClass]="{ 'is-invalid': submitted && f.eobSubmittedToCopayDate.errors }" />
+                                            <button class="btn calendar form-control col-sm-1" (click)="escdt.toggle()" type="button"></button>
+                                            <div id="add-appointment4" *ngIf="submitted && f.eobSubmittedToCopayDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment4" *ngIf="submitted && f.eobSubmittedToCopayDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4"  class="form-group col-sm-6">
+                                        <label>Co-Pay Covered</label>
+                                        <input id="add-appointment" type="text" class="form-control" id="copayCovered" formControlName="copayCovered" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors }" />
+                                        <div id="add-appointment4" *ngIf="(f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.copayCovered.errors.pattern" class="txt-red">
+                                                Co-Pay Covered is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Co-Pay Remaining</label>
+                                      <input type="text" class="form-control" id="copayRemaining" formControlName="copayRemaining" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors }" />
+                                      <div id="add-appointment4" *ngIf="(f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.copayRemaining.errors.pattern" class="txt-red">
+                                                Co-Pay Remaining is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Amount Received from Co-Pay</label>
+                                        <input class="form-control" [ngClass]="{
+                                                'is-invalid':
+                                                (f.amountReceivedFromCopay.dirty || f.amountReceivedFromCopay.touched || submitted) && f.amountReceivedFromCopay.errors
+                                            }" id="amountReceivedFromCopay" formControlName="amountReceivedFromCopay" placeholder="$" [ngClass]="{ 'is-invalid': (f.amountReceivedFromCopay.dirty || f.amountReceivedFromCopay.touched || submitted) && f.amountReceivedFromCopay.errors }"
+                                        />
+                                        <div id="add-appointment4" *ngIf="(f.amountReceivedFromCopay.dirty || f.amountReceivedFromCopay.touched || submitted) && f.amountReceivedFromCopay.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.amountReceivedFromCopay.errors.pattern" class="txt-red">
+                                                Amount Received from Co-Pay is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                      <label>Date Advocacy Received</label >
+                                      <div id="add-appointment4" class="form-inline">
+                                        <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                               #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                        <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                        <div id="add-appointment4" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                                Date Advocacy Received date should be in mm/dd/yyyy format
+                                            </div>
+                                            <div id="add-appointment4" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                                Date Advocacy Received must be within the current month
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                              <div id="add-appointment4" class="form-row">
+                                    <div class="form-group col-sm-6">
+                                        <label>Follow-up Date</label>
+                                        <div id="add-appointment-follow2" class="form-inline">
+                                            <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                            <div id="add-appointment-follow2" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment-follow2" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Follow-up date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                  </div>
+                                </div>
+
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Commercial copy vob - End-->
+
+                            <!-- Free medication after infusion - Start-->
+                            <div id="add-appointment4" *ngIf="showFreeMedicationAfterInfusion">
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment4" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment4" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment4" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment4" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment4" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment4" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment4" class="form-row">
+                                    <div id="add-appointment4" class="form-group col-sm-6">
+                                        <label>Units Used at Infusion<span class="required">*</span></label>
+                                        <input class="form-control" id="unitsUsedAtInfusion" formControlName="unitsUsedAtInfusion" [ngClass]="{ 'is-invalid': (f.unitsUsedAtInfusion.dirty || f.unitsUsedAtInfusion.touched || submitted) && f.unitsUsedAtInfusion.errors }" (input)="calculateTotalCost()"
+                                        />
+                                        <div id="add-appointment4" *ngIf="(f.unitsUsedAtInfusion.dirty || f.unitsUsedAtInfusion.touched || submitted) && f.unitsUsedAtInfusion.errors" class="invalid-feedback">
+                                            <div id="add-appointment4" *ngIf="f.unitsUsedAtInfusion.errors.required" class="txt-red">
+                                                Units used at infusion is required
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.unitsUsedAtInfusion.errors.pattern" class="txt-red">
+                                                Units used at infusion should be numeric
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.unitsUsedAtInfusion.errors.maxlength" class="txt-red">
+                                                Units used at infusion is max of 10 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Price per Unit Infusion<span class="required">*</span></label>
+                                        <input [ngClass]="{'is-invalid': (f.pricePerUnitInfusion.dirty || f.pricePerUnitInfusion.touched || submitted) && f.pricePerUnitInfusion.errors }" (input)="calculateTotalCost()" placeholder="$" class="form-control" id="pricePerUnitInfusion" formControlName="pricePerUnitInfusion"
+                                        />
+                                        <div id="add-appointment5" *ngIf="(f.pricePerUnitInfusion.dirty || f.pricePerUnitInfusion.touched || submitted) && f.pricePerUnitInfusion.errors" class="invalid-feedback">
+                                            <div id="add-appointment5" *ngIf="f.pricePerUnitInfusion.errors.required" class="txt-red">
+                                                Price per unit infusion is required
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.pricePerUnitInfusion.errors.pattern" class="txt-red">
+                                                Price per unit infusion is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date<span class="required">*</span></label>
+                                        <div id="add-appointment5" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfs.toggle()" type="button"></button>
+                                            <div id="add-appointment5" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment5" *ngIf="f.scheduledAppointmentDate.errors.required" class="txt-red">
+                                                    Scheduled appointment date is required
+                                                </div>
+                                                <div id="add-appointment5" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment5" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment5" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment5" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div>
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                                <option value="" selected>Select appointment status</option>
+                                                <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                                {{ appointmentStatus.appointmentStatusName }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Total Cost of Medication Infused</label>
+                                        <input class="form-control" id="totalCostOfMedicationInfused" type="text" formControlName="totalCostOfMedicationInfused" [ngClass]="{ 'is-invalid': (f.totalCostOfMedicationInfused.dirty || f.totalCostOfMedicationInfused.touched || submitted) && f.totalCostOfMedicationInfused.errors }"
+                                            placeholder="$" />
+                                        <div id="add-appointment5" *ngIf="(f.totalCostOfMedicationInfused.dirty || f.totalCostOfMedicationInfused.touched || submitted) && f.totalCostOfMedicationInfused.errors" class="invalid-feedback">
+                                            <div id="add-appointment5" *ngIf="f.totalCostOfMedicationInfused.errors.pattern" class="txt-red">
+                                                Total Cost of Medication Infused is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Replacement Ordered</label>
+                                        <div id="add-appointment5" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="replacementOrdered" ngbDatepicker #dreplacement="ngbDatepicker" formControlName="replacementOrdered" [ngClass]="{ 'is-invalid': (f.replacementOrdered.dirty || f.replacementOrdered.touched || submitted) && f.replacementOrdered.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dreplacement.toggle()" type="button"></button>
+                                            <div id="add-appointment5" *ngIf="(f.replacementOrdered.dirty || f.replacementOrdered.touched || submitted) && f.replacementOrdered.errors" class="invalid-feedback">
+                                                <div id="add-appointment5" *ngIf="(f.replacementOrdered.dirty || f.replacementOrdered.touched || submitted) && f.replacementOrdered.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Replacement ordered date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                  <div id="add-appointment_dtAdvocacyRcvd2" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd2" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment5" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment5" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment5" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment-follow3" class="form-group col-md-6">
+                                        <label>Follow-up Date</label>
+                                        <div id="add-appointment-follow3" class="form-inline">
+                                            <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                            <div id="add-appointment-follow3" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment-follow3" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Follow-up date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              <div id="add-appointment5-teamMemberAssignedTo" class="form-row">
+                                <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-12">
+                                        <label for="notes" class="col-sm-6 col-form-label">Notes</label>
+                                        <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Free medication after infusion - End-->
+
+                            <!-- Free medication before infusion - Start-->
+                            <div id="add-appointment5" *ngIf="showFreeMedicationBeforeInfusion">
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment5" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment5" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment5" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment5" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment5" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment5" class="form-row">
+                                    <div id="add-appointment5" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date<span class="required">*</span></label>
+                                        <div id="add-appointment5" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #dfss="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfss.toggle()" type="button"></button>
+                                            <div id="add-appointment6" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment6" *ngIf="f.scheduledAppointmentDate.errors.required" class="txt-red">
+                                                    Scheduled appointment date is required
+                                                </div>
+                                                <div id="add-appointment6" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div id="add-appointment6">
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                            <option value="" selected>Select appointment status</option>
+                                            <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                            {{ appointmentStatus.appointmentStatusName }}
+                                            </option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment6" class="form-row">
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Units Used at Infusion</label>
+                                        <input (input)="calculateTotalCost()" class="form-control" id="unitsUsedAtInfusion" formControlName="unitsUsedAtInfusion" [ngClass]="{ 'is-invalid': (f.unitsUsedAtInfusion.dirty || f.unitsUsedAtInfusion.touched || submitted) && f.unitsUsedAtInfusion.errors }"
+                                        />
+                                        <div id="add-appointment6" *ngIf="(f.unitsUsedAtInfusion.dirty || f.unitsUsedAtInfusion.touched || submitted) && f.unitsUsedAtInfusion.errors" class="invalid-feedback">
+                                            <div id="add-appointment6" *ngIf="f.unitsUsedAtInfusion.errors.required" class="txt-red">
+                                                Units used at infusion is required
+                                            </div>
+                                            <div id="add-appointment6" *ngIf="f.unitsUsedAtInfusion.errors.pattern" class="txt-red">
+                                                Units used at infusion should be numeric
+                                            </div>
+                                            <div id="add-appointment6" *ngIf="f.unitsUsedAtInfusion.errors.maxlength" class="txt-red">
+                                                Units used at infusion is max of 10 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Price per Unit Infusion</label>
+                                        <input [ngClass]="{'is-invalid': (f.pricePerUnitInfusion.dirty || f.pricePerUnitInfusion.touched || submitted) && f.pricePerUnitInfusion.errors }" (input)="calculateTotalCost()" placeholder="$" type="text" class="form-control" id="pricePerUnitInfusion"
+                                            formControlName="pricePerUnitInfusion" />
+                                        <div id="add-appointment6" *ngIf="(f.pricePerUnitInfusion.dirty || f.pricePerUnitInfusion.touched || submitted) && f.pricePerUnitInfusion.errors" class="invalid-feedback">
+                                            <div id="add-appointment6" *ngIf="f.pricePerUnitInfusion.errors.pattern" class="txt-red">
+                                                Price per unit infusion is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment6" class="form-row">
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Total Cost of Medication Infused</label>
+                                        <input [ngClass]="{ 'is-invalid': (f.totalCostOfMedicationInfused.dirty || f.totalCostOfMedicationInfused.touched || submitted) && f.totalCostOfMedicationInfused.errors }" class="form-control" id="totalCostOfMedicationInfused" type="number" formControlName="totalCostOfMedicationInfused"
+                                            placeholder="$" />
+                                        <div id="add-appointment6" *ngIf="(f.totalCostOfMedicationInfused.dirty || f.totalCostOfMedicationInfused.touched || submitted) && f.totalCostOfMedicationInfused.errors" class="invalid-feedback">
+                                            <div *ngIf="f.totalCostOfMedicationInfused.errors.pattern" class="txt-red">
+                                                Total Cost of Medication Infused is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment6" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment6" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment6" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment6" class="form-row">
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Free Medication Ordered</label>
+                                        <div id="add-appointment6" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="freeMedicationOrdered" ngbDatepicker #fmo="ngbDatepicker" formControlName="freeMedicationOrdered" [ngClass]="{ 'is-invalid': (f.freeMedicationOrdered.dirty || f.freeMedicationOrdered.touched || submitted) && f.freeMedicationOrdered.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fmo.toggle()" type="button"></button>
+                                            <div id="add-appointment6" *ngIf="(f.freeMedicationOrdered.dirty || f.freeMedicationOrdered.touched || submitted) && f.freeMedicationOrdered.errors" class="invalid-feedback">
+                                                <div id="add-appointment6" *ngIf="(f.freeMedicationOrdered.dirty || f.freeMedicationOrdered.touched || submitted) && f.freeMedicationOrdered.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Free medication Ordered date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment6" class="form-group col-sm-6">
+                                        <label>Date Advocacy Received</label >
+                                        <div id="add-appointment6" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                            #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                            <div id="add-appointment6" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                                <div id="add-appointment6" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date Advocacy Received date should be in mm/dd/yyyy format
+                                                </div>
+                                                <div id="add-appointment6" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                                    Date Advocacy Received must be within the current month
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div id="add-appointment6" class="form-row">
+                                    <div id="add-appointment4-follow4" class="form-group col-md-6">
+                                        <label>Follow-up Date</label>
+                                        <div id="add-appointment4-follow4" class="form-inline">
+                                            <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                            <div id="add-appointment4-follow4" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment4-follow4" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Follow-up date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              <div id="add-appointment6-teamMemberAssignedTo" class="form-row">
+                                <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment6" class="form-row">
+                                    <div id="add-appointment71" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="3" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Free medication before infusion - End-->
+
+                            <!-- show grant vob - start-->
+                            <div id="add-appointment71" *ngIf="showGrantVobDisplay">
+                                <div id="add-appointment71" class="form-row">
+
+                                    <div id="add-appointment71" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment71" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment71" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment71" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment71" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment71"  class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment71" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment71" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment71" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment71" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment71" class="form-row">
+                                    <div id="add-appointment71" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date<span class="required">*</span></label>
+                                        <div id="add-appointment71" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #sadt="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="sadt.toggle()" type="button"></button>
+                                            <div id="add-appointment71" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment71" *ngIf="f.scheduledAppointmentDate.errors.required" class="txt-red">
+                                                    Scheduled appointment date is required
+                                                </div>
+                                                <div id="add-appointment71" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment71" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment71" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment71" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment71" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment71" class="form-row">
+                                    <div id="add-appointment71" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins</label>
+                                        <div id="add-appointment7">
+                                            <select id="eobSubmittedToIns" class="custom-select" formControlName="eobSubmittedToIns">
+                                                <option value="" selected>Select submitted to insurance</option>
+                                                <option value="Y">Yes</option>
+                                                <option value="N">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment7" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins Date</label>
+                                        <div id="add-appointment7" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToInsDate" ngbDatepicker #esid="ngbDatepicker" formControlName="eobSubmittedToInsDate" [ngClass]="{ 'is-invalid': (f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="esid.toggle()" type="button"></button>
+                                            <div id="add-appointment7" *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors" class="invalid-feedback">
+                                                <div *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Claim Submitted To Ins date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment7" class="form-row">
+                                    <div id="add-appointment7"  class="form-group col-sm-6">
+                                        <label>EOB Submitted To Grant</label>
+                                        <div id="add-appointment7" >
+                                            <select id="eobSubmittedToGrant" class="custom-select" formControlName="eobSubmittedToGrant">
+                                            <option value="" selected>Select EOB Submitted To Grant</option>
+                                            <option value="Y">Yes</option>
+                                            <option value="N">No</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment7" class="form-group col-sm-6">
+                                        <label>EOB Submitted To Grant Date</label>
+                                        <div id="add-appointment7" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToGrantDate" ngbDatepicker #esgd="ngbDatepicker" formControlName="eobSubmittedToGrantDate" [ngClass]="{ 'is-invalid': (f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="esgd.toggle()" type="button"></button>
+                                            <div id="add-appointment7" *ngIf="(f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment7" *ngIf="(f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    EOB submitted to grant date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment7" class="form-row">
+                                    <div id="add-appointment7" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div id="add-appointment7" >
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                                <option value="" selected>Select appointment status</option>
+                                                <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                                {{ appointmentStatus.appointmentStatusName }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                  <div id="add-appointment7" class="col-sm-6">
+                                    <label>Indicated Copay</label>
+                                    <input class="form-control" [ngClass]="{ 'is-invalid': (f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors }" placeholder="$" id="indicatedCopay" formControlName="indicatedCopay" />
+                                    <div id="add-appointment7" *ngIf="(f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors" class="invalid-feedback">
+                                      <div id="add-appointment7" *ngIf="f.indicatedCopay.errors.pattern" class="txt-red">
+                                        Indicated Copay is allowed with numeric and 10 digits max length with 2 decimals optional
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div id="add-appointment7" class="form-row">
+                                  <div id="add-appointment_dtAdvocacyRcvd3" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd3" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment7" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment7" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment7" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div id="add-appointment7"  class="form-group col-sm-6">
+                                    <label>Amount Received from Grant</label>
+                                    <input class="form-control" id="amountReceivedFromGrant" formControlName="amountReceivedFromGrant" placeholder="$" [ngClass]="{
+                            'is-invalid': (f.amountReceivedFromGrant.dirty || f.amountReceivedFromGrant.touched || submitted) && f.amountReceivedFromGrant.errors }" />
+                                    <div id="add-appointment7"  *ngIf="(f.amountReceivedFromGrant.dirty || f.amountReceivedFromGrant.touched || submitted) && f.amountReceivedFromGrant.errors" class="invalid-feedback">
+                                      <div id="add-appointment7"  *ngIf="f.amountReceivedFromGrant.errors.pattern" class="txt-red">
+                                        Amount Received from Grant is allowed with numeric and 10 digits max length with 2 decimals optional
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                </div>
+                                  <div id="add-appointment-teamMemberAssignedTo" class="form-row">
+                                    <div id="add-appointment4-follow5" class="form-group col-sm-6">
+                                      <label>Follow-up Date</label>
+                                      <div id="add-appointment-follow5" class="form-inline">
+                                        <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                        />
+                                        <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                        <div id="add-appointment-follow5" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                          <div id="add-appointment-follow5" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                            Follow-up date should be in mm/dd/yyyy format
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                    </div>
+                                  </div>
+
+                                <div id="add-appointment7" class="form-row">
+                                    <div id="add-appointment7" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="3" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- show grant vob - end-->
+
+                            <!-- show grant pharmacy - start-->
+                            <div id="add-appointment7" *ngIf="showAddGrantPharmacyDisplay">
+                                <div id="add-appointment7" class="form-row">
+                                    <div id="add-appointment7" class="form-group col-md-6">
+                                        <label>Prescription Number<span class="required">*</span></label>
+                                        <input type="text" class="form-control" id="prescriptionNumber" formControlName="prescriptionNumber" [ngClass]="{ 'is-invalid': (f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors }" />
+                                        <div id="add-appointment7" *ngIf="(f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors" class="invalid-feedback">
+                                            <div id="add-appointment7" *ngIf="f.prescriptionNumber.errors.required" class="txt-red">
+                                                Prescription number is required
+                                            </div>
+                                            <div id="add-appointment7" *ngIf="f.prescriptionNumber.errors.pattern" class="txt-red">
+                                                Prescription number should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment7" *ngIf="f.prescriptionNumber.errors.maxlength" class="txt-red">
+                                                Prescription number is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment7" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment7" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment7" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment8" class="form-row">
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment8" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date</label>
+                                        <div id="add-appointment8" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #dfs="ngbDatepicker" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }"
+                                                formControlName="scheduledAppointmentDate">
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfs.toggle()" type="button"></button>
+                                            <div id="add-appointment8" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment8" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment8" class="form-row">
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Co-Pay Remaining</label>
+                                        <input type="text" class="form-control" id="copayRemaining" formControlName="copayRemaining" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors }" />
+                                        <div id="add-appointment8" *ngIf="(f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors" class="invalid-feedback">
+                                            <div id="add-appointment8" *ngIf="f.copayRemaining.errors.pattern" class="txt-red">
+                                                Co-Pay Remaining is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Co-Pay Covered</label>
+                                        <input type="text" class="form-control" id="copayCovered" formControlName="copayCovered" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors }" />
+                                        <div id="add-appointment8" *ngIf="(f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors" class="invalid-feedback">
+                                            <div id="add-appointment8"  *ngIf="f.copayCovered.errors.pattern" class="txt-red">
+                                                Co-Pay Covered is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment8" class="form-row">
+                                  <div id="add-appointment_dtAdvocacyRcvd4" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd4" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment8" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment8" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment8" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div>
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                <option value="" selected>Select appointment status</option>
+                            <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                {{ appointmentStatus.appointmentStatusName }}
+                            </option>
+                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                              <div id="add-appointment-teamMemberAssignedTo" class="form-row">
+                                <div id="add-appointment-follow6" class="form-group col-sm-6">
+                                  <label>Follow-up Date</label>
+                                  <div id="add-appointment-follow6" class="form-inline">
+                                    <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                    />
+                                    <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                    <div id="add-appointment-follow6" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                      <div id="add-appointment-follow6" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                        Follow-up date should be in mm/dd/yyyy format
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment8" class="form-row">
+                                    <div id="add-appointment8" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="3" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- show grant pharmacy - end-->
+
+                            <!-- show mcd monitor pharmacy - start-->
+                            <div id="add-appointment8" *ngIf="showMcdMonitorPharmacyDisplay">
+                                <div id="add-appointment8"  class="form-row">
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment8" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment8" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment8"  *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment8" *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment8" class="form-row">
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date</label>
+                                        <div id="add-appointment8" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #df="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="df.toggle()" type="button"></button>
+                                            <div id="add-appointment8" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment8" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment8" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment8"  class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment8"  *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment9"  *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9"  class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div id="add-appointment9" >
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                <option value="" selected>Select appointment status</option>
+                            <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                {{ appointmentStatus.appointmentStatusName }}
+                            </option>
+                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment9" class="form-group col-md-6">
+                                        <label>Prescription Number</label>
+                                        <input type="text" class="form-control" id="prescriptionNumber" formControlName="prescriptionNumber" [ngClass]="{ 'is-invalid': (f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors }" />
+                                        <div id="add-appointment9" *ngIf="(f.prescriptionNumber.dirty || f.prescriptionNumber.touched || submitted) && f.prescriptionNumber.errors" class="invalid-feedback">
+                                            <div id="add-appointment9" *ngIf="f.prescriptionNumber.errors.required" class="txt-red">
+                                                Prescription number is required
+                                            </div>
+                                            <div id="add-appointment9" *ngIf="f.prescriptionNumber.errors.pattern" class="txt-red">
+                                                Prescription number should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment9" *ngIf="f.prescriptionNumber.errors.maxlength" class="txt-red">
+                                                Prescription number is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Co-Pay Covered</label>
+                                        <input type="text" class="form-control" id="copayCovered" formControlName="copayCovered" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors }" />
+                                        <div id="add-appointment9" *ngIf="(f.copayCovered.dirty || f.copayCovered.touched || submitted) && f.copayCovered.errors" class="invalid-feedback">
+                                            <div id="add-appointment9" *ngIf="f.copayCovered.errors.pattern" class="txt-red">
+                                                Co-Pay Covered is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Co-Pay Remaining</label>
+                                        <input type="text" class="form-control" id="copayRemaining" formControlName="copayRemaining" placeholder="$" [ngClass]="{ 'is-invalid': (f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors }" />
+                                        <div id="add-appointment9" *ngIf="(f.copayRemaining.dirty || f.copayRemaining.touched || submitted) && f.copayRemaining.errors" class="invalid-feedback">
+                                            <div id="add-appointment9" *ngIf="f.copayRemaining.errors.pattern" class="txt-red">
+                                                Co-Pay Remaining is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="add-appointment9" class="form-row">
+                                  <div id="add-appointment_dtAdvocacyRcvd5" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd5" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment9" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment9" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment9" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                    <div id="add-appointment-follow7" class="form-group col-md-6">
+                                        <label>Follow-up Date</label>
+                                        <div id="add-appointment-follow7" class="form-inline">
+                                            <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                            <div id="add-appointment-follow7" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment-follow7" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Follow-up date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                              <div id="add-appointment9-teamMemberAssignedTo" class="form-row">
+                                <div class="form-group col-md-9">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="3" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- show mcd monitor pharmacy - end-->
+
+                            <!-- show mcd monitor vob (repeated code same like commercial vob) - start-->
+                            <div id="add-appointment9" *ngIf="showMcdMonitorVobDIsplay">
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Dosage<span class="required">*</span></label>
+                                        <input class="form-control" id="dosage" formControlName="dosage" [ngClass]="{ 'is-invalid': (f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors }" />
+                                        <div id="add-appointment9" *ngIf="(f.dosage.dirty || f.dosage.touched || submitted) && f.dosage.errors" class="invalid-feedback">
+                                            <div id="add-appointment9" *ngIf="f.dosage.errors.required" class="txt-red">
+                                                Dosage is required
+                                            </div>
+                                            <div id="add-appointment9" *ngIf="f.dosage.errors.pattern" class="txt-red">
+                                                Dosage should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment9" *ngIf="f.dosage.errors.maxlength" class="txt-red">
+                                                Dosage is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Frequency<span class="required">*</span></label>
+                                        <input class="form-control" id="frequency" formControlName="frequency" [ngClass]="{ 'is-invalid': (f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors }" />
+                                        <div id="add-appointment9" *ngIf="(f.frequency.dirty || f.frequency.touched || submitted) && f.frequency.errors" class="invalid-feedback">
+                                            <div id="add-appointment9" *ngIf="f.frequency.errors.required" class="txt-red">
+                                                Frequency is required
+                                            </div>
+                                            <div id="add-appointment9" *ngIf="f.frequency.errors.pattern" class="txt-red">
+                                                Frequency should be alphanumeric
+                                            </div>
+                                            <div id="add-appointment9"  *ngIf="f.frequency.errors.maxlength" class="txt-red">
+                                                Frequency is max of 50 characters
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Scheduled Appointment Date<span class="required">*</span></label>
+                                        <div id="add-appointment9" class="form-inline">
+                                            <input id="scheduledAppointmentDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="scheduledAppointmentDate" ngbDatepicker #df="ngbDatepicker" formControlName="scheduledAppointmentDate" [ngClass]="{ 'is-invalid': (f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors }">
+                                            <button class="btn calendar form-control col-sm-1" (click)="df.toggle()" type="button"></button>
+                                            <div id="add-appointment9" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment9" *ngIf="f.scheduledAppointmentDate.errors.required" class="txt-red">
+                                                    Scheduled appointment date is required
+                                                </div>
+                                                <div id="add-appointment9" *ngIf="(f.scheduledAppointmentDate.dirty || f.scheduledAppointmentDate.touched || submitted) && f.scheduledAppointmentDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Scheduled appointment date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Date Infused</label>
+                                        <div id="add-appointment9" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateInfused" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateInfused" [ngClass]="{ 'is-invalid': (f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfi.toggle()" type="button"></button>
+                                            <div id="add-appointment9" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors" class="invalid-feedback">
+                                                <div id="add-appointment9" *ngIf="(f.dateInfused.dirty || f.dateInfused.touched || submitted) && f.dateInfused.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Date infused should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins</label>
+                                        <div id="add-appointment" >
+                                            <select id="eobSubmittedToIns" class="custom-select" formControlName="eobSubmittedToIns">
+                            <option value="" selected>Select submitted to insurance</option>
+                        <option value="Y">Yes</option>
+                        <option value="N">No</option>
+                        </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>Claim Submitted To Ins Date</label>
+                                        <div id="add-appointment9" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToInsDate" ngbDatepicker #esid="ngbDatepicker" formControlName="eobSubmittedToInsDate" [ngClass]="{ 'is-invalid': (f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="esid.toggle()" type="button"></button>
+                                            <div id="add-appointment9" *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment9" *ngIf="(f.eobSubmittedToInsDate.dirty || f.eobSubmittedToInsDate.touched || submitted) && f.eobSubmittedToInsDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Claim Submitted To Ins date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>EOB Received From Ins</label>
+                                        <div id="add-appointment9" >
+                                            <select id="eobReceivedFromIns" class="custom-select" formControlName="eobReceivedFromIns">
+                                                    <option value="" selected>Select EOB Received</option>
+                                                    <option value="Y">Yes</option>
+                                            <option value="N">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>EOB Received From Ins Date</label>
+                                        <div id="add-appointment9" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobReceivedFromInsDate" ngbDatepicker #erid="ngbDatepicker" formControlName="eobReceivedFromInsDate" [ngClass]="{ 'is-invalid': (f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="erid.toggle()" type="button"></button>
+                                            <div id="add-appointment9" *ngIf="(f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment9" *ngIf="(f.eobReceivedFromInsDate.dirty || f.eobReceivedFromInsDate.touched || submitted) && f.eobReceivedFromInsDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    EOB received from ins date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment9" class="form-row">
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>EOB Submitted To Grant</label>
+                                        <div id="add-appointment9" >
+                                            <select id="eobSubmittedToGrant" class="custom-select" formControlName="eobSubmittedToGrant">
+                                                <option value="" selected>Select EOB Submitted To Grant</option>
+                                                <option value="Y">Yes</option>
+                                                <option value="N">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="add-appointment9" class="form-group col-sm-6">
+                                        <label>EOB Submitted To Grant Date</label>
+                                        <div id="add-appointment9" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="eobSubmittedToGrantDate" ngbDatepicker #esgd="ngbDatepicker" formControlName="eobSubmittedToGrantDate" [ngClass]="{ 'is-invalid': (f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="esgd.toggle()" type="button"></button>
+                                            <div id="add-appointment9" *ngIf="(f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors" class="invalid-feedback">
+                                                <div *ngIf="(f.eobSubmittedToGrantDate.dirty || f.eobSubmittedToGrantDate.touched || submitted) && f.eobSubmittedToGrantDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    EOB submitted to grant date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment10" class="form-row">
+
+                                    <div id="add-appointment10" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div id="add-appointment10" >
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                            <option value="" selected>Select appointment status</option>
+                        <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                            {{ appointmentStatus.appointmentStatusName }}
+                        </option>
+                        </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment10" class="form-group col-sm-6">
+                                        <label>Indicated Copay</label>
+                                        <input class="form-control" [ngClass]="{ 'is-invalid': (f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors }" id="indicatedCopay" formControlName="indicatedCopay" placeholder="$" />
+                                        <div id="add-appointment10" *ngIf="(f.indicatedCopay.dirty || f.indicatedCopay.touched || submitted) && f.indicatedCopay.errors" class="invalid-feedback">
+                                            <div id="add-appointment10" *ngIf="f.indicatedCopay.errors.pattern" class="txt-red">
+                                                Indicated Copay is allowed with numeric of 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment10" class="form-row">
+                                    <div id="add-appointment10" class="form-group col-sm-6">
+                                        <label>Amount Received from Grant</label>
+                                        <input class="form-control" id="amountReceivedFromGrant" formControlName="amountReceivedFromGrant" placeholder="$" [ngClass]="{
+                            'is-invalid': (f.amountReceivedFromGrant.dirty || f.amountReceivedFromGrant.touched || submitted) && f.amountReceivedFromGrant.errors }" />
+                                        <div id="add-appointment10" *ngIf="(f.amountReceivedFromGrant.dirty || f.amountReceivedFromGrant.touched || submitted) && f.amountReceivedFromGrant.errors" class="invalid-feedback">
+                                            <div id="add-appointment10" *ngIf="f.amountReceivedFromGrant.errors.pattern" class="txt-red">
+                                                Amount Received from Grant is allowed with numeric and 10 digits max length with 2 decimals optional
+                                            </div>
+                                        </div>
+                                    </div>
+                                  <div id="add-appointment_dtAdvocacyRcvd6" class="form-group col-sm-6">
+                                    <label>Date Advocacy Received</label >
+                                    <div id="add-appointment_dtAdvocacyRcvd6" class="form-inline">
+                                      <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateAdvocacyReceived" ngbDatepicker
+                                             #fmr="ngbDatepicker" formControlName="dateAdvocacyReceived" [ngClass]="{ 'is-invalid': (f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors }" />
+                                      <button class="btn calendar form-control col-sm-1" (click)="fmr.toggle()" type="button"></button>
+                                      <div id="add-appointment10" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors" class="invalid-feedback">
+                                        <div id="add-appointment10" *ngIf="(f.dateAdvocacyReceived.dirty || f.dateAdvocacyReceived.touched || submitted) && f.dateAdvocacyReceived.errors?.ngbDate?.invalid" class="txt-red">
+                                            Date Advocacy Received date should be in mm/dd/yyyy format
+                                        </div>
+                                        <div id="add-appointment10" *ngIf="f.dateAdvocacyReceived.errors?.date" class="txt-red">
+                                            Date Advocacy Received must be within the current month
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+
+                                </div>
+                              <div id="add-appointment-teamMemberAssignedTo" class="form-row">
+                                <div id="add-appointment-follow8" class="form-group col-sm-6">
+                                  <label>Follow-up Date</label>
+                                  <div id="add-appointment-follow8" class="form-inline">
+                                    <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                    />
+                                    <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                    <div id="add-appointment-follow8" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                      <div id="add-appointment-follow8" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                        Follow-up date should be in mm/dd/yyyy format
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment10" class="form-row">
+                                    <div id="add-appointment10" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- show mcd monitor vob- end-->
+
+                            <!-- Premium Assist - start-->
+                            <div id="add-appointment10" *ngIf="showPremiumAssistanceDisplay">
+                                <div id="add-appointment10" class="form-row">
+                                    <div id="add-appointment10" class="form-group col-sm-6">
+                                        <label>Patient Notified</label>
+                                        <div> <select id="patientNotified" class="custom-select" formControlName="patientNotified" [ngClass]="{ 'is-invalid': (f.patientNotified.dirty || f.patientNotified.touched || submitted) && f.patientNotified.errors }">
+                                        <option value="" selected>Select Patient Notified</option>
+                                        <option value="Y">Yes</option>
+                                <option value="N">No</option>
+                                </select>
+                                            <div id="add-appointment10" *ngIf="(f.patientNotified.dirty || f.patientNotified.touched || submitted) && f.patientNotified.errors" class="invalid-feedback">
+                                                <div id="add-appointment10" *ngIf="f.patientNotified.errors.required" class="txt-red">
+                                                    Patient notified is required
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment10" class="form-group col-sm-6">
+                                        <label>Patient Notified Date</label>
+                                        <div id="add-appointment2" class="form-inline">
+                                            <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="patientNotifiedDate" ngbDatepicker #dfPat="ngbDatepicker" formControlName="patientNotifiedDate" [ngClass]="{ 'is-invalid': (f.patientNotifiedDate.dirty || f.patientNotifiedDate.touched || submitted) && f.patientNotifiedDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="dfPat.toggle()" type="button"></button>
+                                            <div id="add-appointment2" *ngIf="(f.patientNotifiedDate.dirty || f.patientNotifiedDate.touched || submitted) && f.patientNotifiedDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment2" *ngIf="(f.patientNotifiedDate.dirty || f.patientNotifiedDate.touched || submitted) && f.patientNotifiedDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Patient notified date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="add-appointment2" class="form-row">
+                                    <div id="add-appointment2" class="form-group col-sm-6">
+                                        <label>Appointment Status</label>
+                                        <div id="add-appointment3" >
+                                            <select id="appointmentStatus" class="custom-select" formControlName="appointmentStatusId">
+                                <option value="" selected>Select appointment status</option>
+                            <option *ngFor="let appointmentStatus of addAppointmentStatusList" value="{{ appointmentStatus.appointmentStatusId }}" >
+                                {{ appointmentStatus.appointmentStatusName }}
+                            </option>
+                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div id="add-appointment-follow9" class="form-group col-md-6">
+                                        <label>Follow-up Date</label>
+                                        <div id="add-appointment-follow9" class="form-inline">
+                                            <input id="followUpDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="followUpDate" ngbDatepicker #fud="ngbDatepicker" formControlName="followUpDate" [ngClass]="{ 'is-invalid': (f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors }"
+                                            />
+                                            <button class="btn calendar form-control col-sm-1" (click)="fud.toggle()" type="button"></button>
+                                            <div id="add-appointment-follow9" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors" class="invalid-feedback">
+                                                <div id="add-appointment-follow9" *ngIf="(f.followUpDate.dirty || f.followUpDate.touched || submitted) && f.followUpDate.errors?.ngbDate?.invalid" class="txt-red">
+                                                    Follow-up date should be in mm/dd/yyyy format
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                              <div id="add-appointment8-teamMemberAssignedTo" class="form-row">
+                                <div class="form-group col-md-8">
+                                    <app-assigned-dropdown [parentForm]="addFormAppointment" [teamMembers]="teamMembers"></app-assigned-dropdown>
+                                </div>
+                              </div>
+                                <div id="add-appointment3" class="form-row">
+                                    <div id="add-appointment3" class="col-sm-12">
+                                        <label>Notes</label>
+                                        <textarea rows="2" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="add-appointment3" *ngIf="showSubmitBtn">
+                              <app-file-attachments
+                                attachmentTransmissionInterfaceName="PatientService"
+                                [fileAttachmentData]="fileAttachmentData"
+                                [maxAttachments]="10"
+                                (fileAttachmentsChanged)="onFileAttachmentsChanged($event)">
+                              </app-file-attachments>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div class="card-footer" *ngIf="showSubmitBtn">
+                    <button class="btn btn-primary float-right" (click)="resetAppointmentForm()"><em class="fas fa-refresh"></em> Reset</button>
+                    <button class="btn btn-primary mr-3 float-right" (click)="onSubmit()"><em class="fas fa-check"></em> Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

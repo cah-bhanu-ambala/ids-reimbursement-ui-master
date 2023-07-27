@@ -1,0 +1,188 @@
+<div>
+    <div class="row mb-1">
+        <div class="col-sm-12">
+            <app-search-revenue placeholderText="Search for Provider Name or NPI" (setValue)="onSearch($event)"></app-search-revenue>
+        </div>
+    </div>
+    <div class="row" *ngIf="showError" style="padding: 0.5em">
+        <div class="col-sm-12">
+            <h6 style="color: red">No Records found!</h6>
+        </div>
+    </div>
+    <div class="row" *ngIf="showGrid">
+        <div class="col-md-12">
+            <p-table [value]="providerSearchResult" [lazy]="true" (onLazyLoad)="loadProviderDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="providerTotalRecords" [loading]="providerGridloading" styleClass="p-datatable-striped"
+                [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col">Provider First Name</th>
+                        <th scope="col">Provider Last Name</th>
+                        <th scope="col">NPI</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-provider>
+                    <tr>
+                        <td style="padding-top: 0%">
+                            <button class="btn btn-link" (click)="onEdit(provider)">
+                Edit
+              </button>
+                        </td>
+                        <td>{{ provider.providerFirstName }}</td>
+                        <td>{{ provider.providerLastName }}</td>
+                        <td>{{ provider.npi }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div *ngIf="formProvider">
+        <div class="row">
+            <form class="needs-validation col-md-12 mt-2" [formGroup]="formProvider">
+                <div class="card w-100 p-3">
+                    <h5 *ngIf="!isUpdate" class="card-header">Add New Provider</h5>
+                    <h5 *ngIf="isUpdate" class="card-header">Edit Provider</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <label for="providerFirstName" class="col-sm-6 col-form-label">Provider First Name<span class="required">*</span></label
+              >
+              <label for="providerLastName" class="col-sm-6 col-form-label"
+                >Provider Last Name<span class="required">*</span></label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="providerFirstName"
+                  formControlName="providerFirstName"
+                  [ngClass]="{
+                    'is-invalid': (f.providerFirstName.dirty || f.providerFirstName.touched || submitted) && f.providerFirstName.errors
+                  }"
+                />
+                <div
+                  *ngIf="(f.providerFirstName.dirty || f.providerFirstName.touched || submitted) && f.providerFirstName.errors"
+                  class="invalid-feedback"
+                >
+                  <div
+                    *ngIf="f.providerFirstName.errors.required"
+                    class="txt-red"
+                  >
+                    Provider First Name is required
+                  </div> 
+                  <div
+                    *ngIf="f.providerFirstName.errors.maxlength"
+                    class="txt-red"
+                  >
+                    Provider First Name should have max of 50 characters
+                  </div> 
+                  <div
+                    *ngIf="f.providerFirstName.errors.pattern"
+                    class="txt-red"
+                  >
+                    Provider First Name should be alphanumeric
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="providerLastName"
+                  formControlName="providerLastName"
+                  [ngClass]="{
+                    'is-invalid': (f.providerLastName.dirty || f.providerLastName.touched || submitted) && f.providerLastName.errors
+                  }"
+                />
+                <div
+                  *ngIf="(f.providerLastName.dirty || f.providerLastName.touched || submitted) && f.providerLastName.errors"
+                  class="invalid-feedback"
+                >
+                  <div
+                    *ngIf="f.providerLastName.errors.required"
+                    class="txt-red"
+                  >
+                    Provider Last Name is required
+                  </div> 
+                  <div
+                    *ngIf="f.providerLastName.errors.maxlength"
+                    class="txt-red"
+                  >
+                    Provider Last Name is max of 50 characters
+                  </div> 
+                  <div
+                    *ngIf="f.providerLastName.errors.pattern"
+                    class="txt-red"
+                  >
+                    Provider Last Name is alphanumeric
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <label for="npi" class="col-sm-6 col-form-label"
+                >NPI<span class="required">*</span></label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="npi"
+                  formControlName="npi"
+                  [ngClass]="{ 'is-invalid': (f.npi.dirty || f.npi.touched || submitted) && f.npi.errors }"
+                />
+                <div *ngIf="(f.npi.dirty || f.npi.touched || submitted) && f.npi.errors" class="invalid-feedback">
+                  <div *ngIf="f.npi.errors.required" class="txt-red">
+                    NPI is required
+                  </div> 
+                  <div *ngIf="f.npi.errors.maxlength" class="txt-red">
+                    NPI is max of 15 characters
+                  </div> 
+                  <div *ngIf="f.npi.errors.pattern" class="txt-red">
+                    NPI is alphanumeric
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="float-right">
+              <button
+                *ngIf="!isUpdate"
+                class="btn btn-primary mr-3"
+                (click)="onSubmit()"
+                [disabled]="!formProvider.dirty"
+              >
+                <em class="fas fa-check"></em> Submit
+              </button>
+
+              <button
+                *ngIf="isUpdate"
+                class="btn btn-primary mr-3"
+                (click)="onSubmit()"
+                [disabled]="!formProvider.dirty"
+              >
+                <em class="fas fa-check"></em> Update
+              </button>
+
+              <button
+                class="btn btn-primary mr-3"
+                (click)="onReset()"
+                [disabled]="!formProvider.dirty"
+              >
+                <em class="fas fa-eraser"></em> Clear
+              </button>
+
+              <button class="btn btn-primary" (click)="onCancel()">
+                <em class="fa fa-times"></em> Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

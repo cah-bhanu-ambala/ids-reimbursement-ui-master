@@ -1,0 +1,309 @@
+<div>
+    <div class="row mb-1">
+        <div class="col-sm-12">
+            <app-search-revenue placeholderText="Search for Contact Name or Contact Type" (setValue)="onSearch($event)"></app-search-revenue>
+        </div>
+    </div>
+    <div class="row" *ngIf="showError" style="padding: 0.5em">
+        <div class="col-sm-12">
+            <h6 style="color: red">No Records found!</h6>
+        </div>
+    </div>
+
+    <div class="row scrollmenu" *ngIf="showGrid">
+        <div class="col-md-12">
+            <p-table [value]="contactSearchResult" [lazy]="true" (onLazyLoad)="loadContactDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="contactTotalRecords" [loading]="contactGridloading" styleClass="p-datatable-striped"
+                [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col">Contact First Name</th>
+                        <th scope="col">Contact Last Name</th>
+                        <th scope="col">Contact Type</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Fax</th>
+                        <th scope="col">Website</th>
+                        <th scope="col">Notes</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-contact>
+                    <tr>
+                        <td style="padding-top: 0%">
+                            <button class="btn btn-link" (click)="onEdit(contact)">
+                              Edit
+                            </button>
+                          <button class="btn btn-link" (click)="onDelete(contact)">
+                            Delete
+                          </button>
+                        </td>
+                        <td>{{ contact.contactFirstName }}</td>
+                        <td>{{ contact.contactLastName }}</td>
+                        <td>{{ contact.contactTypeName }}</td>
+                        <td>{{ contact.contactPhone }}</td>
+                        <td>{{ contact.contactFax }}</td>
+                        <td>{{ contact.contactWebsite }}</td>
+                        <td>{{ contact.contactNotes }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div *ngIf="showForm">
+        <div class="row">
+            <form class="needs-validation col-md-12 mt-2" [formGroup]="formContact">
+                <div class="card w-100 p-3">
+                    <h5 *ngIf="!isUpdate" class="card-header">Add New Contact</h5>
+                    <h5 *ngIf="isUpdate" class="card-header">Edit Contact</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <label for="contactFirstName" class="col-sm-6 col-form-label">Contact First Name<span class="required">*</span></label
+              >
+              <label for="contactLastName" class="col-sm-6 col-form-label"
+                >Contact Last Name<span class="required">*</span></label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="contactFirstName"
+                  formControlName="contactFirstName"
+                  [ngClass]="{
+                    'is-invalid': (f.contactFirstName.dirty || f.contactFirstName.touched || submitted) && f.contactFirstName.errors
+                  }"
+                />
+                <div
+                  *ngIf="(f.contactFirstName.dirty || f.contactFirstName.touched || submitted) && f.contactFirstName.errors"
+                  class="invalid-feedback">
+                  <div
+                    *ngIf="f.contactFirstName.errors.required"
+                    class="txt-red"
+                  >
+                    Contact First name is required
+                  </div>
+                  <div
+                    *ngIf="f.contactFirstName.errors.maxlength"
+                    class="txt-red"
+                  >
+                    Contact First name should have max length of 50 characters
+                  </div>
+                  <div
+                    *ngIf="f.contactFirstName.errors.pattern"
+                    class="txt-red"
+                  >
+                    Contact First Name should be alphanumeric
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="contactLastName"
+                  formControlName="contactLastName"
+                  [ngClass]="{
+                    'is-invalid': (f.contactLastName.dirty || f.contactLastName.touched || submitted) && f.contactLastName.errors
+                  }"
+                />
+                <div
+                  *ngIf="(f.contactLastName.dirty || f.contactLastName.touched || submitted) && f.contactLastName.errors"
+                  class="invalid-feedback"
+                >
+                  <div
+                    *ngIf="f.contactLastName.errors.required"
+                    class="txt-red"
+                  >
+                    Contact Last name is required
+                  </div>
+                  <div
+                    *ngIf="f.contactLastName.errors.maxlength"
+                    class="txt-red"
+                  >
+                    Contact Last name should have max length of 50 characters
+                  </div>
+                  <div *ngIf="f.contactLastName.errors.pattern" class="txt-red">
+                    Contact Last Name should be alphanumeric
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <label for="contactTypeId" class="col-sm-6 col-form-label"
+                >Contact Type<span class="required">*</span></label
+              >
+              <label for="contactPhone" class="col-sm-6 col-form-label"
+                >Phone</label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <select
+                  formControlName="contactTypeId"
+                  id="contactTypeId"
+                  class="form-control"
+                  [ngClass]="{
+                    'is-invalid': (f.contactTypeId.dirty || f.contactTypeId.touched || submitted) && f.contactTypeId.errors
+                  }"
+                >
+                <option value="" selected>Select Contact Type</option>
+                  <option
+                    *ngFor="let c of contactTypes"
+                    [value]="c.contactTypeId"
+                  >
+                    {{ c.contactTypeName }}
+                  </option>
+                </select>
+
+                <div
+                  *ngIf="(f.contactTypeId.dirty || f.contactTypeId.touched || submitted) && f.contactTypeId.errors"
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="f.contactTypeId.errors.required" class="txt-red">
+                    Contact Type is required
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="contactPhone"
+                  [ngClass]="{
+                    'is-invalid': (f.contactPhone.dirty || f.contactPhone.touched || submitted) && f.contactPhone.errors
+                  }"
+                  mask="000-000-0000"
+                  placeholder="XXX-XXX-XXXX"
+                />
+                <div
+                  *ngIf="(f.contactPhone.dirty || f.contactPhone.touched || submitted) && f.contactPhone.errors"
+                  class="invalid-feedback"
+                >
+                  <div
+                    *ngIf="f.contactPhone.errors"
+                    class="txt-red"
+                  >
+                    Phone should have 10 digits
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <label for="contactFax" class="col-sm-6 col-form-label"
+                >Fax</label
+              >
+              <label for="contactWebsite" class="col-sm-6 col-form-label"
+                >WebSite</label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="contactFax"
+                  formControlName="contactFax"
+                  [ngClass]="{ 'is-invalid': (f.contactFax.dirty || f.contactFax.touched || submitted) && f.contactFax.errors }"
+                  mask="000-000-0000"
+                  placeholder="XXX-XXX-XXXX"
+                />
+                <div
+                  *ngIf="(f.contactFax.dirty || f.contactFax.touched || submitted) && f.contactFax.errors"
+                  class="invalid-feedback"
+                >
+                  <div *ngIf="f.contactFax.errors" class="txt-red">
+                    Fax should have 10 digits
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <input
+                  type="text"
+                  formControlName="contactWebsite"
+                  class="form-control"
+                  [ngClass]="{
+                    'is-invalid': (f.contactWebsite.dirty || f.contactWebsite.touched || submitted) && f.contactWebsite.errors
+                  }"
+                />
+                <div
+                  *ngIf="(f.contactWebsite.dirty || f.contactWebsite.touched || submitted) && f.contactWebsite.errors"
+                  class="invalid-feedback"
+                >
+                  <div
+                    *ngIf="f.contactWebsite.errors.maxlength"
+                    class="txt-red"
+                  >
+                    WebSite should have max 100 characters
+                  </div>
+                  <div *ngIf="f.contactWebsite.errors.pattern" class="txt-red">
+                    WebSite format is invalid
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <label for="contactNotes" class="col-sm-6 col-form-label"
+                >Notes</label
+              >
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <textarea
+                  rows="3"
+                  type="text"
+                  formControlName="contactNotes"
+                  class="form-control"
+                  [ngClass]="{
+                    'is-invalid': f.contactNotes.errors
+                  }"
+                ></textarea>
+                <div *ngIf="f.contactNotes.errors" class="invalid-feedback">
+                  <div *ngIf="f.contactNotes.errors.maxlength" class="txt-red">
+                    Contact notes should have max 1000 characters
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="float-right">
+              <button
+                *ngIf="!isUpdate"
+                class="btn btn-primary mr-3"
+                (click)="onSubmit()"
+                [disabled]="!formContact.dirty"
+              >
+                <em class="fas fa-check"></em> Submit
+              </button>
+
+              <button
+                *ngIf="isUpdate"
+                class="btn btn-primary mr-3"
+                (click)="onSubmit()"
+                [disabled]="!formContact.dirty"
+              >
+                <em class="fas fa-check"></em> Update
+              </button>
+              <button
+                class="btn btn-primary mr-3"
+                (click)="onReset()"
+                [disabled]="!formContact.dirty"
+              >
+                <em class="fas fa-eraser"></em> Clear
+              </button>
+              <button class="btn btn-primary" (click)="onCancel()">
+                <em class="fa fa-times"></em> Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="col-sm-12">
+        <h6 style="color: red">{{ errorMessage }}</h6>
+      </div>
+    </div>
+  </div>
+</div>

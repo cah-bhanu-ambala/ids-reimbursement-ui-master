@@ -1,0 +1,266 @@
+<form *ngIf="showSearchForm" [formGroup]="formSearchPatient">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Search for patient to add advocacy</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="col-md-6 form-group">
+                    <label for="facilityId" class="mr-2">Facility</label>
+                    <select id="facilityId" class="custom-select" formControlName="facilityId">
+              <option value="" selected>Select Facility</option>
+              <option *ngFor="let f of facilities" value="{{ f.facilityId }}">
+                {{ f.facilityName }}
+              </option>
+            </select>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="mrn" class="mr-2">MRN </label>
+                    <input type="text" class="form-control" id="mrn" formControlName="mrn" (keydown.enter)="onSearch()" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <button class="btn btn-primary mr-3" (click)="onSearch()"> <em class="fa fa-search"></em> Search</button>
+                <button class="btn btn-primary" (click)="onResetSF()"><em class="fa fa-refresh"></em> Reset</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded mt-2">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="searchResult" [lazy]="true" (onLazyLoad)="loadAdvDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalSearchRecords" [loading]="resultGridloading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col">Work Item ID</th>
+                        <th scope="col">MRN</th>
+                        <th scope="col">Facility</th>
+                        <th scope="col">Work Item Drug Code</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-patient>
+                    <tr>
+                        <td style="padding-top: 0%" class="mr-1">
+                            <button class="btn btn-link p-0" (click)="addAdvocacy(patient)">
+                  Add Advocacy
+                </button>
+                        </td>
+                        <td style="padding-top: 0%">
+                            <button class="btn btn-link pl-0" (click)="addAdvocacy(patient)">
+                  {{ patient.workItemId }}
+                </button>
+                        </td>
+                        <td style="padding-top: 0%">{{ patient.patientMrn }}</td>
+                        <td style="padding-top: 0%">{{ patient.facilityName }}</td>
+                        <td style="padding-top: 0%">{{ patient.drugCode }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+
+
+        </div>
+    </div>
+</div>
+
+<form [hidden]="!showForm" [formGroup]="advAddformAdvocacy">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Add Advocacy</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="patientMrn" class="col-sm-6 col-form-label">MRN</label>
+                    <input type="text" class="form-control" formControlName="patientMrn" />
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="col-sm-6 col-form-label">Facility</label>
+                    <input type="text" class="form-control" formControlName="facilityName" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="drugCode" class="col-sm-6 col-form-label">Drug for Advocacy</label>
+                    <input type="text" class="form-control" formControlName="drugCode" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="advocacyStatusId" class="col-sm-6 col-form-label">Advocacy Status <span
+                class="required">*</span></label>
+                    <select class="custom-select" formControlName="advocacyStatusId" [ngClass]="{
+                  'is-invalid': (f.advocacyStatusId.dirty || f.advocacyStatusId.touched || submitted) && f.advocacyStatusId.errors
+                }">
+              <option value="" selected>Select Advocacy Status</option>
+              <option *ngFor="let a of advocacyStatuses" value="{{ a.advocacyStatusId }}">
+                {{ a.advocacyStatusName }}
+              </option>
+            </select>
+                    <div *ngIf="(f.advocacyStatusId.dirty || f.advocacyStatusId.touched || submitted) && f.advocacyStatusId.errors" class="invalid-feedback">
+                        <div *ngIf="f.advocacyStatusId.errors.required" class="txt-red">
+                            Advocacy Status is required
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="maxAmountAvail" class="col-sm-6 col-form-label" style="max-width: 100%">Maximum Amount Available
+          <span class="required">*</span></label>
+                    <input type="text" maxlength="13" placeholder="$" oninput="this.value=this.value.replace(/[^0-9,.]/g,'');" class="form-control" id="maxAmountAvail" formControlName="maxAmountAvail" [ngClass]="{
+                'is-invalid': (f.maxAmountAvail.dirty || f.maxAmountAvail.touched || submitted) && f.maxAmountAvail.errors
+              }" />
+                    <div *ngIf="(f.maxAmountAvail.dirty || f.maxAmountAvail.touched || submitted) && f.maxAmountAvail.errors" class="invalid-feedback">
+                        <div *ngIf="f.maxAmountAvail.errors.required" class="txt-red">
+                            Maximum Amount Available is required
+                        </div>
+                        <div *ngIf="f.maxAmountAvail.errors.pattern" class="txt-red">
+                            Maximum amount Available allows a max length of 10 digits with two optional decimals
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="diagnosisCode" class="col-sm-6 col-form-label">Diagnosis for Advocacy<span
+                class="required">*</span></label>
+                    <ng-select formControlName="diagnosisCode" [items]="icdCodesFiltered$ | async" bindLabel="icdValue" bindValue="icdId" [minTermLength]="minLengthTerm" [loading]="icdCodesLoading" [typeahead]="icdCodesInput$" [virtualScroll]="true" [editableSearchTerm]="true"
+                        placeholder="Search for ICD Code or Description" [ngClass]="{'is-invalid':(f.diagnosisCode.dirty || f.diagnosisCode.touched || submitted) && f.diagnosisCode.errors}">
+                        <ng-template ng-option-tmp let-item="item">
+                            <span [title]="item.icdValue" class="ng-option-label">{{item.icdValue}}</span>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="(f.diagnosisCode.dirty || f.diagnosisCode.touched || submitted) && f.diagnosisCode.errors" class="invalid-feedback">
+                        <div *ngIf="f.diagnosisCode.errors.required" class="txt-red">
+                            Diagnosis for Advocacy is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="advocacyTypeId" class="col-sm-6 col-form-label">Advocacy Type<span
+                class="required">*</span></label>
+                    <select class="custom-select" formControlName="advocacyTypeId" [ngClass]="{
+                  'is-invalid': (f.advocacyTypeId.dirty || f.advocacyTypeId.touched || submitted) && f.advocacyTypeId.errors
+                }">
+              <option value="" selected>Select Advocacy Types</option>
+              <option *ngFor="let a of advocacyTypes" value="{{ a.advocacyTypeId }}">
+                {{ a.advocacyTypeName }}
+              </option>
+            </select>
+                    <div *ngIf="(f.advocacyTypeId.dirty || f.advocacyTypeId.touched || submitted) && f.advocacyTypeId.errors" class="invalid-feedback">
+                        <div *ngIf="f.advocacyTypeId.errors.required" class="txt-red">
+                            Advocacy Type is required
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="advocacySource" class="col-sm-6 col-form-label">Advocacy Source <span
+                class="required">*</span></label>
+                    <input type="text" class="form-control" id="advocacySource" formControlName="advocacySource" [ngClass]="{
+                  'is-invalid': (f.advocacySource.dirty || f.advocacySource.touched || submitted) && f.advocacySource.errors
+                }" />
+                    <div *ngIf="(f.advocacySource.dirty || f.advocacySource.touched || submitted) && f.advocacySource.errors" class="invalid-feedback">
+                        <div *ngIf="f.advocacySource.errors.required" class="txt-red">
+                            Advocacy Source is required
+                        </div>
+                        <div *ngIf="f.advocacySource.errors.maxlength" class="txt-red">
+                            Advocacy Source should be of max 200 characters length
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="startDate" class="col-sm-6 col-form-label">Start Date</label>
+                    <div class="form-inline">
+                        <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="startDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="startDate" [ngClass]="{ 'is-invalid': (f.startDate.dirty || f.startDate.touched || submitted) && f.startDate.errors }"
+                        />
+                        <button class="btn calendar col-sm-1" style="padding: 1.375rem 0.75rem;" (click)="dfs.toggle()" type="button"></button>
+                        <div *ngIf="(f.startDate.dirty || f.startDate.touched || submitted) && f.startDate.errors" class="invalid-feedback">
+                            <div *ngIf="(f.startDate.dirty || f.startDate.touched || submitted) && f.startDate.errors?.ngbDate?.invalid" class="txt-red">
+                                Start date should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="endDate" class="col-sm-6 col-form-label">End Date</label>
+                    <div class="form-inline">
+                        <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="endDate" [ngClass]="{ 'is-invalid': (f.endDate.dirty || f.endDate.touched || submitted) && f.endDate.errors }" ngbDatepicker #dfe="ngbDatepicker" formControlName="endDate" />
+                        <button class="btn calendar col-sm-1" style="padding: 1.375rem 0.75rem;" (click)="dfe.toggle()" type="button"></button>
+                        <div *ngIf="(f.endDate.dirty || f.endDate.touched || submitted) && f.endDate.errors" class="invalid-feedback">
+                            <div *ngIf="(f.endDate.dirty || f.endDate.touched || submitted) && f.endDate.errors?.dateGreaterThan" class="txt-red">
+                                End date cannot be less than start date
+                            </div>
+                            <div *ngIf="(f.endDate.dirty || f.endDate.touched || submitted) && f.endDate.errors?.ngbDate?.invalid" class="txt-red">
+                                End date should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="lookBack" class="col-sm-6 col-form-label">Look Back</label>
+                    <input type="text" class="form-control" id="lookBack" formControlName="lookBack" [ngClass]="{
+              'is-invalid': (f.lookBack.dirty || f.lookBack.touched || submitted) && f.lookBack.errors }" style="margin-top: 4px;" />
+                    <div *ngIf="(f.lookBack.dirty || f.lookBack.touched || submitted) && f.lookBack.errors" class="invalid-feedback">
+                        <div *ngIf="f.lookBack.errors.maxlength" class="txt-red">
+                            Look Back should be of max 50 characters length
+                        </div>
+                        <div *ngIf="(f.lookBack.dirty || f.lookBack.touched || submitted) && f.lookBack.errors.pattern" class="txt-red">
+                            Look Back should be alphanumeric
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="lookBackStartDate" class="col-sm-6 col-form-label">Look Back Start Date</label>
+                    <div class="form-inline">
+                        <input class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="lookBackStartDate" ngbDatepicker #dfl="ngbDatepicker" formControlName="lookBackStartDate" [ngClass]="{ 'is-invalid': (f.lookBackStartDate.dirty || f.lookBackStartDate.touched || submitted) && f.lookBackStartDate.errors }"
+                        />
+                        <button class="btn calendar col-sm-1" style="padding: 1.375rem 0.75rem;" (click)="dfl.toggle()" type="button"></button>
+                        <div *ngIf="(f.lookBackStartDate.dirty || f.lookBackStartDate.touched || submitted) && f.lookBackStartDate.errors" class="invalid-feedback">
+                            <div *ngIf="(f.lookBackStartDate.dirty || f.lookBackStartDate.touched || submitted) && f.lookBackStartDate.errors?.ngbDate?.invalid" class="txt-red">
+                                Look back start date should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="notes" class="col-sm-6 col-form-label">Notes</label>
+                    <textarea rows="3" type="text" formControlName="notes" class="form-control" maxlength="1000"></textarea>
+                </div>
+
+            </div>
+            <app-file-attachments
+              attachmentTransmissionInterfaceName="AdvocacyService"
+              [fileAttachmentData]="fileAttachmentData"
+              (fileAttachmentsChanged)="onFileAttachmentsChanged($event)">
+            </app-file-attachments>
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <button [disabled]="!advAddformAdvocacy.dirty" class="btn btn-primary mr-3" (click)="onSubmit()">
+            <em class="fas fa-check"></em> Submit
+          </button>
+                <button [disabled]="!advAddformAdvocacy.dirty" class="btn btn-primary mr-3" (click)="onClear()">
+            <em class="fas fa-refresh"></em> Clear
+          </button>
+                <button class="btn btn-primary" (click)="onCancel()">
+            <em class="fa fa-times"></em> Cancel
+          </button>
+            </div>
+        </div>
+    </div>
+</form>

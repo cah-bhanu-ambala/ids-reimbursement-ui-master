@@ -1,0 +1,117 @@
+<form [formGroup]="formSearchCustomerWI" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Search Customer Entered Work</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Facility</label>
+                    <ng-select formControlName="facilityIds" [items]="facilities" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" placeholder="Please select Facility">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="workItemStatusId">Work Item Status</label>
+                    <select id="workItemStatusId" class="custom-select" formControlName="workItemStatusId">
+                        <option value="" selected>Select Status</option>
+                        <option
+                        *ngFor="let w of customerWiStatuses"
+                        value="{{ w.customerWorkItemStatusNameId }}">
+                        {{ w.customerWorkItemStatusName }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+
+                <div class="form-group col-md-6">
+                    <label>Assigned Team Member</label>
+                    <input type="text" class="form-control" id="teamMemberId" formControlName="teamMemberId" />
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="onSearch()"><em class="fas fa-check"></em> Search</button>
+        </div>
+        <div class="row" *ngIf="showError" style="padding: 0.5em">
+            <div class="col-sm-6">
+                <h6 style="color: red">No records found!</h6>
+            </div>
+        </div>
+        <div *ngIf="showGrid" class="report-grid-margin">
+            <div class="row">
+                <div class="col-md-12">
+                    <p-table [value]="searchResult" [lazy]="true" (onLazyLoad)="loadCustomerWorkItemDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th scope="col">Customer Work Item Number</th>
+                                <th scope="col">Add patient</th>
+                                <th scope="col">External customer request to delete</th>
+                                <th scope="col">Item Status</th>
+                                <th scope="col">MRN</th>
+                                <th scope="col">PSS Team Member</th>
+                                <!-- <th scope="col">Patient ID</th> -->
+                                <th scope="col">Meds</th>
+                                <th scope="col">Diag</th>
+                                <th scope="col">Physician</th>
+                                <th scope="col">Facility</th>
+                                <th scope="col">Date of service</th>
+                                <th scope="col">Who Added</th>
+                                <th scope="col">Customer Created Date</th>
+                                <th scope="col">Notes</th>
+                                <th scope="col">Attachments</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-wi>
+                            <tr>
+                                <td style="padding-top: 0%;text-align: center;">
+                                    <span [ngClass]="wi.patientId == 0 || wi.patientId == null? '' : 'btn btn-link'" (click)="addNewWorkItem(wi)">
+                  {{ wi.customerWorkItemId }}
+                                    </span>
+                                </td>
+                                <td style="padding-top: 0%">
+                                    <button *ngIf="wi.patientId == 0 || wi.patientId == null" (click)="addPatient(wi)" class="btn btn-link">
+                    Add patient
+                  </button>
+                                </td>
+                                <td><button class="btn btn-sm btn-danger" *ngIf="wi.externalCustomerRequestedToDelete =='Y'" (click)="onDelete(wi.customerWorkItemId)">Delete</button></td>
+
+                                <td>{{ wi.workItemStatusName }}</td>
+                                <td> {{ wi.patientMrn}}</td>
+                                <td>{{ wi.modifiedByName }}</td>
+                                <!-- <td>{{ wi.patientId }}</td> -->
+
+                                <td>
+                                    {{getIcdCodesInfo(wi.icdCodes)}}
+                                </td>
+                                <td>
+                                    {{getdrugCodeInfo(wi.drugCodes)}}
+                                </td>
+
+                                <td>{{ wi.providerName }}</td>
+                                <td>{{ wi.facilityName}}</td>
+                                <td>{{ wi.dos | date :'shortDate': 'UTC' }}</td>
+                                <td>{{ wi.createdByName }}</td>
+                                <td>{{ wi.createdDate | date :'shortDate': 'UTC' }}</td>
+                                <td class="notes-word-wrap">{{ wi.notes}}</td>
+                                <td>
+                                    <ng-container *ngIf="wi.attachments">
+                                        <div *ngFor="let att of wi.attachments">
+                                            <div class="btn-link" style="cursor: pointer;" (click)="openFile(att.customerWorkItemAttachmentId, att.customerWorkItemAttachmentPath) ">{{att.customerWorkItemAttachmentPath}}
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

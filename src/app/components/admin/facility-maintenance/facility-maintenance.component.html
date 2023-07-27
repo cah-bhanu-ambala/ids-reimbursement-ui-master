@@ -1,0 +1,351 @@
+<div>
+    <div class="row mb-1">
+        <div class="col-md-12">
+            <app-search-revenue id="facilityMaintSearch" placeholderText="Search for facility" (setValue)="onSearch($event)"></app-search-revenue>
+        </div>
+    </div>
+    <div class="row" *ngIf="showError">
+        <div class="col-md-12">
+            <h6 style="color: red">No records found!</h6>
+        </div>
+    </div>
+    <div *ngIf="showViewFacilityGrid">
+        <div class="row">
+            <div class="col-md-12">
+                <p-table [value]="facilitySearchResult" [lazy]="true" (onLazyLoad)="loadfacilityDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="facilityTotalRecords" [loading]="facilityGridloading" styleClass="p-datatable-striped"
+                    [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col" *ngIf="userRole == 'Superuser'">Action</th>
+                            <th scope="col">Facility</th>
+                            <th scope="col">System</th>
+                            <th scope="col">EIN</th>
+                            <th scope="col">Contact1</th>
+                            <th scope="col">Contact1 Role</th>
+                            <th scope="col">Contact2</th>
+                            <th scope="col">Contact2 Role</th>
+                            <th scope="col">Contact3</th>
+                            <th scope="col">Contact3 Role</th>
+                            <th scope="col">Contact4</th>
+                            <th scope="col">Contact4 Role</th>
+                            <th scope="col">NPI</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Phone</th>
+                            <th scope="col">Fax</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-facility>
+                        <tr>
+                            <td style="padding-top: 0%" *ngIf="userRole == 'Superuser'">
+                                <button class="btn btn-link" (click)="onEdit(facility)">Edit</button>
+                                <button class="btn btn-link" (click)="onDelete(facility)">Delete</button>
+                            </td>
+                            <td>{{ facility.facilityName }}</td>
+                            <td>{{ facility.systemName }}</td>
+                            <td>{{ facility.ein }}</td>
+                            <td>{{facility.contact1}}</td>
+                            <td>{{facility.contactRole1}}</td>
+                            <td>{{facility.contact2}}</td>
+                            <td>{{facility.contactRole2}}</td>
+                            <td>{{facility.contact3}}</td>
+                            <td>{{facility.contactRole3}}</td>
+                            <td>{{facility.contact4}}</td>
+                            <td>{{facility.contactRole4}}</td>
+                            <td>{{ facility.facilityNPI }}</td>
+                            <td class="col-width">{{ facility.address }}</td>
+                            <td>{{ facility.phone }}</td>
+                            <td>{{ facility.fax }}</td>
+
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="showForm && userRole == 'Superuser'" class="row">
+        <form class="col-md-12 needs-validation mt-2" [formGroup]="maintainFormFacility">
+            <div class="card w-100 p-3">
+                <h5 *ngIf="!isUpdate" class="card-header">Add New Facility</h5>
+                <h5 *ngIf="isUpdate" class="card-header">Edit Facility</h5>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="facilityName" class="col-sm-6 col-form-label">Facility<span class="required">*</span></label>
+                        <label for="facilityNickName" class="col-sm-6 col-form-label">Nick Name </label>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="facilityName" formControlName="facilityName" [ngClass]="{
+                    'is-invalid': (f.facilityName.dirty || f.facilityName.touched || submitted) && f.facilityName.errors
+                  }" />
+                            <div *ngIf="  (f.facilityName.dirty || f.facilityName.touched || submitted) && f.facilityName.errors" class="invalid-feedback">
+                                <div *ngIf="f.facilityName.errors.required" class="txt-red">
+                                    Facility Name is required
+                                </div>
+                                <div *ngIf="f.facilityName.errors.maxlength" class="txt-red">
+                                    Facility name should be of max 100 characters length
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="facilityNickName" formControlName="facilityNickName" [ngClass]="{
+                    'is-invalid': (f.facilityNickName.dirty || f.facilityNickName.touched || submitted) &&  f.facilityNickName.errors
+                  }" />
+                            <div *ngIf=" (f.facilityNickName.dirty || f.facilityNickName.touched || submitted) &&  f.facilityNickName.errors" class="invalid-feedback">
+                                <div *ngIf="f.facilityNickName.errors.maxlength" class="txt-red">
+                                    Nick name should be of max 50 characters length
+                                </div>
+                                <div *ngIf=" f.facilityNickName.errors.pattern" class="txt-red">
+                                    Nick name should be alphanumeric
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="ein" class="col-sm-6 col-form-label">EIN<span class="required">*</span></label>
+                        <label for="facilityNPI" class="col-sm-6 col-form-label">NPI<span class="required">*</span></label>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="ein" formControlName="ein" [ngClass]="{ 'is-invalid': (f.ein.dirty || f.ein.touched || submitted) && f.ein.errors }" />
+                            <div *ngIf="(f.ein.dirty || f.ein.touched || submitted) && f.ein.errors" class="invalid-feedback">
+                                <div *ngIf="f.ein.errors.required" class="txt-red">
+                                    EIN is required
+                                </div>
+                                <div *ngIf="f.ein.errors.maxlength" class="txt-red">
+                                    EIN should be of max 10 characters length
+                                </div>
+                                <div *ngIf="f.ein.errors.pattern" class="txt-red">
+                                    EIN should be alphanumeric
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="facilityNPI" formControlName="facilityNPI" (keypress)="onKeypressEvent($event)" [ngClass]="{
+                    'is-invalid':(f.facilityNPI.dirty || f.facilityNPI.touched || submitted) && f.facilityNPI.errors
+                  }" />
+                            <div *ngIf="(f.facilityNPI.dirty || f.facilityNPI.touched || submitted) && f.facilityNPI.errors" class="invalid-feedback">
+                                <div *ngIf="f.facilityNPI.errors.required" class="txt-red">
+                                    NPI is required
+                                </div>
+                                <div *ngIf="f.facilityNPI.errors.maxlength" class="txt-red">
+                                    NPI should have max length of 10 characters
+                                </div>
+                                <div *ngIf="f.facilityNPI.errors.pattern" class="txt-red">
+                                    NPI should be alphanumeric
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="address" class="col-sm-6 col-form-label">Address (Street Address, City, State, Zip)<span
+                class="required">*</span></label>
+                        <label for="phone" class="col-sm-6 col-form-label">Phone</label>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="address" formControlName="address" [ngClass]="{ 'is-invalid':(f.address.dirty || f.address.touched || submitted) && f.address.errors }" />
+                            <div *ngIf="(f.address.dirty || f.address.touched || submitted) &&  f.address.errors" class="invalid-feedback">
+                                <div *ngIf="f.address.errors.required" class="txt-red">
+                                    Address is required
+                                </div>
+                                <div *ngIf="f.address.errors.maxlength" class="txt-red">
+                                    Address should be of max 100 characters length
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="phone" formControlName="phone" [ngClass]="{ 'is-invalid':(f.phone.dirty || f.phone.touched || submitted) && f.phone.errors }" mask="000-000-0000" placeholder="XXX-XXX-XXXX" />
+                            <div *ngIf="(f.phone.dirty || f.phone.touched || submitted) && f.phone.errors" class="invalid-feedback">
+                                <div *ngIf="f.phone.errors.required" class="txt-red">
+                                    Phone Number is required
+                                </div>
+                                <div *ngIf=" f.phone.errors" class="txt-red">
+                                    Phone Number should have 10 digits
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fax" class="col-sm-6 col-form-label">Fax</label>
+                      <label  for="systemId" class="col-sm-6 col-form-label">System<span
+                        class="required">*</span></label>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="fax" formControlName="fax" [ngClass]="{ 'is-invalid':(f.fax.dirty || f.fax.touched || submitted) &&  f.fax.errors }" mask="000-000-0000" placeholder="XXX-XXX-XXXX" />
+                            <div *ngIf="(f.fax.dirty || f.fax.touched || submitted) && f.fax.errors" class="invalid-feedback">
+                                <div *ngIf="f.fax.errors.required" class="txt-red">
+                                    Fax is required
+                                </div>
+                                <div *ngIf=" f.fax.errors" class="txt-red">
+                                    Fax should have 10 digits
+                                </div>
+                            </div>
+                        </div>
+                      <div class="col-sm-6">
+
+                        <select id="systemId" class="custom-select" formControlName="systemId" [ngClass]="{
+                      'is-invalid': (f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors
+                    }">
+                          <option value="" selected>Select System</option>
+                          <option *ngFor="let system of systems" [ngValue]="system.systemId">
+                            {{ system.systemName }}
+                          </option>
+                        </select>
+                        <div *ngIf="(f.systemId.dirty || f.systemId.touched || submitted) && f.systemId.errors" class="invalid-feedback">
+                          <div *ngIf="f.systemId.errors.required" class="txt-red">
+                            System is required
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="card">
+                                <div class="card-header container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <h5>WBS</h5>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn-primary float-right" (click)="generateSubMaintainFacilities()"><em
+                          class="fas fa-plus"></em></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row ml-2">
+                                    <div class="form-group col-md-4">
+                                        <h6 class="card-title mt-3">WBS Number</h6>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6 class="card-title mt-3">Contract Start Date</h6>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6 class="card-title mt-3">Contract End Date</h6>
+                                    </div>
+                                </div>
+
+                                <ng-container formArrayName="facilityWbsDetails">
+                                    <div *ngFor="let _ of facilityWbsDetails.controls; index as i">
+                                        <ng-container [formGroupName]="i">
+                                            <div class="form-row ml-2 mr-2">
+                                                <div class="form-group col-4">
+                                                    <input formControlName="wbsName" class="form-control" />
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <div class="form-inline">
+                                                        <input class="form-control" placeholder="mm/dd/yyyy" ngbDatepicker #dcs="ngbDatepicker" formControlName="contractStartDate" (ngModelChange)="onContractStartDateChange(i)" />
+                                                        <button class="btn calendar col-md-1" (click)="dcs.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <div class="form-inline">
+                                                        <input class="form-control" placeholder="mm/dd/yyyy" ngbDatepicker #dce="ngbDatepicker" formControlName="contractEndDate" />
+                                                        <button class="btn calendar col-md-1" (click)="dce.toggle()" type="button"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <div class="card">
+                                <div class="card-header container-fluid">
+                                    <div class="row">
+                                        <div class="col-md-11">
+                                            <h5>Contacts <small>(Max 4)</small></h5>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn-primary float-right" (click)="generateMaintainContacts()"><em
+                          class="fas fa-plus"></em></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row ml-2">
+                                    <div class="form-group col-md-6">
+                                        <h6 class="card-title mt-3">Contact Name / Email / Phone</h6>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <h6 class="card-title mt-3">Role</h6>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="form-row ml-2 mr-2">
+                                        <ng-container *ngFor="let a of arr; index as i">
+                                            <div class="form-group col-6">
+                                                <input type="text" [formControlName]="'contact'+(i+1)" class="form-control" maxlength="50" />
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <input type="text" [formControlName]="'contactRole'+(i+1)" class="form-control" maxlength="100" />
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="form-group row">
+                        <label for="facilityBillingLevelName" class="col-sm-6 col-form-label">Billing Level</label>
+                        <label for="billingAmount" class="col-sm-6 col-form-label">Billing Amount</label>
+                    </div>
+                    <div formArrayName="facilityBillingDetails">
+                        <ng-container *ngFor="
+                  let bInfo of facilityBillingDetails.controls;
+                  index as i
+                ">
+                            <div class="row" style="padding: 1em">
+                                <div class="col-sm-6" [formGroupName]="i">
+                                    <input type="text" class="form-control" formControlName="facilityBillingLevelName" readonly />
+                                </div>
+                                <div class="col-sm-6" [formGroupName]="i">
+                                    <div class="input-group">
+                                        <span class="v-align">$</span>
+                                        <input type="text" class="form-control" formControlName="billingAmount" [ngClass]="{
+                          'is-invalid':
+                          ( bInfo.controls.billingAmount.touched || submitted ||bInfo.controls.billingAmount.dirty ) && bInfo.controls.billingAmount.errors
+                        }" />
+                                        <div *ngIf="( bInfo.controls.billingAmount.touched || submitted ||bInfo.controls.billingAmount.dirty ) && bInfo.controls.billingAmount.errors" class="invalid-feedback">
+                                            <div *ngIf="bInfo.controls.billingAmount.errors.pattern" class="txt-red">
+                                                Billing amount is allowed a max length of 10 digits with two optional decimals
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <div class="float-right">
+                        <button *ngIf="!isUpdate" class="btn btn-primary mr-3 " [disabled]="!maintainFormFacility.dirty" (click)="onSubmit()">
+              <em class="fas fa-check"></em> Submit
+            </button>
+
+                        <button *ngIf="isUpdate" class="btn btn-primary mr-3 " [disabled]="!maintainFormFacility.dirty" (click)="onSubmit()">
+              <em class="fas fa-check"></em> Update
+            </button>
+                        <button class="btn btn-primary mr-3" (click)="resetMaintainFormFields()" [disabled]="!maintainFormFacility.dirty">
+              <em class="fas fa-eraser"></em> Clear
+            </button>
+                        <button class="btn btn-primary " (click)="onCancel()">
+              <em class="fa fa-times"></em> Cancel
+            </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

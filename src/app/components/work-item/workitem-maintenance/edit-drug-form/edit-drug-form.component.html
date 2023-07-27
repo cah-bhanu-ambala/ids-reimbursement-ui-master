@@ -1,0 +1,91 @@
+<div *ngIf="drugList" class="modal-xl" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 ngbAutofocus class="modal-title"><span>Add/Edit Drug</span></h5>
+            <button type="button" class="close" aria-label="Close" (click)="Close()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form class="needs-validation" [formGroup]="formDrug">
+
+                <div class="row">
+                    <label for="workItemId" class="col-sm-6 col-form-label wi-header">Code</label>
+                    <label for="drugShortDesc" class="col-sm-6 col-form-label wi-header">Description</label>
+
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                    <input type="text" class="form-control" formControlName="drugProcCode" id="drugProcCode"
+                        list="drugList" (keyup)="getDrugsByCode()" />
+                    <datalist id="drugList">
+                        <option *ngFor="let drug of drugList" [value]="drug.drugProcCode">{{drug.drugProcCode}}</option>
+                    </datalist>
+                    </div>
+                    <div class="col-sm-6">
+                    <input type="text" class="form-control" formControlName="drugShortDesc"
+                        id="drugShortDesc" />
+                    </div>
+                </div>
+                <div class="row" >
+                    <label for="isCover" class="col-sm-6 col-form-label wi-header">Is Covered</label>
+                    <label for="priorAuth" class="col-sm-6 col-form-label wi-header">Prior Auth</label>
+
+                </div>
+
+                <div class="row">
+
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" formControlName="isCover" id="isCover" />
+
+                </div>
+                <div class="col-sm-6">
+                     <input type="text" class="form-control" formControlName="priorAuth" id="priorAuth" />
+                </div>
+            </div>
+                <div class="row">
+                    <label for="priorAuthFromDate" class="col-sm-6 col-form-label wi-header">PriorAuth From
+                        Date</label>
+                    <label for="priorAuthToDate" class="col-sm-6 col-form-label wi-header">PriorAuth To
+                        Date</label>
+
+                </div>
+                <div class="row">
+                            <input class="form-control col-sm-5" placeholder="mm/dd/yyyy" name="priorAuthFromDate" ngbDatepicker
+                                #dff="ngbDatepicker" formControlName="priorAuthFromDate">
+                        <button class="btn calendar col-sm-1" (click)="dff.toggle()" type="button"></button>
+
+                            <input class="form-control col-sm-5" placeholder="mm/dd/yyyy" name="priorAuthToDate" ngbDatepicker
+                                #dft="ngbDatepicker" formControlName="priorAuthToDate">
+                        <button class="btn calendar col-sm-1" (click)="dft.toggle()" type="button"></button>
+
+                </div>
+                <div class="row">
+                    <label for="priorAuthNo" class="col-sm-6 col-form-label wi-header">priorAuth Number</label>
+                    <label for="priorAuthNotes" class="col-sm-6 col-form-label wi-header">PriorAuth Notes</label>
+                </div>
+                <div class="row">
+                <div class="col-sm-6">
+                    <input type="text" class="form-control" formControlName="priorAuthNo" id="priorAuthNo" />
+                </div>
+                <div class="col-sm-6">
+                    <textarea rows="2" type="text" formControlName="priorAuthNotes" class="form-control"
+                    maxlength="500" ></textarea>
+                </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary float-right"
+                            (click)="onSubmit()">Update</button></div>
+                    <div class="col-sm-6">
+                        <button type="button" class="btn btn-primary float-left"
+                            (click)="Close()">Cancel</button> </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

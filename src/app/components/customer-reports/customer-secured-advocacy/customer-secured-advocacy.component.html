@@ -1,0 +1,123 @@
+<form [formGroup]="reportsAdvocacyForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Search Secured Advocacy</h5>
+        <div class="card-body">
+            <div id="customer-secured-advocacy-dup" class="form-row">
+              <app-facility-list id ="shared-facility-id" class="form-group col-md-6" [form]="reportsAdvocacyForm" [submitEvent]="searched"></app-facility-list>
+                <!--<div id="customer-secured-advocacy-dup" class="form-group col-md-6" *ngIf="customerFacilityId == 0">-->
+                    <!--<label for="facilityId" class="mr-2">Facility</label><span class="required">*</span>-->
+                    <!--<select class="custom-select" formControlName="facilityId" [ngClass]="{ 'is-invalid': (sf.facilityId.touched || sf.facilityId.dirty ||searched) && sf.facilityId.errors  }">-->
+              <!--<option value="" selected>Select Facility</option>-->
+              <!--<option *ngFor="let f of facilitiesList" value="{{ f.facilityId }}">-->
+                <!--{{ f.facilityName }}-->
+              <!--</option>-->
+            <!--</select>-->
+                    <!--<div id="customer-secured-advocacy-dup" *ngIf="(sf.facilityId.touched || sf.facilityId.dirty ||searched) && sf.facilityId.errors" class="invalid-feedback">-->
+                        <!--<div id="customer-secured-advocacy-dup" *ngIf="sf.facilityId.errors.required" class="txt-red">-->
+                            <!--Facility is required-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div id="customer-secured-advocacy-dup" class="form-group col-md-6" *ngIf="customerFacilityName != ''">-->
+                    <!--<label>Facility</label>-->
+                    <!--<input type="text" class="form-control" formControlName="facilityName" />-->
+                <!--</div>-->
+                <div id="customer-secured-advocacy-dup" class="form-group col-md-6">
+                    <label>MRN<span class="required">*</span></label>
+                    <input type="text" class="form-control" id="mrn" formControlName="mrn" [ngClass]="{ 'is-invalid': searched && sf.mrn.errors }" />
+                    <div id="customer-secured-advocacy-dup" *ngIf="searched && sf.mrn.errors" class="invalid-feedback">
+                        <div id="customer-secured-advocacy-dup" *ngIf="sf.mrn.errors.required" class="txt-red">
+                            MRN is required
+                        </div>
+                        <div id="customer-secured-advocacy-dup" *ngIf="sf.mrn.errors.pattern" class="txt-red">
+                            MRN should be alphanumeric
+                        </div>
+                        <div id="customer-secured-advocacy-dup" *ngIf="sf.mrn.errors.maxlength" class="txt-red">
+                            MRN should be of max 25 characters length
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="customer-secured-advocacy-dup" class="form-row">
+
+                <div id="customer-secured-advocacy-dup" class="form-group col-md-6">
+                    <label for="dateCreatedFrom">
+              Date From<span class="required">*</span>
+            </label>
+                    <div id="customer-secured-advocacy-dup" class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedFrom" ngbDatepicker #dffrom="ngbDatepicker" formControlName="dateCreatedFrom" [ngClass]="{'is-invalid':searched && sf.dateCreatedFrom.errors}" />
+                        <button class="btn calendar col-md-1" style="padding: 1.375rem 0.75rem;" (click)="dffrom.toggle()" type="button"></button>
+                        <div id="customer-secured-advocacy-dup" *ngIf="searched && sf.dateCreatedFrom.errors" class="invalid-feedback">
+                            <div id="customer-secured-advocacy-dup" *ngIf="sf.dateCreatedFrom.errors.required" class="txt-red">
+                                Date From is required
+                            </div>
+                            <div id="customer-secured-advocacy-dup" *ngIf="searched && sf.dateCreatedFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                Date From should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="customer-secured-advocacy-dup" class="form-group col-md-6">
+                    <label for="dateCreatedTo">Date To<span class="required">*</span></label>
+                    <div id="customer-secured-advocacy-dup" class="form-inline">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedTo" ngbDatepicker #dfto="ngbDatepicker" formControlName="dateCreatedTo" [ngClass]="{'is-invalid':searched && sf.dateCreatedTo.errors}" />
+                        <button class="btn calendar col-md-1" style="padding: 1.375rem 0.75rem;" (click)="dfto.toggle()" type="button"></button>
+                        <div id="customer-secured-advocacy-dup" *ngIf="searched && sf.dateCreatedTo.errors" class="invalid-feedback">
+                            <div id="customer-secured-advocacy-dup" *ngIf="sf.dateCreatedTo.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div id="customer-secured-advocacy-dup" *ngIf="searched && sf.dateCreatedTo.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="customer-secured-advocacy-dup" class="card-footer ">
+            <div id="customer-secured-advocacy-dup" class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getReportsData()">
+            <em class="fa fa-search"></em> Search
+          </button>
+                <button type="button" class="btn btn-primary mr-3" (click)="onReset()">
+            <em class="fa fa-refresh"></em> Reset
+          </button>
+                <button type="button" class="btn btn-primary " (click)="exportAdvocacyExcel()">
+            <em class="fa fa-download"></em> Export
+          </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="customer-secured-advocacy-dup" class="row" *ngIf="showError" style="padding: 0.5em">
+    <div id="customer-secured-advocacy-dup" class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div id="customer-secured-advocacy-dup" *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div id="customer-secured-advocacy-dup" class="row">
+        <div id="customer-secured-advocacy-dup" class="col-md-12" style="overflow: auto;">
+            <p-table [value]="resultList" [lazy]="true" (onLazyLoad)="loadAdvocacyReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">MRN</th>
+                        <th scope="col">Advocacy Type</th>
+                        <th scope="col">Maximum Amount Availed</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-adv>
+                    <tr>
+                        <td>{{ adv.patientMrn }}</td>
+                        <td>{{ adv.advocacyTypeName }}</td>
+                        <td>{{ adv.maxAmountAvail }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div id="customer-secured-advocacy-dup" class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportAdvocacyExcel()">
+          Export
+        </button>
+        </div>
+    </div>
+</div>

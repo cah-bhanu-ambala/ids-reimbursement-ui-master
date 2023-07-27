@@ -1,0 +1,484 @@
+<form [formGroup]="completedFormSearchWI" class="mt-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">View Work Items</h5>
+        <div class="card-body">
+            <div class="form-row">
+              <app-facility-list id ="shared-facility-id" class="form-group col-md-6" [form]="completedFormSearchWI" [submitEvent] ="searched" (change)="refreshViewWorkItemGrid()"></app-facility-list>
+                <div class="form-group col-md-6">
+                    <label>MRN</label>
+                    <input type="text" class="form-control" id="mrn" formControlName="mrn" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="workItemStatusId">Work Item Status</label>
+                    <select id="workItemStatusId" class="custom-select" formControlName="workItemStatusId">
+                      <option value="" selected>Select Status</option>
+                      <option
+                      *ngFor="let w of wiStatuses"
+                      value="{{ w.workItemStatusId }}">
+                      {{ w.workItemStatusName }}
+                      </option>
+                  </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Team Member</label>
+                    <select id="teamMemberId" class="custom-select" formControlName="teamMemberId">
+                      <option value="" selected>Select Team Member</option>
+                      <option *ngFor="let member of wiTeamMembers" value="{{ member.userId }}" >
+                      {{ member.userName }}
+                      </option>
+                  </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label>Date Out</label>
+                    <div class="form-inline">
+                        <input id="dateOut" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="dateOut" ngbDatepicker #df="ngbDatepicker" formControlName="dateOut" [ngClass]="{ 'is-invalid': (sf.dateOut.dirty || sf.dateOut.touched || searched) && sf.dateOut.errors }">
+                        <button class="btn calendar form-control col-sm-1" (click)="df.toggle()" type="button"></button>
+                        <div *ngIf="(sf.dateOut.dirty || sf.dateOut.touched || searched) && sf.dateOut.errors" class="invalid-feedback">
+                            <div *ngIf="(sf.dateOut.dirty || sf.dateOut.touched || searched) && sf.dateOut.errors?.ngbDate?.invalid" class="txt-red">
+                                Date Out should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="onSearch()"><em class="fas fa-check"></em> Search</button>
+
+        </div>
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+
+<div *ngIf="showViewWorkItemGrid" class="shadow p-3 rounded mt-2" style="background-color: white;">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="wiSearchResult" [lazy]="true" (onLazyLoad)="loadWiDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="wiTotalRecords" [loading]="workItemsloading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Work Item #</th>
+                        <th scope="col">MRN</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Team Member Created</th>
+                        <th scope="col">Team Member Assigned</th>
+                        <th scope="col">Order Type</th>
+                        <th scope="col">Billing Type</th>
+                        <th scope="col">Diagnosis Codes</th>
+                        <th scope="col">Drug Codes</th>
+                        <th scope="col">Order Date</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-wi>
+                    <tr>
+                        <td style="padding-top: 0%">
+                            <button class="btn btn-link" (click)="onView(wi.workItemId)">
+                {{ wi.workItemId }}
+              </button>
+                        </td>
+                        <td>{{ wi.patientMrn }}</td>
+                        <td>{{ wi.workItemStatusName }}</td>
+                        <td>{{ wi.createdByName }}</td>
+                        <td>{{ wi.assignedToId }}</td>
+                        <td>{{ wi.orderTypeName }}</td>
+                        <td>{{ wi.facilityBillingTypeName }}</td>
+                        <td>
+                            {{getIcdCodesInfo(wi.icdCodes)}}
+                        </td>
+                        <td>
+                            {{getdrugCodeInfo(wi.drugCodes)}}
+                        </td>
+                        <td>{{ wi.orderDate | date :'shortDate': 'UTC' }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+      <div class="col-md-12 mt-3">
+
+      </div>
+    </div>
+</div>
+
+<div id="printWorkItem">
+
+    <form *ngIf="showWorkItem" [formGroup]="completedFormWorkItem" class="mt-2">
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Reimbursement Solution Information</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Work Item Number</label>
+                        <input type="text" class="form-control" formControlName="workIdtemId" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>MRN</label>
+                        <input type="text" class="form-control" formControlName="patientMrn" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Work Item Status</label>
+                        <input type="text" class="form-control" formControlName="workItemStatusName" />
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>Team Member Assigned</label>
+                        <input type="text" class="form-control" formControlName="assignedToId" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Order Type</label>
+                        <select class="custom-select" formControlName="orderTypeId">
+                          <option value="1">Oncology</option>
+                          <option value="2">Non Oncology</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Billing Type</label>
+                        <input type="text" class="form-control" formControlName="facilityBillingTypeName" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Date in</label>
+                        <input class="form-control" placeholder="mm/dd/yyyy" name="dateIn" ngbDatepicker #dfi="ngbDatepicker" formControlName="dateIn" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Date Out</label>
+                        <div class="form-inline">
+                            <input id="dateOut" class="form-control" placeholder="mm/dd/yyyy" name="dateOut" ngbDatepicker #df="ngbDatepicker" formControlName="dateOut" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Team Member Who Added</label>
+                        <input type="text" class="form-control" formControlName="createdBy"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Order Information</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Facility EIN</label>
+                        <input type="text" class="form-control" formControlName="facilityEin" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Physician</label>
+                        <input type="text" class="form-control" formControlName="providerName" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Physician NPI</label>
+                        <input type="text" class="form-control" formControlName="providerNPi" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Facility NPI</label>
+                        <input type="text" class="form-control" formControlName="facilityNPI" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Facility</label>
+                        <input type="text" class="form-control" formControlName="facilityName" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Order Date</label>
+                        <div class="form-inline">
+                            <input id="orderDate" class="form-control" placeholder="mm/dd/yyyy" name="orderDate" ngbDatepicker #df="ngbDatepicker" formControlName="orderDate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Buy and Bill or WB(White Bag)</label>
+                        <select class="custom-select" formControlName="buyBill">
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+            <option value="U">Unknown</option>
+          </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Diagnosis Information</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <label for="icdCode" class="col-sm-4 col-form-label wi-header">DX Code</label>
+                    <label for="mrn" class="col-sm-6 col-form-label wi-header">Description</label>
+                </div>
+                <div formArrayName="icdCodes">
+                    <ng-container *ngFor="let icd of icdCodes.controls; index as i">
+                        <div class="row" style="padding: 0.2em">
+                            <div [formGroupName]="i" class="col-4">
+                                <input type="text" class="form-control" formControlName="icdCode" list="icdList" />
+                            </div>
+                            <div [formGroupName]="i" class="col-6">
+                                <input type="text" class="form-control" formControlName="icdDescription" />
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3" >
+            <h5 class="card-header">Drug/Test Information</h5>
+            <div class="card-body">
+                <div class="scrollmenu">
+                    <div class="form-row" formArrayName="drugCodes">
+                        <div class="form-group col-md-6">
+                            <table class="table table-hover" style="width: 100%; height: 100px">
+                              <caption>This table contains Drug/Test Information</caption>
+                                <thead class="grid-header">
+                                    <tr>
+                                        <th scope="col">Codes</th>
+                                        <th scope="col">Short Description</th>
+                                        <th scope="col">Long Description</th>
+                                        <th scope="col">Is Cover</th>
+                                        <th scope="col">Prior Auth</th>
+                                        <th scope="col">Prior Auth No</th>
+                                        <th scope="col">Prior Auth Notes</th>
+                                        <th scope="col">From Date</th>
+                                        <th scope="col">To Date</th>
+                                        <th scope="col">Visits Approved</th>
+                                        <th scope="col">Units Approved</th>
+                                        <th scope="col">Approval Reason</th>
+                                        <th scope="col">Advocacy Needed</th>
+                                        <th scope="col">Advocacy Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody *ngFor="let dc of drugCodes.controls; index as i">
+                                    <td [formGroupName]="i">
+                                        <input type="text" class="form-control" formControlName="drugProcCode" list="drugList" style="width: 200px" />
+                                    </td>
+                                    <td [formGroupName]="i">
+                                        <input type="text" class="form-control" formControlName="drugShortDesc" style="width: 150px; word-wrap: break-word" />
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <input type="text" class="form-control" formControlName="drugLongDesc" style="width: 150px; word-wrap: break-word" />
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <div class="row" style="width: 120px; padding-right: 0.5em">
+                                            <select class="custom-select col-sm-12" formControlName="isCover" style="width: 70px">
+                      <option value="Y">Yes</option>
+                      <option value="N">No</option>
+                      <option value="U">Unknown</option>
+                    </select>
+                                        </div>
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <div class="row" style="width: 120px">
+                                            <select class="custom-select col-sm-12" formControlName="priorAuth" style="width: 70px">
+                      <option value="Y">Yes</option>
+                      <option value="N">No</option>
+                      <option value="U">Unknown</option>
+                    </select>
+                                        </div>
+                                    </td>
+
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <input type="text" class="form-control" formControlName="priorAuthNo" style="width: 80px" />
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <textarea rows="2" type="text" formControlName="priorAuthNotes" class="form-control" maxlength="1000" style="width: 200px"></textarea>
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <div class="row" style="width: 200px; padding-right: 0.5em">
+                                            <input class="form-control col-sm-10" placeholder="mm/dd/yyyy" name="priorAuthFromDate" ngbDatepicker #dfs="ngbDatepicker" formControlName="priorAuthFromDate" style="width: 80px" />
+                                        </div>
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <div class="row" style="width: 200px">
+                                            <input class="form-control col-sm-10" placeholder="mm/dd/yyyy" name="priorAuthToDate" ngbDatepicker #dfe="ngbDatepicker" formControlName="priorAuthToDate" />
+                                        </div>
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <input type="text" class="form-control" formControlName="visitsApproved" style="width: 70px" />
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <input type="text" class="form-control" formControlName="unitsApproved" style="width: 70px" />
+                                    </td>
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <select class="custom-select col-sm-10" formControlName="priorAuthApprovalReason">
+                    <option *ngFor="let reason of wiApprovalReasons" value="{{ reason.priorAuthStatusId }}">
+                      {{ reason.priorAuthStatusName }}
+                    </option>
+                  </select>
+                                    </td>
+
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <select class="custom-select col-sm-6" formControlName="advocacyNeeded" style="width: 200px">
+                    <option value="Y">Yes</option>
+                    <option value="N">No</option>
+                    <option value="U">Unknown</option>
+                  </select>
+                                    </td>
+
+                                    <td [formGroupName]="i" style="width: auto">
+                                        <textarea rows="2" type="text" formControlName="advocacyNotes" class="form-control" maxlength="500" style="width: 200px"></textarea>
+                                    </td>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3" formGroupName="wiInsurance">
+            <h5 class="card-header">Primary Insurance Information</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Representatives</label>
+                        <input type="text" class="form-control" formControlName="primaryInsRep" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Reference #</label>
+                        <input type="text" class="form-control" formControlName="primaryInsRefNum" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>In Network</label>
+                        <select class="custom-select" formControlName="primaryInNetwork">
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+            <option value="U">Unknown</option>
+          </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Deductible Max</label>
+                        <input type="text" class="form-control" formControlName="deductibleMax" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Deductible Met</label>
+                        <input type="text" class="form-control" formControlName="deductibleMet" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Out of Pocket Max</label>
+                        <input type="text" class="form-control" formControlName="outOfPocketMax" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Out of Pocket Met</label>
+                        <input type="text" class="form-control" formControlName="outOfPocketMet" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Co-Insurance %</label>
+                        <input type="number" class="form-control" formControlName="coInsurance" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Insurance Notes</label>
+                        <textarea rows="2" type="text" formControlName="primaryInsNotes" class="form-control" maxlength="200"></textarea>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Insurance Classification</label>
+                        <select class="custom-select" formControlName="primaryInsClassification">
+            <option *ngFor="let insur of primaryInsList" value="{{ insur.insuranceId }}">
+              {{ insur.insuranceName }}
+            </option>
+          </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3" formGroupName="wiInsurance">
+            <h5 class="card-header">Secondary Insurance Information</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Representatives</label>
+                        <input type="text" class="form-control" formControlName="secondaryInsRep" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Reference #</label>
+                        <input type="text" class="form-control" formControlName="secondaryInsRefNum" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>In Network</label>
+                        <select class="custom-select" formControlName="secondaryInNetwork">
+            <option value="Y">Yes</option>
+            <option value="N">No</option>
+            <option value="U">Unknown</option>
+          </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Insurance Classification</label>
+                        <select class="custom-select" formControlName="secondaryInsClassification">
+            <option *ngFor="let ins of secondaryInsList" value="{{ ins.insuranceId }}">
+              {{ ins.insuranceName }}
+            </option>
+          </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Insurance Notes</label>
+                        <textarea rows="2" type="text" formControlName="secondaryInsNotes" class="form-control" maxlength="200"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card w-100 p-3">
+
+            <h5 class="card-header">Notes</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <label>General Notes</label>
+                    <textarea rows="4" type="text" formControlName="generalNotes" class="form-control" maxlength="1000" ></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <div *ngFor="let file of filesList; let index = index">
+                            <ul><li>
+                                <span class="btn-link" style="cursor: pointer;" (click)="openFile(file.attachmentId, file.name) ">
+                {{file.name}}
+              </span>
+                            </li></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          <div ngbDropdown class="d-inline-block float-right dropup">
+            <button class="btn btn-primary " (click)="exportPDF()" id="export-pdf-btn"><em class="fa fa-download"></em> Export</button>
+            <!--<button class="dropdown-toggle btn btn-primary" id="dropdownBasic1" ngbDropdownToggle>Export</button>
+           <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+             <button ngbDropdownItem (click)="exportExcel()">Excel Export</button>
+             <button ngbDropdownItem (click)="exportPDF()">PDF Export</button>
+           </div>-->
+          </div>
+        </div>
+
+    </form>
+
+</div>

@@ -1,0 +1,129 @@
+<form [formGroup]="advocacyBillingReportForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Advocacy Facility Billing </h5>
+        <div class="card-body">
+            <div id="advocacy-billing-dub5" class="form-row">
+                <div id="advocacy-billing-dub5" class="form-group col-md-6">
+                    <label>Wbs<span class="required">*</span></label>
+
+                    <ng-select formControlName="WbsNames" [items]="wbsList" bindLabel="wbsName" bindValue="wbsName" [multiple]="false" [searchable]="false" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Wbs"
+                        [ngClass]="{'is-invalid': (sf.WbsNames.touched || sf.WbsNames.dirty ||searched) && sf.WbsNames.errors}" required="true">
+
+                    </ng-select>
+                    <div id="advocacy-billing-dub5" *ngIf="(sf.WbsNames.dirty || sf.WbsNames.touched || searched) &&  sf.WbsNames.errors" class="invalid-feedback">
+                        <div id="advocacy-billing-dub5" *ngIf="sf.WbsNames.errors.required" class="txt-red">
+                            Wbs Name is required
+                        </div>
+                    </div>
+                </div>
+                <div id="advocacy-billing-dub5" class="form-group col-md-6">
+                    <label for="dateOutFrom">
+                        Date From<span class="required">*</span>
+                    </label>
+                    <div id="advocacy-billing-dub5" class="form-inline">
+                        <input id="dateOut" class="form-control col-md-10 rounded" placeholder="mm/dd/yyyy" name="dateOutFrom" ngbDatepicker #dateOutFrom="ngbDatepicker" formControlName="dateOutFrom" [ngClass]="{'is-invalid':(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors}"
+                        />
+                        <button class="btn calendar col-md-1" (click)="dateOutFrom.toggle()" type="button"></button>
+                        <div id="advocacy-billing-dub5" *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors" class="invalid-feedback">
+                            <div id="advocacy-billing-dub5" *ngIf="sf.dateOutFrom.errors.required" class="txt-red">
+                                Date from is required
+                            </div>
+                            <div id="advocacy-billing-dub5" *ngIf="(sf.dateOutFrom.touched || sf.dateOutFrom.dirty ||searched) && sf.dateOutFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                Date from should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="advocacy-billing-dub5" class="form-row">
+                <div id="advocacy-billing-dub5" class="form-group col-md-6">
+                    <label for="dateOutTo">
+            Date To<span class="required">*</span>
+          </label>
+                    <div id="advocacy-billing-dub5" class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateOutTo" ngbDatepicker #dateOutTo="ngbDatepicker" formControlName="dateOutTo" [ngClass]="{'is-invalid':(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors}"
+                        />
+                        <button class="btn calendar col-md-1" (click)="dateOutTo.toggle()" type="button"></button>
+                        <div id="advocacy-billing-dub5" *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors" class="invalid-feedback">
+                            <div id="advocacy-billing-dub5" *ngIf="sf.dateOutTo.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div id="advocacy-billing-dub5" *ngIf="(sf.dateOutTo.touched || sf.dateOutTo.dirty ||searched) && sf.dateOutTo.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="advocacy-billing-dub5" class="card-footer ">
+            <div id="advocacy-billing-dub5" class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getAdvocacyBillingReport()">
+          <em class="fa fa-search"></em> Search
+        </button>
+                <button type="button" class="btn btn-primary" (click)="onReset()">
+          <em class="fa fa-refresh"></em> Reset
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div id="advocacy-billing-dub5" class="row" *ngIf="showError" style="padding: 0.5em">
+    <div id="advocacy-billing-dub5" class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div id="advocacy-billing-dub5" *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div id="advocacy-billing-dub5" class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="advocacyBillingList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">MRN</th>
+                        <th scope="col">Facility Name</th>
+                        <th scope="col">Advocacy ID</th>
+                        <th scope="col">Advocacy Status</th>
+                        <th scope="col">Appointment ID</th>
+                        <th scope="col">Appointment Type</th>
+                        <th scope="col">Appointment Status</th>
+                        <th scope="col">Insurance Type</th>
+                        <th scope="col">Insurance Name</th>
+                        <th scope="col">Replacement Received</th>
+                        <th scope="col">Date Advocacy Received</th>
+                        <th scope="col">Copay Covered</th>
+                        <th scope="col">Received From Copay</th>
+                        <th scope="col">Cost of Medication Infused</th>
+                        <th scope="col">Received From Grant</th>
+                        <th scope="col">Advocacy Amount</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-advocacyBillingReport>
+                    <tr>
+                        <td>{{ advocacyBillingReport.mrn }}</td>
+                        <td>{{ advocacyBillingReport.facilityName }}</td>
+                        <td>{{ advocacyBillingReport.advocacyId }}</td>
+                        <td>{{ advocacyBillingReport.advocacyStatus }}</td>
+                        <td>{{ advocacyBillingReport.appointmentId }}</td>
+                        <td>{{ advocacyBillingReport.appointmentType }}</td>
+                        <td>{{ advocacyBillingReport.appointmentStatus }}</td>
+                        <td>{{ advocacyBillingReport.insuranceType }}</td>
+                        <td>{{ advocacyBillingReport.insuranceName }}</td>
+                        <td>{{ advocacyBillingReport.replacementReceived | date : "MM/dd/yyyy"}}</td>
+                        <td>{{ advocacyBillingReport.dateAdvocacyReceived | date : "MM/dd/yyyy"}}</td>
+                        <td>{{ advocacyBillingReport.copayCovered}}  </td>
+                        <td>{{ advocacyBillingReport.receivedFromCopay }}</td>
+                        <td>{{ advocacyBillingReport.costOfMedicationInfused }}</td>
+                        <td>{{ advocacyBillingReport.receivedFromGrant }}</td>
+                        <td>{{ advocacyBillingReport.advocacyAmount }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportAdvocacyBillingDataToExcel()">
+        Export
+      </button>
+        </div>
+    </div>
+</div>

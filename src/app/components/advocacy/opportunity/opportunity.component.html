@@ -1,0 +1,186 @@
+<div class="shadow p-3 mb-5 bg-white rounded">
+    <form [formGroup]="formAdvOppSearch" class="mt-2">
+        <div class="card w-100 p-3">
+            <h5 class="card-header">Advocacy Opportunity</h5>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Primary Insurance<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="primaryInsId" [ngClass]="{'is-invalid': (fa.primaryInsId.touched || fa.primaryInsId.dirty ||searched) && fa.primaryInsId.errors }">
+                            <option value="" selected>Select Primary Insurance</option>
+                            <option *ngFor="let primInsurance of primaryInsurance" [ngValue]="primInsurance.insuranceId">
+                            {{ primInsurance.insuranceName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(fa.primaryInsId.touched || fa.primaryInsId.dirty ||searched) && fa.primaryInsId.errors" class="invalid-feedback">
+                            <div *ngIf="fa.primaryInsId.errors.required" class="txt-red">
+                                Primary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Secondary Insurance<span class="required">*</span></label>
+                        <select class="custom-select" formControlName="secondaryInsId" [ngClass]="{'is-invalid': (fa.secondaryInsId.touched || fa.secondaryInsId.dirty ||searched) && fa.secondaryInsId.errors }">
+                            <option value="" selected>Select Secondary Insurance</option>
+                            <option *ngFor="let secInsurance of secondaryInsurance" [ngValue]="secInsurance.insuranceId">
+                            {{ secInsurance.insuranceName }}
+                            </option>
+                        </select>
+                        <div *ngIf="(fa.secondaryInsId.touched || fa.secondaryInsId.dirty ||searched) && fa.secondaryInsId.errors" class="invalid-feedback">
+                            <div *ngIf="fa.secondaryInsId.errors.required" class="txt-red">
+                                Secondary Insurance is required
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Advocacy Type<span class="required">*</span></label>
+                            <select class="custom-select" formControlName="advocacyOpportunityTypeId" [ngClass]="{'is-invalid': (fa.advocacyOpportunityTypeId.touched || fa.advocacyOpportunityTypeId.dirty ||searched) && fa.advocacyOpportunityTypeId.errors }">
+                                    <option value="" selected>Select Advocacy Type</option>
+                                    <option *ngFor="let advOppType of advocacyOpportunityTypes" [ngValue]="advOppType.advocacyOpportunityTypeId">
+                                    {{ advOppType.advocacyOpportunityTypeName }}
+                                    </option>
+                                </select>
+                            <div *ngIf="(fa.advocacyOpportunityTypeId.touched || fa.advocacyOpportunityTypeId.dirty ||searched) && fa.advocacyOpportunityTypeId.errors" class="invalid-feedback">
+                                <div *ngIf="fa.advocacyOpportunityTypeId.errors.required" class="txt-red">
+                                    Advocacy Type is required
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <div class="card-footer ">
+                <button class="btn btn-primary float-right" (click)="onReset()"><em class="fas fa-refresh"></em> Reset</button>
+                <button class="btn btn-primary mr-3 float-right" (click)="onSearchByPrimInsAndSecondIns()"><em class="fas fa-check"></em> Search</button>
+            </div>
+        </div>
+    </form>
+    <div class="row" *ngIf="showError" style="padding: 0.5em">
+        <div class="col-sm-6">
+            <h6 style="color: red">No records found!</h6>
+        </div>
+    </div>
+    <div *ngIf="showAdvOppGrid">
+        <div class="row">
+            <div class="col-md-12">
+                <p-table [value]="advOppSearchResult" [lazy]="true" (onLazyLoad)="loadAdvOppDetails($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="advOppTotalRecords" [loading]="advOpploading" styleClass="p-datatable-striped"
+                    [autoLayout]="true">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th scope="col">Action</th>
+                            <th scope="col">Primary Insurance</th>
+                            <th scope="col">Secondary Insurance</th>
+                            <th scope="col">Advocacy Type</th>
+                            <th scope="col">Notes</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-opportunity>
+                        <tr>
+                            <td style="padding-top: 0%" *ngIf="userRole == 'Superuser' || userRole == 'Team Lead'">
+                                <button class="btn btn-link" (click)="onEdit(opportunity)">Edit</button>
+                                <button class="btn btn-link" (click)="deleteAdvocacyOpportunity(opportunity)">
+                                    Delete
+                                </button>
+                            </td>
+                            <td *ngIf="userRole == 'External User' || userRole == 'Business Analyst'">
+                                <button class="btn btn-link" style="margin-top: 5px">
+                                    View
+                                  </button>
+                            </td>
+                            <td>{{ opportunity.primaryInsuranceName }}</td>
+                            <td>{{ opportunity.secondaryInsuranceName }}</td>
+                            <td>{{ opportunity.advocacyOpportunityTypeName }}</td>
+                            <td class="wrap">{{ opportunity.notes}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="showAdvocacyOpportunityForm && (userRole == 'Superuser' || userRole == 'Team Lead')">
+        <div class="row">
+            <form class="needs-validation col-md-12 mt-2" [formGroup]="formAdvocacyOpportunity">
+                <div class="card w-100 p-3">
+                    <h5 *ngIf="!isUpdate" class="card-header">Add Advocacy Opportunity</h5>
+                    <h5 *ngIf="isUpdate" class="card-header">Edit Advocacy Opportunity</h5>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Primary Insurance<span class="required">*</span></label>
+                                <select class="custom-select" formControlName="primaryInsuranceId" [ngClass]="{'is-invalid': (f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors }">
+                                        <option value="" selected>Select Primary Insurance</option>
+                                        <option *ngFor="let primInsurance of primaryInsurance" [ngValue]="primInsurance.insuranceId">
+                                        {{ primInsurance.insuranceName }}
+                                        </option>
+                                    </select>
+                                <div *ngIf="(f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.primaryInsuranceId.errors.required" class="txt-red">
+                                        Primary Insurance is required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Secondary Insurance<span class="required">*</span></label>
+                                <select class="custom-select" formControlName="secondaryInsuranceId" [ngClass]="{'is-invalid': (f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || submitted) && f.secondaryInsuranceId.errors }">
+                                        <option value="" selected>Select Secondary Insurance</option>
+                                        <option *ngFor="let secInsurance of secondaryInsurance" [ngValue]="secInsurance.insuranceId">
+                                        {{ secInsurance.insuranceName }}
+                                        </option>
+                                    </select>
+                                <div *ngIf="(f.secondaryInsuranceId.dirty || f.secondaryInsuranceId.touched || submitted) && f.secondaryInsuranceId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.secondaryInsuranceId.errors.required" class="txt-red">
+                                        Secondary Insurance is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Advocacy Opportunity<span class="required">*</span></label>
+                                <select class="custom-select" formControlName="advocacyOpportunityTypeId" [ngClass]="{'is-invalid': (f.advocacyOpportunityTypeId.dirty || f.advocacyOpportunityTypeId.touched || submitted) && f.advocacyOpportunityTypeId.errors }">
+                                        <option value="" selected>Select Advocacy Opportunity Type</option>
+                                        <option *ngFor="let advOppType of advocacyOpportunityTypes" [ngValue]="advOppType.advocacyOpportunityTypeId">
+                                        {{ advOppType.advocacyOpportunityTypeName }}
+                                        </option>
+                                    </select>
+                                <div *ngIf="(f.advocacyOpportunityTypeId.dirty || f.advocacyOpportunityTypeId.touched || submitted) && f.advocacyOpportunityTypeId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.advocacyOpportunityTypeId.errors.required" class="txt-red">
+                                        Advocacy Opportunity Type is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-sm-12">
+                                <label>Notes</label>
+                                <textarea rows="8" type="text" formControlName="notes" class="form-control" [ngClass]="{'is-invalid': (f.notes.dirty || f.notes.touched || submitted) && f.notes.errors }">
+                                </textarea>
+                                <div *ngIf="(f.notes.dirty || f.notes.touched || submitted) && f.notes.errors" class="invalid-feedback">
+                                    <div *ngIf="f.notes.errors" class="txt-red">
+                                        Notes should have maximum of 1200 characters
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="float-right">
+                            <button *ngIf="!isUpdate" class="btn btn-primary mr-3 " (click)="onSubmit()" [disabled]="!formAdvocacyOpportunity.dirty">
+              <em class="fas fa-check"></em> Submit
+            </button>
+                            <button *ngIf="isUpdate" class="btn btn-primary mr-3 " (click)="onSubmit()" [disabled]="!formAdvocacyOpportunity.dirty">
+              <em class="fas fa-check"></em> Update
+            </button>
+                            <button class="btn btn-primary  mr-3" (click)="onClear()">
+              <em class="fas fa-times"></em> Cancel
+            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

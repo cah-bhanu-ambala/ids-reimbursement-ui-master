@@ -1,0 +1,139 @@
+<form [formGroup]="formSearchAdvocacy">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Advocacy Maintenance</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+
+                  <label for="facilityId">Facility</label>
+                  <ng-select formControlName="selectedFacilitiesIds" [items]="facilitiesList" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true"
+                             placeholder="Please select Facility" >
+
+                    <ng-template ng-header-tmp>
+                      <div>
+                        <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                        <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                      </div>
+                    </ng-template>
+                  </ng-select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="patientMrn"> MRN </label>
+                    <input type="text" class="form-control" id="patientMrn" formControlName="patientMrn" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+
+                <label for="advocacyStatusId">Advocacy Status</label>
+                <ng-select formControlName="selectedAdvocacyStatusIds" [items]="advocacyStatuses" bindLabel="advocacyStatusName" bindValue="advocacyStatusId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true"
+                           placeholder="Please select Advocacy Status" >
+
+                  <ng-template ng-header-tmp>
+                    <div>
+                      <button class="btn btn-link pl-0" (click)="onSelectAll('advocacyStatuses')">Select All</button>
+                      <button class="btn btn-link" (click)="onClearAll('advocacyStatuses')">Clear All</button>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <button class="btn btn-primary mr-3" (click)="onSearch()"><em class="fa fa-search"></em> Search</button>
+                <button class="btn btn-primary" (click)="onResetSF()"><em class="fa fa-refresh"></em> Reset</button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded mt-2">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+          <p-table #ptable [value]="advocacyDatasource" [lazy]="true" (onLazyLoad)="loadAdvocacyMaintenancePage($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped"
+              [autoLayout]="true" [sortMode]="'multiple'">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col" [pSortableColumn]="'followUp'">Follow Up<p-sortIcon [field]="'followUp'" [sortOrder]="-1"></p-sortIcon></th>
+                        <th scope="col">Advocacy</th>
+                        <th scope="col" [pSortableColumn]="'patientMrn'">MRN<p-sortIcon [field]="'patientMrn'"></p-sortIcon></th>
+                        <th scope="col">Facility</th>
+                        <th scope="col" [pSortableColumn]="'advocacyStatusName'">Advocacy Status<p-sortIcon [field]="'advocacyStatusName'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'advocacyTypeName'">Advocacy Type<p-sortIcon [field]="'advocacyTypeName'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'advocacySource'">Advocacy Source<p-sortIcon [field]="'advocacySource'"></p-sortIcon></th>
+                        <th scope="col">Insurance Type</th>
+                        <th scope="col">Insurance Name</th>
+                        <th scope="col" [pSortableColumn]="'icdCode'">Diagnosis for Advocacy<p-sortIcon [field]="'icdCode'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'drugProcCode'">Drug for Advocacy<p-sortIcon [field]="'drugProcCode'"></p-sortIcon></th>
+                        <th scope="col">Start Date</th>
+                        <th scope="col">End Date</th>
+                        <th scope="col">Look Back</th>
+                        <th scope="col">Look Back Start Date</th>
+                        <th scope="col">Maximum Amount</th>
+                        <th scope="col">Notes</th>
+                        <th scope="col">Date it was added</th>
+                        <th scope="col">Attachments</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-a>
+                    <tr>
+                        <td>
+                            <button class="btn btn-link pl-0" (click)="onEdit(a.advocacyId)">
+                              Edit
+                            </button>
+                            <button class="btn btn-link pl-0" (click)="onDelete(a.advocacyId)">
+                              Delete
+                            </button>
+                        </td>
+                        <td><img alt="bell" *ngIf="a.followUp" style="width: 25px;height:25px;" src="assets/img/notification.png"></td>
+                        <td>
+                            <button class="btn btn-link pl-0" (click)="onEdit(a.advocacyId)">
+                              {{ a.advocacyId }}
+                            </button>
+                        </td>
+                        <td>{{ a.patientMrn }}</td>
+                        <td>{{ a.facilityName }}</td>
+                        <td>{{ a.advocacyStatusName }}</td>
+                        <td>{{ a.advocacyTypeName }}</td>
+                        <td>{{ a.advocacySource }}</td>
+                        <td>{{ a.insuranceType }}</td>
+                         <td>{{ a.insuranceName }}</td>
+                        <td>{{ a.icdCode }}</td>
+                        <td style="width: 200px">{{ a.drugProcCode }}</td>
+                        <td>{{ a.startDate | date :'shortDate': 'UTC' }}</td>
+                        <td>{{ a.endDate | date :'shortDate': 'UTC' }}</td>
+                        <td>{{ a.lookBack }}</td>
+                        <td>{{ a.lookBackStartDate | date :'shortDate': 'UTC' }}</td>
+                        <td>{{ a.maxAmountAvail }}</td>
+                        <td>{{ a.notes }}</td>
+                        <td>{{ a.createdDate | date :'shortDate': 'UTC' }}</td>
+                        <td>
+                          <ng-container *ngIf="a.attachments">
+                            <div *ngFor="let att of (a.attachments).split(',')">
+                              <div *ngIf="att">
+                          
+                                  <div class="btn-link" style="cursor: pointer;" (click)="openFile(att.split('~')[0], att.split('~')[1]) ">{{att.split('~')[1]}}
+                              </div>
+                                        
+                            </div>
+                            </div>
+                           </ng-container>
+                       </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+      <div class="col-md-12 mt-3">
+        <button *ngIf="showExport" type="button" class="btn btn-primary float-right mr-4" (click)="getDataSetForExcel()">
+          Export
+        </button>
+      </div>
+    </div>
+</div>

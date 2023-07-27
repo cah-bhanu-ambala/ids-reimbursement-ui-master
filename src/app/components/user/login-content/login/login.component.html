@@ -1,0 +1,37 @@
+<div class="">
+  <img class="doctors-one" src="assets/img/cardinal_health.png" alt="left side image"/>
+  <div class="row">
+
+    <div class="col-lg-6">
+      <div class="login-form comm-border d-flex align-items-center justify-content-center float-left">
+        <form [formGroup]="loginForm">
+          <h2 class="form-h-pt form-h-pb">Sign In</h2>
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" type="email" class="form-control comm-border" formControlName="username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input id="password" type="password" class="form-control comm-border" formControlName="password"
+                   appHideShowPass>
+          </div>
+          <div class="form-group form-check">
+            <input id="rememberMe" type="checkbox"
+                   class="form-check-input ids-form-check-input comm-border" formControlName="rememberMe">
+            <label class="form-check-label checkbox-label" for="rememberMe">Remember
+              Me</label>
+          </div>
+          <div class="d-flex justify-content-center align-items-center">
+            <button type="submit" class="btn login-btn btn-main" (click)="login()">Sign In</button>
+          </div>
+          <ng-container *ngIf="message">
+            <app-form-messaging [success]="success" [innerHtml]="message"></app-form-messaging>
+          </ng-container>
+          <!-- <div class="form-group pt-5 text-center">
+            <a class="cursor-hand" (click)="loginHelp()">Forgot Password?</a>
+          </div> -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

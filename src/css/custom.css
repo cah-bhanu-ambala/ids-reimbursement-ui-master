@@ -1,0 +1,70 @@
+@charset "utf-8";
+/* CSS Document */
+
+.navbar-brand img{
+	width:85%;
+}
+
+.hamBtn{
+	float:left;
+	width:45px !important;
+	height:45px;
+	background:#e85637;
+	
+}
+.hamBtn .btn-link{
+	background:#e85637;
+	color:#fff;
+	width:45px;
+	margin-top:2px;
+}
+
+.srch{
+	float:left;
+	width: calc(100% - 65px);
+	margin-left:20px;
+}
+.srch button{
+	background-color:#e85637;
+}
+.srch input[type="text"], .srch .btn-orange {
+	height:45px;
+	border:none !important;
+}
+
+input[type="text"]{
+	height:45px !important;
+	border:solid 1px #cacaca !important;
+}
+
+textarea{
+	border:solid 1px #cacaca !important;
+}
+.addDrug h1{
+	color:#e85637;
+}
+
+.nav-dropdown-items li a{
+	margin-left:20px;
+	font-size:14px;
+}
+
+.nav-dropdown-items li:hover{
+	background:#5d5d5d;
+}
+.nav-dropdown-items li:hover a{
+	color:#fff !important;
+}
+
+.addDrug-lft{
+	background:#fff;
+	padding:30px;
+}
+
+@media screen and (max-width:767px) {
+
+.addDrug-lft h1{
+	font-size:1.5rem;
+}
+	
+}

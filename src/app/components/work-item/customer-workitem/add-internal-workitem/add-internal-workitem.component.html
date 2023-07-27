@@ -1,0 +1,311 @@
+<!-- Add New WorkItem Form Start-->
+<form [hidden]="!showAddWorkItem" [formGroup]="internalFormWorkItem" class="mt-2">
+    <div id="add-internal-workitem-dup2" class="card w-100 p-3">
+        <h5 class="card-header">Add Work Item</h5>
+        <div class="card-body">
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>MRN</label>FacilityList
+                    <input type="text" class="form-control" formControlName="mrn" />
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Facility</label>
+                    <input type="text" class="form-control" id="facilityName" formControlName="facilityName" />
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Physician</label>
+                    <select class="custom-select" formControlName="providerId" (change)="onProviderChange()" >
+                        <option value="" selected>Select Status</option>
+                        <option
+                        *ngFor="let p of internalProviderList"
+                        value="{{p.providerId}}">
+                        {{ p.providerNPI }}
+                        </option>
+                    </select>
+                    <!-- <ng-select formControlName="providerName" [virtualScroll]="true" [items]="providerFiltered$ | async" [trackByFn]="trackByProvider" [minTermLength]="minLengthTerm" [loading]="providerLoading" [typeahead]="providerInput$" placeholder="Search for Provider.."
+                        (change)="onProviderChange($event)" [ngClass]="{'is-invalid': (f.providerName.dirty || f.providerName.touched || submitted) && f.providerName.errors}">
+                    </ng-select> -->
+                    <!-- <input type="text" class="form-control" formControlName="providerName" /> -->
+
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Order Type<span class="required">*</span></label>
+                    <select id="orderTypeId" class="custom-select" formControlName="orderTypeId" [ngClass]="{ 'is-invalid': (f.orderTypeId.dirty || f.orderTypeId.touched || submitted) && f.orderTypeId.errors }">
+                        <option value="" selected>Select Order Type</option>
+                        <option [ngValue]="1">Oncology</option>
+                        <option [ngValue]="2">Non Oncology</option>
+                    </select>
+                    <div id="add-internal-workitem-dup" *ngIf="(f.orderTypeId.dirty || f.orderTypeId.touched || submitted) && f.orderTypeId.errors" class="invalid-feedback">
+                        <div id="add-internal-workitem-dup" *ngIf="f.orderTypeId.errors.required" class="txt-red">
+                            Order Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Provider First Name</label>
+                    <input
+                    type="text"
+                    class="form-control"
+                    id="providerFirstNameInternal"
+                    formControlName="providerFirstName"
+                    [ngClass]="{
+                        'is-invalid': (f.providerFirstName.dirty || f.providerFirstName.touched || submitted) && f.providerFirstName.errors
+                    }"
+                    />
+                    <div
+                    *ngIf="(f.providerFirstName.dirty || f.providerFirstName.touched || submitted) && f.providerFirstName.errors"
+                    class="invalid-feedback"
+                    >
+                    <div
+                        id="providerFirstNameRequire"
+                        *ngIf="f.providerFirstName.errors.required"
+                        class="txt-red"
+                    >
+                        Provider First Name is required
+                    </div> 
+                    <div
+                        id="providerFirstNameMax"
+                        *ngIf="f.providerFirstName.errors.maxlength"
+                        class="txt-red"
+                    >
+                        Provider First Name should have max of 50 characters
+                    </div> 
+                    <div
+                        id="providerFirstNamePattern"
+                        *ngIf="f.providerFirstName.errors.pattern"
+                        class="txt-red"
+                    >
+                        Provider First Name should be alphanumeric
+                    </div>
+                    </div>
+                </div>
+
+                <div id="add-internal-workitem-dup22" class="form-group col-md-6">
+                    <label>Provider Last Name</label>
+                    <input
+                    type="text"
+                    class="form-control"
+                    id="providerLastName"
+                    formControlName="providerLastName"
+                    [ngClass]="{
+                        'is-invalid': (f.providerLastName.dirty || f.providerLastName.touched || submitted) && f.providerLastName.errors
+                    }"
+                    />
+                    <div
+                    id="providerLastnameTouch"
+                    *ngIf="(f.providerLastName.dirty || f.providerLastName.touched || submitted) && f.providerLastName.errors"
+                    class="invalid-feedback"
+                    >
+                    <div
+                        id="providerLastnameTouch"
+                        *ngIf="f.providerLastName.errors.required"
+                        class="txt-red"
+                    >
+                        Provider Last Name is required
+                    </div> 
+                    <div
+                        id="providerLastnameTouch"
+                        *ngIf="f.providerLastName.errors.maxlength"
+                        class="txt-red"
+                    >
+                        Provider Last Name is max of 50 characters
+                    </div> 
+                    <div
+                        id="providerLastnameTouch"
+                        *ngIf="f.providerLastName.errors.pattern"
+                        class="txt-red"
+                    >
+                        Provider Last Name is alphanumeric
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label class="col-sm-4">Order Date<span class="required">*</span></label>
+                    <div id="add-internal-workitem-dup" class="form-inline">
+                        <input id="orderDate" class="form-control col-sm-11" placeholder="mm/dd/yyyy" name="orderDate" ngbDatepicker #df="ngbDatepicker" formControlName="orderDate" [ngClass]="{ 'is-invalid': (f.orderDate.dirty || f.orderDate.touched || submitted) && f.orderDate.errors }">
+                        <button class="btn calendar form-control col-sm-1" (click)="df.toggle()" type="button"></button>
+                        <div id="add-internal-workitem-dup" *ngIf="(f.orderDate.dirty || f.orderDate.touched || submitted) && f.orderDate.errors" class="invalid-feedback">
+                            <div id="add-internal-workitem-dup" *ngIf="f.orderDate.errors.required" class="txt-red">
+                                Please select Order Date
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Billing Type<span class="required">*</span></label>
+                    <select id="facilityBillingTypeId" class="custom-select" formControlName="facilityBillingTypeId" [ngClass]="{ 'is-invalid': (f.facilityBillingTypeId.dirty || f.facilityBillingTypeId.touched || submitted) && f.facilityBillingTypeId.errors }">
+                        <option value="" selected>Select Billing Type</option>
+                        <option *ngFor="let billingType of billingTypes" value="{{ billingType.facilityBillingTypeId }}">
+                            {{ billingType.facilityBillingTypeName }}
+                        </option>
+                    </select>
+                    <div id="add-internal-workitem-dup" *ngIf="(f.facilityBillingTypeId.dirty || f.facilityBillingTypeId.touched || submitted) && f.facilityBillingTypeId.errors" class="invalid-feedback">
+                        <div id="add-internal-workitem-dup" *ngIf="f.facilityBillingTypeId.errors.required" class="txt-red">
+                            Billing Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Referral Number</label>
+                    <input type="text" class="form-control" formControlName="referralNumber" [ngClass]="{ 'is-invalid': (f.referralNumber.dirty || f.referralNumber.touched || submitted) && f.referralNumber.errors }" />
+                    <div id="add-internal-workitem-dup" *ngIf="(f.referralNumber.dirty || f.referralNumber.touched || submitted) && f.referralNumber.errors" class="invalid-feedback">
+                        <div id="add-internal-workitem-dup" *ngIf="f.referralNumber.errors.maxlength" class="txt-red">
+                            Referral number is max of 25 characters
+                        </div>
+                        <div id="add-internal-workitem-dup" *ngIf="f.referralNumber.errors.pattern" class="txt-red">
+                            Referral number is not in correct format
+                        </div>
+                    </div>
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Work Item Status</label>
+                    <select class="custom-select" formControlName="customerWorkItemStatusId">
+                        <option value="" selected>Select Status</option>
+                        <option
+                        *ngFor="let w of customerWiStatuses"
+                        value="{{ w.customerWorkItemStatusNameId }}">
+                        {{ w.customerWorkItemStatusName }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Assigned Team Member</label>
+                    <input type="text" class="form-control" formControlName="assignedTeamMember" />
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Patient ID</label>
+                    <input type="text" class="form-control" formControlName="patientId" />
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Who Added</label>
+                    <input type="text" class="form-control" formControlName="createdByName" />
+                </div>
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Customer Added Date</label>
+                    <input type="text" class="form-control" formControlName="cad" />
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-6">
+                    <label>Customer Team Member</label>
+                    <input type="text" class="form-control" formControlName="customerTeamMember" />
+                </div>
+            </div>
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-12">
+                    <div id="add-internal-workitem-dup" class="card">
+                        <div id="add-internal-workitem-dup" class="card-header container-fluid">
+                            <div id="add-internal-workitem-dup" class="row">
+                                <div id="add-internal-workitem-dup" class="col-md-11">
+                                    <h5>Diagnosis codes <small>(Max 10)</small></h5>
+                                </div>
+                                <div id="add-internal-workitem-dup" class="col-md-1">
+                                    <button type="button" class="btn-primary float-right" (click)="generateInternalDianosisControls()"><em class="fas fa-plus"></em></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="add-internal-workitem-dup" class="form-row ml-2">
+                            <div id="add-internal-workitem-dup" class="form-group col-md-4">
+                                <h6 class="card-title mt-3">ICD Code</h6>
+                            </div>
+                            <div id="add-internal-workitem-dup" class="form-group col-md-8">
+                                <h6 class="card-title mt-3"> ICD Description</h6>
+                            </div>
+                        </div>
+                        <div id="add-internal-workitem-dup" formArrayName="icdCodes">
+                            <ng-container *ngFor="let icd of icdCodes.controls; index as i">
+                                <div id="add-internal-workitem-dup" [formGroupName]="i">
+                                    <div id="add-internal-workitem-dup" class="form-row ml-2 mr-2">
+                                        <div id="add-internal-workitem-dup" class="form-group col-4">
+                                            <ng-select formControlName="icdCode" [virtualScroll]="true" [items]="icdCodesFiltered$ | async" [trackByFn]="trackByIcdCodeInternal" [minTermLength]="minLengthTerm" [loading]="icdCodesLoadingInternal" [typeahead]="icdCodesInput$" placeholder="Search for ICD code, description"
+                                                (change)="onIcdCodeChange($event, i)">
+                                            </ng-select>
+                                        </div>
+                                        <div id="add-internal-workitem-dup" class="form-group col-8">
+                                            <input type="text" formControlName="icdDescription" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-internal-workitem-dup" class="form-row">
+                <div id="add-internal-workitem-dup" class="form-group col-md-12">
+                    <div id="add-internal-workitem-dup" class="card">
+                        <div id="add-internal-workitem-dup" class="card-header container-fluid">
+                            <div id="add-internal-workitem-dup" class="row">
+                                <div id="add-internal-workitem-dup" class="col-md-11">
+                                    <h5>Drug / Procedure Codes <small>(Max 13)</small></h5>
+                                </div>
+                                <div id="add-internal-workitem-dup" class="col-md-1">
+                                    <button type="button" class="btn-primary float-right" (click)="generateDrugCodeControls()"><em class="fas fa-plus"></em></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="add-internal-workitem-dup" class="form-row ml-2">
+                            <div id="add-internal-workitem-dup" class="form-group col-md-4">
+                                <h6 class="card-title mt-3">Drug Code</h6>
+                            </div>
+                            <div id="add-internal-workitem-dup" class="form-group col-md-8">
+                                <h6 class="card-title mt-3">Drug Code Description</h6>
+                            </div>
+                        </div>
+                        <div id="add-internal-workitem-dup" formArrayName="drugCodes">
+                            <ng-container *ngFor="let drug of drugCodes.controls; index as i">
+                                <div id="add-internal-workitem-dup2" [formGroupName]="i">
+                                    <div id="add-internal-workitem-dup2" class="form-row ml-2 mr-2">
+                                        <div id="add-internal-workitem-dup2" class="form-group col-4">
+                                            <ng-select formControlName="drugCode" [virtualScroll]="true" [items]="drugCodesFiltered$ | async" [trackByFn]="trackByDrugCode" [minTermLength]="minLengthTerm" [loading]="drugCodesLoading" [typeahead]="drugCodesInput$" placeholder="Search for Drug code, description"
+                                                (change)="onDrugCodeChange($event, i)">
+                                            </ng-select>
+                                        </div>
+                                        <div id="add-internal-workitem-dup2" class="form-group col-8">
+                                            <input type="text" formControlName="drugCodeDescription" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-internal-workitem-dup2" class="card w-100 p-3">
+                <h5 class="card-header">NOTES SECTION</h5>
+                <div id="add-internal-workitem-dup2" class="card-body">
+                    <div id="add-internal-workitem-dup2" class="form-row">
+                        <label>General Notes</label>
+                        <textarea rows="3" type="text" formControlName="generalNotes" class="form-control" maxlength="1000"></textarea>
+                    </div>
+                      <app-file-attachments
+                        attachmentTransmissionInterfaceName="WorkitemService"
+                        [fileAttachmentData]="fileAttachmentData"
+                        (fileAttachmentsChanged)="onFileAttachmentsChanged($event)">
+                      </app-file-attachments>
+                </div>
+            </div>
+        </div>
+        <div id="add-internal-workitem-dup2" class="card-footer ">
+            <button class="btn btn-primary float-right" (click)="onClear()"><em class="fas fa-refresh"></em> Clear</button>
+            <button class="btn btn-primary mr-3 float-right" (click)="onSubmit()" [disabled]="wiStatusesExtLoading ||  billingExtLoading || providerExtLoading || facilityExtLoading"><em class="fas fa-check"></em> Submit</button>
+        </div>
+    </div>
+</form>
+<!-- Add New WorkItem Form End-->

@@ -1,0 +1,396 @@
+<div>
+    <div class="row mb-1">
+        <div class="col-sm-12">
+            <app-search-revenue placeholderText="Search for Facility Name or MRN" (setValue)="onSearch($event)"></app-search-revenue>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="showError" style="padding: 0.5em">
+        <div class="col-md-12">
+            <h6 style="color: red">No Records found!</h6>
+        </div>
+    </div>
+
+    <div class="card w-100 p-3" *ngIf="showGrid">
+        <div class="col-md-12 card-body">
+            <p-table [value]="patientDatasource"  [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15, 20]" [totalRecords]="patientTotalRecords" [loading]="patientGridloading" styleClass="p-datatable-striped"
+                [autoLayout]="true" [sortMode]="'multiple'" >
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">Action</th>
+                        <th scope="col" [pSortableColumn]="'mrn'">MRN<p-sortIcon [field]="'mrn'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'facilityName'">Facility<p-sortIcon [field]="'facilityName'"></p-sortIcon></th>
+                        <th scope="col" [pSortableColumn]="'contactStatusName'">Contact Status<p-sortIcon [field]="'contactStatusName'"></p-sortIcon></th>
+                       </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-patient>
+                    <tr>
+                        <td style="padding-top: 0%">
+                            <button class="btn btn-link" (click)="onEdit(patient.patientId)">
+                Edit
+              </button>
+                        </td>
+                      <td>{{ patient.mrn }}</td>
+                      <td>{{ patient.facilityName }}</td>
+                      <td>{{ patient.contactStatusName }}</td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+      <div id="billing-dup" class="card-footer ">
+        <div id="billing-dup" class="float-right">
+          <button type="button" class="btn btn-primary" (click)="exportExcel()">
+            Export
+          </button>
+      </div></div>
+    </div>
+  <!--<div id="patient-dup" class="row float-right">
+    <div class="float-right">-->
+
+    <div *ngIf="showForm">
+        <div class="row">
+            <form class="needs-validation col-md-12 mt-2" [formGroup]="formPatient">
+                <div class="card w-100 p-3">
+                    <h5 *ngIf="!isUpdate" class="card-header">Add New Patient</h5>
+                    <h5 *ngIf="isUpdate" class="card-header">Edit Patient</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <label for="mrn" class="col-sm-6 col-form-label">MRN<span class="required">*</span></label>
+                            <label for="facilityId" class="col-sm-6 col-form-label">Facility<span class="required">*</span></label>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" maxlength="25" class="form-control" formControlName="mrn" [ngClass]="{ 'is-invalid': (f.mrn.dirty || f.mrn.touched || submitted) && f.mrn.errors }" />
+                                <div *ngIf="(f.mrn.dirty || f.mrn.touched || submitted) && f.mrn.errors" class="invalid-feedback">
+                                    <div *ngIf="f.mrn.errors.required" class="txt-red">
+                                        MRN is required
+                                    </div>
+                                    <div *ngIf="f.mrn.errors.pattern" class="txt-red">
+                                        MRN should be alphanumeric
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <select class="custom-select" formControlName="facilityId" [ngClass]="{
+                      'is-invalid': (f.facilityId.dirty || f.facilityId.touched || submitted) && f.facilityId.errors
+                    }">
+                  <option value="" selected>Select Facility</option>
+                    <option
+                      *ngFor="let f of facilities"
+                      value="{{ f.facilityId }}"
+                    >
+                      {{ f.facilityName }}
+                    </option>
+                  </select>
+                                <div *ngIf="(f.facilityId.dirty || f.facilityId.touched || submitted) && f.facilityId.errors" class="invalid-feedback">
+                                    <div *ngIf="f.facilityId.errors.required" class="txt-red">
+                                        Facility is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label for="primaryInsuranceId" class="col-sm-6 col-form-label">Primary Insurance<span class="required">*</span></label
+                >
+                <label for="secondaryInsuranceId" class="col-sm-6 col-form-label"
+                  >Secondary Insurance</label
+                >
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <select
+                    class="custom-select"
+                    formControlName="primaryInsuranceId"
+                    [ngClass]="{
+                      'is-invalid': (f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors
+                    }"
+                  >
+                    <option
+                      *ngFor="let insur of primaryInsuranceList"
+                      value="{{ insur.insuranceId }}"
+                    >
+                      {{ insur.insuranceName }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="(f.primaryInsuranceId.dirty || f.primaryInsuranceId.touched || submitted) && f.primaryInsuranceId.errors"
+                    class="invalid-feedback"
+                  >
+                    <div
+                      *ngIf="f.primaryInsuranceId.errors.required"
+                      class="txt-red"
+                    >
+                      Primary Insurance is required
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <select
+                    class="custom-select"
+                    formControlName="secondaryInsuranceId"
+                  >
+                    <option
+                      *ngFor="let insur of secondaryInsuranceList"
+                      value="{{ insur.insuranceId }}"
+                    >
+                      {{ insur.insuranceName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="proofOfIncome" class="col-sm-6 col-form-label"
+                  >Proof Of Income</label
+                >
+                <label for="householdSize" class="col-sm-6 col-form-label"
+                  >House Hold</label
+                >
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="proofOfIncome"
+                    [ngClass]="{
+                      'is-invalid': (f.proofOfIncome.dirty || f.proofOfIncome.touched || submitted) && f.proofOfIncome.errors
+                    }"
+                  />
+                  <div
+                    *ngIf="(f.proofOfIncome.dirty || f.proofOfIncome.touched || submitted) && f.proofOfIncome.errors"
+                    class="invalid-feedback"
+                  >
+                    <div *ngIf="f.proofOfIncome.errors.pattern" class="txt-red">
+                      Proof Of Income is allowed a max length of 10 digits with two optional decimals
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <input
+                    type="tel"
+                    maxlength="2"
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'');"
+                    class="form-control"
+                    formControlName="householdSize"
+                    [ngClass]="{
+                      'is-invalid': (f.householdSize.dirty || f.householdSize.touched || submitted) && f.householdSize.errors
+                    }"
+                  />
+                  <div
+                    *ngIf="(f.householdSize.dirty || f.householdSize.touched || submitted) && f.householdSize.errors"
+                    class="invalid-feedback"
+                  >
+                    <div *ngIf="f.householdSize.errors.required" class="txt-red">
+                      House hold is allowed only 2 numeric characters
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="firstContactDate" class="col-sm-6 col-form-label"
+                  >First Contact Date</label
+                >
+                <label for="firstContactOutcome" class="col-sm-6 col-form-label"
+                  >First Contact Outcome</label
+                >
+              </div>
+
+              <div class="row">
+                <div class="col-sm-5">
+                  <input
+                    class="form-control"
+                    placeholder="mm/dd/yyyy"
+                    name="firstContactDate"
+                    ngbDatepicker
+                    #df="ngbDatepicker"
+                    formControlName="firstContactDate"
+                    [ngClass]="{ 'is-invalid': (f.firstContactDate.dirty || f.firstContactDate.touched || submitted) && f.firstContactDate.errors }"
+                  />
+                  <div *ngIf="(f.firstContactDate.dirty || f.firstContactDate.touched || submitted) && f.firstContactDate.errors" class="invalid-feedback">
+                    <div *ngIf="(f.firstContactDate.dirty || f.firstContactDate.touched || submitted) && f.firstContactDate.errors?.ngbDate?.invalid" class="txt-red">
+                      First Contact Date should be in mm/dd/yyyy format
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="btn calendar col-sm-1"
+                  (click)="df.toggle()"
+                  type="button"
+                ></button>
+
+                <div class="col-sm-6">
+                  <select
+                    class="custom-select"
+                    formControlName="firstContactOutcome"
+                  >
+                    <option
+                      *ngFor="let oc of outcomes"
+                      value="{{ oc.contactOutcomeId }}"
+                    >
+                      {{ oc.contactOutcomeName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="secondContactDate" class="col-sm-6 col-form-label"
+                  >Second Contact Date</label
+                >
+                <label for="secondContactOutcome" class="col-sm-6 col-form-label"
+                  >Second Contact Outcome</label
+                >
+              </div>
+
+              <div class="row">
+                <div class="col-sm-5">
+                  <input
+                    class="form-control"
+                    placeholder="mm/dd/yyyy"
+                    name="secondContactDate"
+                    ngbDatepicker
+                    #ds="ngbDatepicker"
+                    formControlName="secondContactDate"
+                    [ngClass]="{ 'is-invalid': (f.secondContactDate.dirty || f.secondContactDate.touched || submitted) && f.secondContactDate.errors }"
+                  />
+                  <div *ngIf="(f.secondContactDate.dirty || f.secondContactDate.touched || submitted) && f.secondContactDate.errors" class="invalid-feedback">
+                    <div *ngIf="(f.secondContactDate.dirty || f.secondContactDate.touched || submitted) && f.secondContactDate.errors?.ngbDate?.invalid" class="txt-red">
+                      Second Contact Date should be in mm/dd/yyyy format
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="btn calendar col-sm-1"
+                  (click)="ds.toggle()"
+                  type="button"
+                ></button>
+                <div class="col-sm-6">
+                  <select
+                    class="custom-select"
+                    formControlName="secondContactOutcome"
+                  >
+                    <option
+                      *ngFor="let oc of secondOutcomes"
+                      value="{{ oc.contactOutcomeId }}"
+                    >
+                      {{ oc.contactOutcomeName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="thirdContactDate" class="col-sm-6 col-form-label"
+                  >Third Contact Date</label
+                >
+                <label for="thirdContactOutcome" class="col-sm-6 col-form-label"
+                  >Third Contact Outcome</label
+                >
+              </div>
+
+              <div class="row">
+                <div class="col-sm-5">
+                  <input
+                    class="form-control"
+                    placeholder="mm/dd/yyyy"
+                    name="thirdContactDate"
+                    ngbDatepicker
+                    #dt="ngbDatepicker"
+                    formControlName="thirdContactDate"
+                    [ngClass]="{ 'is-invalid': (f.thirdContactDate.dirty || f.thirdContactDate.touched || submitted) && f.thirdContactDate.errors }"
+                  />
+                  <div *ngIf="(f.thirdContactDate.dirty || f.thirdContactDate.touched || submitted) && f.thirdContactDate.errors" class="invalid-feedback">
+                    <div *ngIf="(f.thirdContactDate.dirty || f.thirdContactDate.touched || submitted) && f.thirdContactDate.errors?.ngbDate?.invalid" class="txt-red">
+                      Third Contact Date should be in mm/dd/yyyy format
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="btn calendar col-sm-1"
+                  (click)="dt.toggle()"
+                  type="button"
+                ></button>
+                <div class="col-sm-6">
+                  <select
+                    class="custom-select"
+                    formControlName="thirdContactOutcome"
+                  >
+                    <option
+                      *ngFor="let oc of thirdOutcomes"
+                      value="{{ oc.contactOutcomeId }}"
+                    >
+                      {{ oc.contactOutcomeName }}
+                    </option>
+                  </select>
+
+                  <!-- <input type="text" class="form-control" id="thirdContactOutcome" formControlName="thirdContactOutcome"/>         -->
+                </div>
+              </div>
+
+              <div class="row">
+
+                            <label for="contactStatusId" class="col-sm-6 col-form-label">Contact Status</label>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <select class="custom-select" formControlName="contactStatusId" [ngClass]="{
+    'is-invalid': (f.contactStatusId.dirty || f.contactStatusId.touched || submitted) && f.contactStatusId.errors?.csInvalid
+  }">
+  <option
+    *ngFor="let con of contactStatuses"
+    value="{{ con.contactStatusId }}"
+  >
+    {{ con.contactStatusName }}
+  </option>
+</select>
+                            <div *ngIf="(f.contactStatusId.dirty || f.contactStatusId.touched || submitted) && f.contactStatusId.errors?.csInvalid" class="invalid-feedback">
+                                <div *ngIf="f.contactStatusId.errors?.csInvalid" class="txt-red">
+                                    Contact Status is required
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <label for="notes" class="col-sm-6 col-form-label">Notes</label>
+                            <div class="col-sm-12">
+                                <textarea rows="3" type="text" formControlName="notes" class="form-control" [ngClass]="{
+          'is-invalid': f.notes.errors
+        }"></textarea>
+                                <div *ngIf="f.notes.errors" class="invalid-feedback">
+                                    <div *ngIf="f.notes.errors.maxlength" class="txt-red">
+                                        Notes should have max 1000 characters
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="float-right">
+                                <button *ngIf="!isUpdate" class="btn btn-primary mr-3" (click)="onSubmit()" [disabled]="!formPatient.dirty">
+      <em class="fas fa-check"></em> Submit
+    </button>
+                                <button *ngIf="isUpdate" class="btn btn-primary mr-3" (click)="onSubmit()" [disabled]="!formPatient.dirty">
+      <em class="fas fa-check"></em> Update
+    </button>
+                                <button class="btn btn-primary mr-3" (click)="onReset()" [disabled]="!formPatient.dirty">
+      <em class="fas fa-eraser"></em> Clear
+    </button>
+                                <button class="btn btn-primary" (click)="onCancel()">
+      <em class="fa fa-times"></em> Cancel
+    </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

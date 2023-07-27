@@ -1,0 +1,88 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Deliquency Report</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="facilityId">Facility<span class="required">*</span></label>
+                    <ng-select formControlName="delinquencySelectedFacilitiesIds" [items]="delinquencyFacilities" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Facility"
+                        [ngClass]="{
+              'is-invalid': (sf.delinquencySelectedFacilitiesIds.touched || sf.delinquencySelectedFacilitiesIds.dirty ||searched) && sf.delinquencySelectedFacilitiesIds.errors}">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('delinquencyFacilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('delinquencyFacilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="(sf.delinquencySelectedFacilitiesIds.touched || sf.delinquencySelectedFacilitiesIds.dirty ||searched) && sf.delinquencySelectedFacilitiesIds.errors" class="invalid-feedback">
+                        <div *ngIf="sf.delinquencySelectedFacilitiesIds.errors.required" class="txt-red">
+                            Facility is required
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="dateIn">
+            Date In<span class="required">*</span>
+          </label>
+                    <div class="form-inline" style="margin-top: -5px;">
+                        <input class="form-control col-md-10 rounded" placeholder="mm/dd/yyyy" ngbDatepicker #df="ngbDatepicker" formControlName="dateIn" [ngClass]="{'is-invalid':(sf.dateIn.touched || sf.dateIn.dirty ||searched) && sf.dateIn.errors}" />
+                        <button class="btn calendar col-md-1" (click)="df.toggle()" type="button"></button>
+                        <div *ngIf="(sf.dateIn.touched || sf.dateIn.dirty ||searched) && sf.dateIn.errors" class="invalid-feedback">
+                            <div *ngIf="sf.dateIn.errors.required" class="txt-red">
+                                Date In is required
+                            </div>
+                            <div *ngIf="(sf.dateIn.touched || sf.dateIn.dirty ||searched) && sf.dateIn.errors?.ngbDate?.invalid" class="txt-red">
+                                Date In should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getDelinquencyReport()">
+          <em class="fa fa-search"></em> Search
+        </button>
+                <button type="button" class="btn btn-primary" (click)="onFormReset()">
+          <em class="fa fa-refresh"></em> Reset
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="delinquencyList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [totalRecords]="totalRecords" [rowsPerPageOptions]="[5,10,15,20]" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th scope="col">WorkItem Id</th>
+                        <th scope="col">Patient Mrn</th>
+                        <th scope="col">Facility Name</th>
+                        <th scope="col">Date In</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-newWorkItem>
+                    <tr>
+                        <td>{{ newWorkItem.workItemId }}</td>
+                        <td>{{ newWorkItem.patientMrn }}</td>
+                        <td>{{ newWorkItem.facilityName }}</td>
+                        <td>{{ newWorkItem.dateIn | date :'shortDate': 'UTC' }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportDelinquencyExcel()">
+        Export
+      </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="form-row">
+  <div class="file-attachment-add-attachment d-flex flex-column flex-md-row justify-content-end align-items-center mb-3">
+    <a (click)="uploader.click()" href="javascript:void(0)" style="text-decoration: none;">
+      <em class="fa fa-paperclip"> Add Attachments</em>
+    </a>
+    <input hidden type="file" #uploader (change)="addAttachment($event,'id')" multiple />
+  </div>
+</div>
+<div>
+  <div *ngFor="let file of fileAttachmentData.filesList; let index = index">
+    <ul><li>
+      <span class="btn-link" style="cursor: pointer;" (click)="openFile(file.attachmentId, file.name) ">
+        {{file.name}}
+      </span>
+      <a (click)="deleteSelectedFile(index,file.attachmentId)">
+        <em class="fa fa-remove" style="font-size:20px; cursor: pointer;color:#e85637"></em>
+      </a>
+    </li></ul>
+  </div>
+</div>

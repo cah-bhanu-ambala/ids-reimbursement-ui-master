@@ -1,0 +1,22 @@
+<header class="page-header">
+    <div class="align-items-end">
+        <div class="site-logo">
+            <span class="navbar-brand left">
+            <img class="img-fluid" src="assets/img/logo.png" alt="Cardinal Health">
+            </span>
+            <a class="nav-link dropdown-toggle right grey" role="button" data-toggle="dropdown" aria-haspopup="true" (click)="onUser()" #toggleDropdown aria-expanded="false">
+                <span class="small mr-2 d-md-down-none userN">Hello <strong>{{ currentUser.userName}} </strong> <strong> - {{ currentUser.userRole.userRoleName}} </strong></span>
+                <img viewBox="0 0 16 16" class="avatar avatar-md mr-1 avatar" fill="currentColor" src="assets/img/avatar-1.png" alt="User Avatar">
+            </a>
+
+            <div class="dropdown dropdown-menu-right" #dropdownMenu>
+                <div id="myDropdown" class="dropdown-content" [ngClass]="showMenu ? 'show' : 'none'">
+<!--                    <a [routerLink]="['/dashboard/home']">Dashboard</a>-->
+<!--                    <a href="#about">Reset Password</a>-->
+                    <a style="cursor: pointer;" (click)="onLogout()">Logout</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header>

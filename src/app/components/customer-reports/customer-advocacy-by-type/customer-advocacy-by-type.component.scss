@@ -1,0 +1,22 @@
+.ngx-charts-outer {
+    width: 100% !important;
+}
+
+.chart-legend>div {
+    width: auto !important;
+    max-width: 200px;
+}
+
+.legend-labels {
+    width: calc(100% + 30px) !important;
+}
+
+.legend-label-text {
+    white-space: normal !important;
+    width: 100% !important;
+}
+
+.pie-label {
+    font-size: 11px;
+    width: 30px !important;
+}

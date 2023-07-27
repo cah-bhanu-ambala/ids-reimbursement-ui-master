@@ -1,0 +1,122 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Advocacy Analysis Report</h5>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="facilityId">Facility<span class="required">*</span></label>
+                    <ng-select formControlName="selectedFacilitiesIds" [items]="facilitiesList" bindLabel="facilityName" bindValue="facilityId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Facility"
+                        [ngClass]="{'is-invalid': (sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors}">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('facilities')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('facilities')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+
+                    <div *ngIf="(sf.selectedFacilitiesIds.touched || sf.selectedFacilitiesIds.dirty ||searched) && sf.selectedFacilitiesIds.errors" class="invalid-feedback ml-3">
+                        <div *ngIf="sf.selectedFacilitiesIds.errors.required" class="txt-red">
+                            Facility is required
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="advocacyTypeId">Advocacy Type<span class="required">*</span></label>
+                    <ng-select formControlName="selectedAdvocacyTypesIds" [items]="advocacyTypes" bindLabel="advocacyTypeName" bindValue="advocacyTypeId" [multiple]="true" [searchable]="true" [closeOnSelect]="false" [virtualScroll]="true" [editableSearchTerm]="true" placeholder="Please select Advocay Type" [ngClass]="{
+                        'is-invalid': (sf.selectedAdvocacyTypesIds.touched || sf.selectedAdvocacyTypesIds.dirty ||searched) && sf.selectedAdvocacyTypesIds.errors }">
+                        <ng-template ng-header-tmp>
+                            <div>
+                                <button class="btn btn-link pl-0" (click)="onSelectAll('advocacyType')">Select All</button>
+                                <button class="btn btn-link" (click)="onClearAll('advocacyType')">Clear All</button>
+                            </div>
+                        </ng-template>
+                    </ng-select>
+                    <div *ngIf="(sf.selectedAdvocacyTypesIds.touched || sf.selectedAdvocacyTypesIds.dirty ||searched) && sf.selectedAdvocacyTypesIds.errors" class="invalid-feedback ml-3">
+                        <div *ngIf="sf.selectedAdvocacyTypesIds.errors.required" class="txt-red">
+                            Advocacy Type is required
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="dateCreatedFrom">
+                        Date From<span class="required">*</span>
+                    </label>
+                    <div class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedFrom" ngbDatepicker #dffrom="ngbDatepicker" formControlName="dateCreatedFrom" [ngClass]="{'is-invalid':(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors}"
+                        />
+                        <button class="btn calendar col-md-1 " (click)="dffrom.toggle()" type="button"></button>
+                        <div *ngIf="(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors" class="invalid-feedback">
+                            <div *ngIf="sf.dateCreatedFrom.errors.required" class="txt-red">
+                                Date From is required
+                            </div>
+                            <div *ngIf="(sf.dateCreatedFrom.touched || sf.dateCreatedFrom.dirty ||searched) && sf.dateCreatedFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                Date From should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="dateCreatedTo">Date To<span class="required">*</span></label>
+                    <div class="form-inline">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedTo" ngbDatepicker #dfto="ngbDatepicker" formControlName="dateCreatedTo" [ngClass]="{'is-invalid':(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors}"
+                        />
+                        <button class="btn calendar col-md-1 " (click)="dfto.toggle()" type="button"></button>
+                        <div *ngIf="(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors" class="invalid-feedback">
+                            <div *ngIf="sf.dateCreatedTo.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div *ngIf="(sf.dateCreatedTo.touched || sf.dateCreatedTo.dirty ||searched) && sf.dateCreatedTo.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getAdvocacyAnalysisReport()">
+          <em class="fa fa-search"></em> Search
+        </button>
+                <button type="button" class="btn btn-primary" (click)="onReset()">
+          <em class="fa fa-refresh"></em> Reset
+        </button>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row" *ngIf="showError" style="padding: 0.5em">
+    <div class="col-sm-6">
+        <h6 style="color: red">No records found!</h6>
+    </div>
+</div>
+<div *ngIf="showGrid" class="shadow p-3 bg-white rounded">
+    <div class="row">
+        <div class="col-md-12" style="overflow: auto;">
+            <p-table [value]="advocacyAnalysisList" [lazy]="true" (onLazyLoad)="loadReport($event)" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,15,20]" [totalRecords]="totalRecords" [loading]="loading" styleClass="p-datatable-striped" [autoLayout]="true">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th *ngFor="let detailItem of advocacyAnalysisListDetails" scope="col">
+                            {{ detailItem.name }}
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-newAdvocacyAnalysis>
+                    <tr>
+                        <td *ngFor="let detailItem of advocacyAnalysisListDetails">
+                            {{ detailItem.count }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary float-right mr-4" (click)="exportExcel()">
+        Export
+      </button>
+        </div>
+    </div>
+</div>

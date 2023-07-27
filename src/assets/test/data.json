@@ -1,0 +1,296 @@
+{
+    "data": [{
+            "data": {
+                "Advocacy": "Advocacy",
+                "Facility": "200mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "Angular",
+                        "Facility": "25mb",
+                        "Advocacy Status": "Clinic Obtained"
+                    },
+                    "children": [{
+                            "data": {
+                                "Advocacy": "angular.app",
+                                "Facility": "10mb",
+                                "Advocacy Status": "Application"
+                            }
+                        },
+                        {
+                            "data": {
+                                "Advocacy": "cli.app",
+                                "Facility": "10mb",
+                                "Advocacy Status": "Application"
+                            }
+                        },
+                        {
+                            "data": {
+                                "Advocacy": "mobile.app",
+                                "Facility": "5mb",
+                                "Advocacy Status": "Application"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "data": {
+                        "Advocacy": "editor.app",
+                        "Facility": "25mb",
+                        "Advocacy Status": "Application"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "settings.app",
+                        "Facility": "50mb",
+                        "Advocacy Status": "Application"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Cloud",
+                "Facility": "20mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "backup-1.zip",
+                        "Facility": "10mb",
+                        "Advocacy Status": "Zip"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "backup-2.zip",
+                        "Facility": "10mb",
+                        "Advocacy Status": "Zip"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Desktop",
+                "Facility": "150kb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "note-meeting.txt",
+                        "Facility": "50kb",
+                        "Advocacy Status": "Text"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "note-todo.txt",
+                        "Facility": "100kb",
+                        "Advocacy Status": "Text"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Documents",
+                "Facility": "75kb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "Work",
+                        "Facility": "55kb",
+                        "Advocacy Status": "Clinic Obtained"
+                    },
+                    "children": [{
+                            "data": {
+                                "Advocacy": "Expenses.doc",
+                                "Facility": "30kb",
+                                "Advocacy Status": "Document"
+                            }
+                        },
+                        {
+                            "data": {
+                                "Advocacy": "Resume.doc",
+                                "Facility": "25kb",
+                                "Advocacy Status": "Resume"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "data": {
+                        "Advocacy": "Home",
+                        "Facility": "20kb",
+                        "Advocacy Status": "Clinic Obtained"
+                    },
+                    "children": [{
+                        "data": {
+                            "Advocacy": "Invoices",
+                            "Facility": "20kb",
+                            "Advocacy Status": "Text"
+                        }
+                    }]
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Downloads",
+                "Facility": "25mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "Spanish",
+                        "Facility": "10mb",
+                        "Advocacy Status": "Clinic Obtained"
+                    },
+                    "children": [{
+                            "data": {
+                                "Advocacy": "tutorial-a1.txt",
+                                "Facility": "5mb",
+                                "Advocacy Status": "Text"
+                            }
+                        },
+                        {
+                            "data": {
+                                "Advocacy": "tutorial-a2.txt",
+                                "Facility": "5mb",
+                                "Advocacy Status": "Text"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "data": {
+                        "Advocacy": "Travel",
+                        "Facility": "15mb",
+                        "Advocacy Status": "Text"
+                    },
+                    "children": [{
+                            "data": {
+                                "Advocacy": "Hotel.pdf",
+                                "Facility": "10mb",
+                                "Advocacy Status": "PDF"
+                            }
+                        },
+                        {
+                            "data": {
+                                "Advocacy": "Flight.pdf",
+                                "Facility": "5mb",
+                                "Advocacy Status": "PDF"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Main",
+                "Facility": "50mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "bin",
+                        "Facility": "50kb",
+                        "Advocacy Status": "Link"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "etc",
+                        "Facility": "100kb",
+                        "Advocacy Status": "Link"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "var",
+                        "Facility": "100kb",
+                        "Advocacy Status": "Link"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Other",
+                "Facility": "5mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "todo.txt",
+                        "Facility": "3mb",
+                        "Advocacy Status": "Text"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "logo.png",
+                        "Facility": "2mb",
+                        "Advocacy Status": "Picture"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Pictures",
+                "Facility": "150kb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "barcelona.jpg",
+                        "Facility": "90kb",
+                        "Advocacy Status": "Picture"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "primeng.png",
+                        "Facility": "30kb",
+                        "Advocacy Status": "Picture"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "prime.jpg",
+                        "Facility": "30kb",
+                        "Advocacy Status": "Picture"
+                    }
+                }
+            ]
+        },
+        {
+            "data": {
+                "Advocacy": "Videos",
+                "Facility": "1500mb",
+                "Advocacy Status": "Clinic Obtained"
+            },
+            "children": [{
+                    "data": {
+                        "Advocacy": "primefaces.mkv",
+                        "Facility": "1000mb",
+                        "Advocacy Status": "Video"
+                    }
+                },
+                {
+                    "data": {
+                        "Advocacy": "intro.avi",
+                        "Facility": "500mb",
+                        "Advocacy Status": "Video"
+                    }
+                }
+            ]
+        }
+    ]
+}

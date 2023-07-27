@@ -1,0 +1,35 @@
+// .input-group.md-form.form-sm.form-2 input.amber-border {
+//     border: 1px solid #ffca28;
+// }
+// .red-border {
+//     border: none;
+//     height: 45px;
+// }
+.form-control:focus {
+    box-shadow: none;
+}
+
+.form-control-underlined {
+    border-width: 1px;
+    border-bottom-width: 1px;
+    border-radius: 1px;
+    padding-left: 0;
+}
+
+body {
+    background: #ffd89b;
+    // background: -webkit-linear-gradient(to right, #ffd89b, #19547b);
+    background: linear-gradient(to right, #ffd89b, #19547b) !important;
+    min-height: 100vh;
+}
+
+.form-control::placeholder {
+    font-size: 0.95rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+.search-bar {
+    background-color: #808184;
+    //background-color: #8d9096;
+}

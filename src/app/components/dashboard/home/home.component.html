@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <title>Revenue Cycles</title>
+</head>
+
+<body class="bg-light">
+    <app-header></app-header>
+    <div id="main-content" class="main-container">
+        <div class="sidebar">
+            <nav id="mySidenav" class="sidenav" [ngStyle]="{ width: '350px',height: '200px' }">
+                <ul class="nav">
+                    <li class="nav-item dropdown" *ngFor="let item of menusByRole">
+                        <a *ngIf="item.subMenu == ''" class="nav-link dropdown-toggle nav-dropdown-toggle" data-toggle="dropdown" (click)="SelectMenu(item)">
+                            <span>{{item.mainMenu}} <img *ngIf="item.notificationRequired" style="width: 25px;height:25px;" src="assets/img/notification.png" alt="notification"><em class="fa fa-caret-left"></em></span>
+                        </a>
+                        <div [ngStyle]="{ display: item.mainMenu == selectedMainMenu && item.subMenu !='' ? 'block' : 'none' }">
+                            <ul>
+                                <li class="menu-subitem">
+                                    <a class="dropdown-item" [routerLink]="[item.url]">{{ item.subMenu}} <img *ngIf="item.notificationRequired" style="width: 25px;height:25px;" src="assets/img/notification.png" alt="notification"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <router-outlet></router-outlet>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

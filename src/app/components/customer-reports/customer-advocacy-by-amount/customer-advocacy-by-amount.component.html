@@ -1,0 +1,97 @@
+<form [formGroup]="reportsForm" class="mb-2">
+    <div class="card w-100 p-3">
+        <h5 class="card-header">Advocacy Identified By Status</h5>
+        <div class="card-body">
+            <div id="customer-advocacy-amount-dup" class="form-row">
+              <app-facility-list id ="shared-facility-id" class="form-group col-md-6" [form]="reportsForm" [submitEvent]="searched"></app-facility-list>
+                <!--<div id="customer-advocacy-amount-dup" class="form-group col-md-6" *ngIf="customerFacilityId == 0">-->
+                    <!--<label for="facilityId" class="mr-2">Facility</label><span class="required">*</span>-->
+                    <!--<select class="custom-select" formControlName="facilityIds" [ngClass]="{ 'is-invalid': (sf.facilityIds.touched || sf.facilityIds.dirty ||searched) && sf.facilityIds.errors  }">-->
+              <!--<option value="" selected>Select Facility</option>-->
+              <!--<option *ngFor="let f of facilitiesList" value="{{ f.facilityId }}">-->
+                <!--{{ f.facilityName }}-->
+              <!--</option>-->
+            <!--</select>-->
+                    <!--<div id="customer-advocacy-amount-dup" *ngIf="(sf.facilityIds.touched || sf.facilityIds.dirty ||searched) && sf.facilityIds.errors" class="invalid-feedback">-->
+                        <!--<div id="customer-advocacy-amount-dup" *ngIf="sf.facilityIds.errors.required" class="txt-red">-->
+                            <!--Facility is required-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div id="customer-advocacy-amount-dup" class="form-group col-md-6" *ngIf="customerFacilityName != ''">-->
+                    <!--<label>Facility</label>-->
+                    <!--<input type="text" class="form-control" formControlName="facilityName" />-->
+                <!--</div>-->
+                <div id="customer-advocacy-amount-dup" class="form-group col-md-6">
+                    <label for="dateCreatedFrom">
+              Date From<span class="required">*</span>
+            </label>
+                    <div id="customer-advocacy-amount-dup" class="form-inline ">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedFrom" ngbDatepicker #dffrom="ngbDatepicker" formControlName="dateCreatedFrom" [ngClass]="{'is-invalid':searched && sf.dateCreatedFrom.errors}" />
+                        <button class="btn calendar col-md-1" style="padding: 1.375rem 0.75rem;" (click)="dffrom.toggle()" type="button"></button>
+                        <div id="customer-advocacy-amount-dup" *ngIf="searched && sf.dateCreatedFrom.errors" class="invalid-feedback">
+                            <div id="customer-advocacy-amount-dup" *ngIf="sf.dateCreatedFrom.errors.required" class="txt-red">
+                                Date From is required
+                            </div>
+                            <div id="customer-advocacy-amount-dup" *ngIf="searched && sf.dateCreatedFrom.errors?.ngbDate?.invalid" class="txt-red">
+                                Date From should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="customer-advocacy-amount-dup" class="form-row">
+                <div id="customer-advocacy-amount-dup" class="form-group col-md-6">
+                    <label for="dateCreatedTo">Date To<span class="required">*</span></label>
+                    <div id="customer-advocacy-amount-dup" class="form-inline">
+                        <input class="form-control col-md-11 rounded" placeholder="mm/dd/yyyy" name="dateCreatedTo" ngbDatepicker #dfto="ngbDatepicker" formControlName="dateCreatedTo" [ngClass]="{'is-invalid':searched && sf.dateCreatedTo.errors}" />
+                        <button class="btn calendar col-md-1" style="padding: 1.375rem 0.75rem;" (click)="dfto.toggle()" type="button"></button>
+                        <div id="customer-advocacy-amount-dup" *ngIf="searched && sf.dateCreatedTo.errors" class="invalid-feedback">
+                            <div id="customer-advocacy-amount-dup" *ngIf="sf.dateCreatedTo.errors.required" class="txt-red">
+                                Date To is required
+                            </div>
+                            <div id="customer-advocacy-amount-dup" *ngIf="searched && sf.dateCreatedTo.errors?.ngbDate?.invalid" class="txt-red">
+                                Date To should be in mm/dd/yyyy format
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div id="customer-advocacy-amount-dup" class="card-footer ">
+            <div id="customer-advocacy-amount-dup" class="float-right">
+                <button type="button" class="btn btn-primary mr-3" (click)="getAdvocacyIdentifiedReport()">
+            <em class="fa fa-search"></em> Search
+          </button>
+                <button type="button" class="btn btn-primary mr-3" (click)="onReset()">
+            <em class="fa fa-refresh"></em> Reset
+          </button>
+                <button type="button" class="btn btn-primary " (click)="downloadChart()">
+            <em class="fa fa-download"></em> Export
+          </button>
+            </div>
+        </div>
+        <div id="customer-advocacy-amount-dup" class="row" *ngIf="showError">
+            <div id="customer-advocacy-amount-dup" class="col-md-12">
+                <h6 style="color: red">No Records found!</h6>
+            </div>
+        </div>
+        <div id="customer-advocacy-amount-dup" *ngIf="showChart" id="chart">
+            <div id="customer-advocacy-amount-dup" class="row">
+                <div id="customer-advocacy-amount-dup" class="col-md-8 offset-md-4">
+                    <h3 class="reprot-title">Advocacy Identified By Status</h3>
+                </div>
+            </div>
+            <div id="customer-advocacy-amount-dup" class="row">
+                <div id="customer-advocacy-amount-dup" class="cold-md-12 offset-md-2">
+                    <ngx-charts-bar-vertical [view]="view" [scheme]="colorScheme" [results]="advocacyTypedata" [gradient]="gradient" [xAxis]="showXAxis" [yAxis]="showYAxis" [legend]="showLegend" [xAxisLabel]="'Advocacy Request Status'" [showDataLabel]=true [dataLabelFormatting]="formatDataLabel">
+                    </ngx-charts-bar-vertical>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
