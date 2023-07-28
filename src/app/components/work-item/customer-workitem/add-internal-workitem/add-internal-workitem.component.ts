@@ -226,6 +226,7 @@ export class AddInternalWorkitemComponent implements OnInit, AfterContentChecked
             this.customerWorkItem.attachments.forEach(attachment => {
               this.fileAttachmentData.filesList.push({name:attachment.customerWorkItemAttachmentPath , attachmentId: attachment.customerWorkItemAttachmentId});
             });
+            
           }
         }
       )

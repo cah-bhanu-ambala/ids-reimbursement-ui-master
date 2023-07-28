@@ -23,7 +23,7 @@ export class CustomerWorkItem {
 	referralNumber: string;
 
 	internalWorkItemId: number;
-
+	attachments: any;
 	constructor(customerWorkItem?: any) {
 		Object.assign(this, customerWorkItem);
 	}
